@@ -381,14 +381,16 @@ class TeamGameState:
     #update defense gamesate
 
         #['S','2B','3B','HR','BB','SO','HBP','GO','AO','SAC','DP','TP']#,'IBB']        
+        #DEBUG
+
         if side == 'offense':
             if thisAtBatResult.getResultCode() == 'S':
                 if self.__onThird != -1:
                     self.__runsScored += 1
 
-                    self._setBaseState(self.__lineup[self.__nextBatterIndex].guid(),
-                                       self.__onFirst,
-                                       self.__onSecond)
+                self._setBaseState(self.__lineup[self.__nextBatterIndex].guid(),
+                                   self.__onFirst,
+                                   self.__onSecond)
 
             # TODO: increment player runs scored
             # TODO: increment RBIs
@@ -403,8 +405,9 @@ class TeamGameState:
                 if self.__onSecond != -1:
                     self.__runsScored += 1
 
-                self.__onThird = self.__onFirst
-                self.__onSecond = self.__lineup[self.__nextBatterIndex].guid()
+                self._setBaseState(-1,
+                                    self.__lineup[self.__nextBatterIndex].guid(),
+                                    self.__onFirst)
 
                 # TODO: increment player runs scored
                 # TODO: increment RBIs
@@ -477,8 +480,14 @@ class TeamGameState:
             elif resCode == 'TP':
                 self.__outs += 3
        
+            #DEBUG
             #print "res:%s outs:%d\n" %(resCode, self.__outs)
+            print "[runs %d] base state: %d %d %d\n" % (self.__runsScored, 
+                                                        self.__onFirst, self.__onSecond, 
+                                                        self.__onThird)
             return self.__outs
+
+        
         
         #if its defense (TODO: FIX - THIS IS MAD DIRTY)
         return -1
