@@ -12,7 +12,7 @@ gsOUTSPERINNING = 3
 gsBATTING_LINEUP_LENGTH = 9
 gsBASEEMPTY = -1
 gsPLAYERFREEAGENT = -1
-
+gsNOTATBAT = ['BB','HBP']
 
 #can happen anytime
 #['S','2B','3B','HR','BB','SO','HBP','GO','AO']

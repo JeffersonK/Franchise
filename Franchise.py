@@ -16,7 +16,7 @@ class FranchiseDB:
 class Franchise:
     
 
-    def __init__(self, franchiseGUID, owner, teamName):
+    def __init__(self, owner, teamName, franchiseGUID):
          #General Info
         self.__franchiseGUID = franchiseGUID
         self.__owner = owner
@@ -40,6 +40,9 @@ class Franchise:
 
         return
     
+    def getFranchiseGUID(self):
+        return self.__franchiseGUID
+
     def addPlayers(self, playerDict):
         self.__players.update(playerDict)
         return 0

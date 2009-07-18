@@ -1,7 +1,7 @@
 import random
 import Globals
 import Player
-
+#['S','2B','3B','HR','BB','SO','HBP','GO','AO','SAC','DP','TP']#,'IBB']
 ####
 #
 #
@@ -24,8 +24,41 @@ class AtBatResult:
 
         return
     
-    #def __str__(self):
-    #    return ""
+    def __str__(self):
+        ss = ["%d " % self.__batter_playerGUID , " %d on a (%d-%d) count."  % (self.__pitcher_playerGUID,
+                                                                            self.__ballCount,
+                                                                            self.__strikeCount)]
+        if self.__resultCode == 'S':
+            return ss[0] + "singled off" + ss[1]
+        elif self.__resultCode == '2B':
+            return ss[0] + "doubled off" + ss[1]
+        elif self.__resultCode == '3B':
+            return ss[0] + "tripled off" + ss[1]
+        elif self.__resultCode == 'HR':
+            return ss[0] + "homered" + ss[1]
+        elif self.__resultCode == 'BB':
+            return "%d walked %d." % (self.__pitcher_playerGUID, self.__batter_playerGUID)
+        elif self.__resultCode == 'SO':
+            return "%d struck out %d." % (self.__pitcher_playerGUID, self.__batter_playerGUID)
+        elif self.__resultCode == 'HBP':
+            return "%d was hit by a pitch." % (self.__batter_playerGUID)    
+        elif self.__resultCode == 'GO':
+            x = ['first', 'second','third','the pitcher','the shortstop']
+            return "%d ground out to %s." % (self.__batter_playerGUID, x[random.randint(0,len(x)-1)])
+        elif self.__resultCode == 'AO':
+            x = ['first', 'second','third','the pitcher','the shortstop', 'center', 'left', 'right', 'the catcher']
+            return "%d popped out to %s." %  (self.__batter_playerGUID, x[random.randint(0,len(x)-1)])
+        elif self.__resultCode == 'SAC':
+            return "IMPLEMENT SAC"
+        elif self.__resultCode == 'DP':
+            return "IMPLEMENT DP"
+        elif self.__resultCode == 'TP':
+            return "IMPLEMENT TP"        
+        else:
+            return "MISSING CASE (%s)!!!" % self.__resultCode
+        
+
+ 
 
     def incRunsScored(self):
         self.__runsScored += 1
@@ -390,7 +423,8 @@ class TeamGameState:
                 self._clearBaseState()
                     
             elif thisAtBatResult.getResultCode() in ['BB', 'HBP']:
-                pitcherGameState.incWalks()
+                pitcherGameState.incWalksThrown()
+                batterGameState.incWalks()
                 if not self._manOn(1):
                     self._setBaseState(self.__lineup[self.__nextBatterIndex],
                                        self.__onSecond,
@@ -458,6 +492,7 @@ class GameRunner:
         self.__inning = 1
         self.__isHomeAtBat = False  
 
+        self.__gameEventLog = []
 
         if homeTeam==None or awayTeam==None:
             return None
@@ -479,7 +514,14 @@ class GameRunner:
         s = "--- GAME STATE ---\n"
         s += "Home Team: %s\n" % str(self.__homeTeam.teamName())
         s += "Away Team: %s\n" % str(self.__awayTeam.teamName())
+        s += str(self.__gameEventLog)
         return s
+
+    def _gameLog(self, logstr):
+        self.__gameEventLog += [logstr]
+
+    def getGameEventLog(self):
+        return self.__gameEventLog
 
     def _endGame(self):
         return
@@ -515,8 +557,11 @@ class GameRunner:
             thisAtBatResult = self.__awayTeamGameState.simAtBat(self.__homeTeamGameState)
             numOuts = self.__awayTeamGameState.updateOffenseTeamGameState(thisAtBatResult)
             self.__homeTeamGameState.updateDefenseTeamGameState(thisAtBatResult)
-            
-            #num_outs = self._updateGameState(atBatResult)
+        
+        
+        self._gameLog(str(thisAtBatResult))
+        
+        #num_outs = self._updateGameState(atBatResult)
         if numOuts == Globals.gsOUTSPERINNING and self.__inning >= Globals.gsMAXGAMEINNINGS and self.__isHomeAtBat and not self._scoreEqual():
             #DEBUG
             print "FINAL --- %s [%d - %d] ---\n" % (self.__inning, 

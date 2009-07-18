@@ -46,7 +46,7 @@ class Player:
 
         #Pitcher Stats
         self.__totKs = 0
-        self.__totWalks = 0
+        self.__totWalksThrown = 0
         self.__totOutsPitched = 0
         self.__totEarnedRuns = 0
         
@@ -75,12 +75,12 @@ class Player:
 
     def __getstate__(self):
         fmt =  "{'playerGUID':%d,'position':'%s','franchiseGUID':%d,'totKs':%d," + \
-            "'totWalks':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
+            "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
             "'totAtBats':%d,'totHits':%d,'tot1b':%d,'tot2b':%d," + \
             "'tot3b':%d,'totHR':%d,'totWalks':%d}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
-                      self.__totKs, self.__totWalks, self.__totOutsPitched,
+                      self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
                       self.__totEarnedRuns, self.__totAtBats, self.__totHits, 
                       self.__tot1b, self.__tot2b, self.__tot3b, self.__totHR,
                       self.__totWalks)
@@ -93,7 +93,7 @@ class Player:
         self.__franchiseGUID = d['franchiseGUID']
         self.__position = d['position']
         self.__totKs = d['totKs']
-        self.__totWalks = d['totWalks']
+        self.__totWalksThrown = d['totWalksThrown']
         self.__totOutsPitched = d['totOutsPitched']
         self.__totEarnedRuns = d['totEarnedRuns']
         
@@ -117,6 +117,9 @@ class Player:
     def isPitcher(self):
         return self.__position == 'P'
 
+    def getPosition(self):
+        return self.__position
+
     def guid(self):
         return self.__playerGUID
 
@@ -127,6 +130,10 @@ class Player:
     def incTotWalks(self, n=1):
         self.__totWalks += n
         return self.__totWalks
+
+    def incTotWalksThrown(self, n=1):
+        self.__totWalksThrown += n
+        return self.__totWalksThrown
 
     def setPlayerFranchise(self, franchiseGUID):
         self.__franchiseGUID = franchiseGUID
@@ -141,15 +148,17 @@ class PlayerGameState:
         self.__playerGUID = playerGUID
 
         #hitting 
-        self.__atBats = [] #(pitcher playerGUID, AtBatResultStr)
+        self.__atBatResult = [] #(pitcher playerGUID, AtBatResultStr)
+        self.__atBats = 0
         self.__hits = 0
         self.__rbis = 0
         self.__runs = 0
+        self.__walks = 0
         
         #pitching
         self.__battersFaced = [] #(batter playerGUID, AtBatResultStr)
         self.__ks = 0
-        self.__walks = 0
+        self.__walksThrown = 0
         self.__hitsAllowed = 0
         self.__HRsAllowed = 0
         self.__earnedRuns = 0
@@ -172,7 +181,7 @@ class PlayerGameState:
         s += "--- PITCHING ---\n"
         s += "Batter Results: %s\n" % str(self.__battersFaced)
         s += "\tKs: %d\n" % self.__ks
-        s += "\tWalks: %d\n" % self.__walks
+        s += "\tWalks: %d\n" % self.__walksThrown
         s += "\tHits: %d\n" % self.__hitsAllowed
         s += "\tHRs: %d\n" % self.__HRsAllowed
         s += "\tRuns: %d\n" % self.__earnedRuns
@@ -185,8 +194,12 @@ class PlayerGameState:
     def getBattersFaced(self):
         return self.__battersFaced
 
-    def getAtBats(self):
-        return self.__atBats
+    #def getAtBats(self):
+    #    return self.__atBats
+
+    #def incAtBats(self):
+    #    self.__atBats += 1
+    #    return self.__atBats
 
     #For Hitters
     def incRunsScored(self):
@@ -200,6 +213,10 @@ class PlayerGameState:
     def incHits(self):
         self.__hits += 1
         return self.__hits
+
+    def incWalks(self):
+        self.__walks += 1
+        return self.__walks
 
     #FOR Pitchers
     def incHitsAllowed(self):
@@ -222,16 +239,19 @@ class PlayerGameState:
         self.__ks +=1
         return self.__ks
 
-    def incWalks(self):
-        self.__walks += 1
-        return self.__walks
+    def incWalksThrown(self):
+        self.__walksThrown += 1
+        return self.__walksThrown
 
     def addBattingResult(self, atBatResult):
-        self.__atBats.append([(atBatResult.getPitcherGUID(), atBatResult.getResultCode())])
+        self.__atBatResult += [(atBatResult.getPitcherGUID(), atBatResult.getResultCode())]
+        if atBatResult.getResultCode() not in Globals.gsNOTATBAT:
+            self.__atBats += 1
+            
         return
 
     def addPitchingResult(self, atBatResult):
-        self.__battersFaced.append([(atBatResult.getBatterGUID(), atBatResult.getResultCode())])
+        self.__battersFaced += [(atBatResult.getBatterGUID(), atBatResult.getResultCode())]
         (totPitches, totStrikesThrown, totBalls) = atBatResult.getPitchCounts()
         self.__totPitches += totPitches
         self.__totStrikesThrown += totStrikesThrown

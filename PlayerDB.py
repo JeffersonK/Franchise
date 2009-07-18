@@ -119,7 +119,7 @@ class PlayerDB:
 
         filename = self._makePlayerFileStr(playerGUID)
         
-        if os.path.exist(filename):
+        if os.path.exists(filename):
             file = open(filename, "r")
             if file == None:
                 return None
