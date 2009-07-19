@@ -46,6 +46,12 @@ class AtBatResult:
         r = random.randint(0,len(allowedEvents)-1)
         self.__resultCode = allowedEvents[r]
 
+        #initialize pitch counts
+        self.__fouls = 0
+        self.__strikeCount = 0
+        self.__ballCount = 0
+        self.__totPitches = 0
+
         #generate pitches
         if self.__resultCode == 'SO':
             self.__strikeCount = 3     
@@ -72,10 +78,10 @@ class AtBatResult:
         if self.__resultCode not in self.gsDONTADDPITCH:
             self.__totPitches += 1
 
-        self.__totPitches = 0
-        self.__fouls = 0
+    
 
         #fill these in later
+        self.__atBatEventLog = [] #list of strings
         self.__runnersOut = [] 
         self.__runnersScored = [] #[playerGUID,]
 
@@ -84,8 +90,27 @@ class AtBatResult:
     def __str__(self):
         return "%d - %s" % ( self.__batter_playerGUID, self.__resultCode)
 
+
+    def logAtBatEvent(self, eventStr):
+        self.__atBatEventLog += [eventStr]
+
+    def atBatEventLog(self):
+        return self.__atBatEventLog
+
     def isOut(self):
         return self.__resultCode in self.gsOUTEVENTS
+
+    def outsMade(self):
+        if self.__resultCode in self.gsSINGLEOUTPLAYS:
+            return 1
+
+        if self.DoublePlay():
+            return 2
+
+        if self.TriplePlay():
+            return 3
+
+        return 0
 
     def countsAsAtBat(self):
         return self.__resultCode not in self.gsNOTATBAT
@@ -153,11 +178,11 @@ class AtBatResult:
     def getBatterGUID(self):
         return self.__batter_playerGUID
 
-    def getStrikesThrown(self):
-        return self.__strikes + self.__fouls
+    #def getStrikesThrown(self):
+    #    return self.__strikes + self.__fouls
 
-    def getTotPitches(self):
-        return self.__totPitches
+    #def getTotPitches(self):
+    #    return self.__totPitches
 
     def getPitchCounts(self):
         return (self.__totPitches, self.__strikeCount + self.__fouls, self.__ballCount)
@@ -208,6 +233,9 @@ class GameState:
             return self.__AwayTeam.getCurrentPitcherGUID()
 
         return self.__HomeTeam.getCurrentPitcherGUID()
+
+    def _appendGameEvents(self, eventList):
+        self.__gameEventLog += eventList
 
     def _logGameEvent(self, eventStr):
         self.__gameEventLog += [eventStr]
@@ -300,16 +328,16 @@ class GameState:
 
             offenseTeam.incRunsScored(len(runnersScoredList))
             if len(runnersScoredList) == 1:
-                self._logGameEvent("%d hit a HR." % (atBatResultObj.getBatterGUID()))
+                atBatResultObj.logAtBatEvent("%d hit a HR." % (atBatResultObj.getBatterGUID()))
 
             else:
                 if len(runnersScoredList) == 4:
-                    self._logGameEvent("%d hit a GRANDSLAM HR." % (atBatResultObj.getBatterGUID()))
+                    atBatResultObj.logAtBatEvent("%d hit a GRANDSLAM HR." % (atBatResultObj.getBatterGUID()))
                 else:
-                    self._logGameEvent("%d hit a %d run HR." % (atBatResultObj.getBatterGUID(), len(runnersScoredList)))
+                    atBatResultObj.logAtBatEvent("%d hit a %d run HR." % (atBatResultObj.getBatterGUID(), len(runnersScoredList)))
                 
                 for runnerGUID in runnersScoredList:#[0:-1]:
-                    self._logGameEvent("%d scores." % runnerGUID)
+                    atBatResultObj.logAtBatEvent("%d scores." % runnerGUID)
                 
             
             return self._isEndGame()
@@ -317,7 +345,7 @@ class GameState:
         #case of not HR
         for runnerGUID in runnersScoredList:
             offenseTeam.incRunsScored(1)
-            self._logGameEvent("%d scores." % runnerGUID)
+            atBatResultObj.logAtBatEvent("%d scores." % runnerGUID)
             if self._isEndGame():
                 return True
             
@@ -419,21 +447,33 @@ class GameState:
         
         atBatResultObj.setRunnersScored(runnersScored)
         return #runnersScored
-        
+    
+    def getGameEvents(self):
+        return []
 
-    #endSim
+    #endSim()
+    #don't reset state because successive 
+    #calls to isSimDone() must
+    #all be true
     def handleEndGame(self):
-        #copy Games stats into Players Stats
+        #generate appropriate events
 
-        #don't reset state because successive 
-        #calls to isSimDone() must
-        #all be true
+        #update pitcher record
+        
+        #update team record
+        
+        #don't copy Games stats into Players Stats
+        #person who ran the sim should pass TeamGameState to Franchise object
+
+        
         print self.__gameEventLog
-        return
+        
+        #TODO: return 'GAMEOVER' event
+        return ['GAMEOVER']
 
-    #startSim
+    #startSim()
     def handleStartGame(self):
-        return
+        return ['Game Start'] #gameStateEvent('Start Game')
 
     def handleStartAtBat(self, atBatEventObj):
         #put batter in 0th place 
@@ -475,12 +515,17 @@ class GameState:
 
         defTeamObj.updateTeamGameState(atBatEventObj, False)
 
+        
+        self._appendGameEvents(atBatEventObj.atBatEventLog())
+
         print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
+
+        
         return
 
     #should be called before handleStartAtBat or after handleEndAtBat() 
     #so that the 0th element in the list is gsBASEEMPTY
-    def _getStateForNextEvent(self):
+    def _getStateForNextAtBatEvent(self):
         return (self.__outs, len([p for p in self.__bases[1:] if p != self.gsBASEEMPTY]))
 
     #
@@ -492,19 +537,22 @@ class GameState:
         
         atBatEvent = AtBatResult(self._getNextBatterGUID(),
                                  self._getPitcherGUID(),
-                                 self._getStateForNextEvent())
+                                 self._getStateForNextAtBatEvent())
           
         print atBatEvent
         return atBatEvent
 
     def initSim(self):
-        self.handleStartGame()
-        return
+        events = self.handleStartGame()
+        return events
 
     def isSimDone(self):
         return self._isEndGame()
 
     def stepSim(self):#, simEvent):
+
+        if self.isSimDone():
+            return "GAMEOVER"
 
         atBatEvent = self.generateSimEvent()
 
@@ -515,14 +563,18 @@ class GameState:
         self.handleEndAtBat(atBatEvent)
 
         if gameOver:
-            return True
+            return ["GAMEOVER"] #gameStateEvent().setGameOver()
 
         if changeSides:
             self.handleChangeSides()
 
         #if sim finish return True
-        return False
+        
+        #TODO: generate a real event
+        if len(self.__gameEventLog) > 0:
+            return [self.__gameEventLog[-1]] #gameEvents()
+        return []
 
     def finishSim(self):
-        self.handleEndGame()
-        return
+        gameStateEvents = self.handleEndGame()
+        return gameStateEvents

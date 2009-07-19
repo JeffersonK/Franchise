@@ -2,6 +2,7 @@ import random
 #from Globals import *
 import Globals
 import Player
+import PlayerDB
 #from Player import *
 
 class FranchiseDB:
@@ -104,7 +105,6 @@ class Franchise:
     def nextPitcherInRotation(self):
         return self.__rotation[0]
 
-
     def __str__(self):
         s = "Owner: " + self.__owner + "\n"
         s += "Team Name: " + self.__teamName + "\n"
@@ -123,11 +123,26 @@ class Franchise:
 
         return s
 
-    def teamName(self):
-        return self.__teamName
+    #def teamName(self):
+    #    return self.__teamName
 
-    def owner(self):
-        return self.__owner
+    #def owner(self):
+    #    return self.__owner
+
+    #return events
+    def updateFranchiseStats(self, teamGameState, isWin):
+        playerGameStates = teamGameState.getPlayerGameStates()
+        updatePlayerStatsEvents = []
+        for (playerGUID, playerGameState) in playerGameStates.items():
+            if playerGUID not in self.__players:
+                print "Error Player %d not on this team\n" % playerGUID
+                return []
+
+            playerState = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
+            #print playerState
+            updatePlayerStatsEvents += [playerState.updatePlayerStats(playerGameState)]
+
+        return updatePlayerStatsEvents
 
 ########
 #
@@ -168,6 +183,9 @@ class TeamGameState:
     def getRunsScored(self):
         return self.__runs
 
+    def getPlayerGameStates(self):
+        return self.__playerStates
+
     def updateTeamGameState(self, atBatEvent, isBatter):
         #will update team stats and find appropriate playerGameState 
         #and call its update function
@@ -191,6 +209,7 @@ class TeamGameState:
     def printPlayerGameState(self, playerGUID):
         print self.__playerStates[playerGUID]
 
+    
     def getCurrentPitcherGUID(self):
         return self.__pitchers[-1][1]
 

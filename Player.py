@@ -31,8 +31,10 @@ class Player:
         #self.__dateDrafted
 
         #Player Personality/Character
-        #__playerName = ""
+        #__firstName = "Moonbeam"
+        #__lastName = "McFly"
         #__picture = None
+        #__experience = None
         #__playerHomeTown =
         #__playerSalaryHistory =
         #__temper = 
@@ -43,6 +45,9 @@ class Player:
         #__happiness =
 
     
+        #expereince
+        #age
+        #gamesPlayed
 
         #Pitcher Stats
         self.__totBattersFaced = 0
@@ -67,12 +72,14 @@ class Player:
         #Batting stats
         self.__totAtBats = 0
         self.__totHits = 0
-        self.__tot1b = 0
-        self.__tot2b = 0
-        self.__tot3b = 0
-        self.__totHR = 0
+        self.__tot1Bs = 0
+        self.__tot2Bs = 0
+        self.__tot3Bs = 0
+        self.__totHRs = 0
+        self.__grandSlams = 0
         self.__totWalks = 0
-    
+        self.__cyclesHit = 0
+
         #Abilities as batter 0-10
         #__power = 0
         #__contact = 0
@@ -85,13 +92,13 @@ class Player:
     def __getstate__(self):
         fmt =  "{'playerGUID':%d,'position':'%s','franchiseGUID':%d,'totKs':%d," + \
             "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
-            "'totAtBats':%d,'totHits':%d,'tot1b':%d,'tot2b':%d," + \
-            "'tot3b':%d,'totHR':%d,'totWalks':%d}"
+            "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
+            "'tot3Bs':%d,'totHR':%d,'totWalks':%d}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
                       self.__totEarnedRuns, self.__totAtBats, self.__totHits, 
-                      self.__tot1b, self.__tot2b, self.__tot3b, self.__totHR,
+                      self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
                       self.__totWalks)
 
 
@@ -123,8 +130,24 @@ class Player:
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
 
+    #we should generate events when we update stats because
+    #it is a change in the player state
+    #here is where a player will gain ablities when their stats are updated
     def updatePlayerStats(self, playerGameState):
-        return
+        self.__totAtBats += playerGameState.atBatCount()
+        self.__totHits += playerGameState.Hits()
+        self.__tot1Bs += playerGameState.Singles()
+        self.__tot2Bs += playerGameState.Doubles()
+        self.__tot3Bs += playerGameState.Triples()
+        self.__totHRs += playerGameState.HomeRuns()
+        self.__totWalks += playerGameState.Walks()
+        self.__grandSlams += playerGameState.GrandSlams()
+        self.__cyclesHit += playerGameState.checkHitCycle()
+        
+        #self._updateBatAvg()
+        #self._updateSlgPct()
+        #need helper function to compute stats so we dno't repete the logic
+        return ['+1 EXP']
 
     def isPitcher(self):
         return self.__position == 'P'
@@ -153,6 +176,12 @@ class Player:
     def savePlayerUpdates(self):
         return PlayerDB.gsPlayerDB.write(self.__playerGUID)
 
+    #def handlePlayerPlayedGame(self)
+
+    #def generatePlayerEvents(self, state):
+    #    return
+
+
 class PlayerGameState:
 
     def __init__(self, playerGUID):
@@ -161,17 +190,23 @@ class PlayerGameState:
 
         #hitting 
         self.__atBatResults = [] #(pitcher playerGUID, AtBatResultStr)
-        self.__atBats = 0
+        self.__atBatCount = 0
         self.__hits = 0
         self.__HRs = 0
-        self.__1B = 0
-        self.__2B = 0
-        self.__3B = 0
+        self.__1Bs = 0
+        self.__2Bs = 0
+        self.__3Bs = 0
         self.__rbis = 0
         self.__runs = 0
         self.__walks = 0
         self.__Kd = 0
+        self.__hbps = 0
+        self.__grandSlams = 0
         
+        #caliculated stats
+        self.__battingAvg = 0
+        self.__onBasePct = 0 
+        self.__sluggingPct = 0
 
         #pitching
         self.__started = 0
@@ -180,61 +215,182 @@ class PlayerGameState:
         self.__walksThrown = 0
         self.__hitsAllowed = 0
         self.__HRsAllowed = 0
+        self.__grandSlamsAllowed = 0
+        self.__1BsAllowed = 0
+        self.__2BsAllowed = 0
+        self.__3BsAllowed = 0
         self.__earnedRuns = 0
-        self.__totPitches = 0
-        self.__totBalls = 0
+        self.__hbpsThrown = 0
+        self.__totPitchesThrown = 0
+        self.__totBallsThrown = 0
         self.__totStrikesThrown = 0 #strikes + fouls
         self.__outsPitched = 0
         
+        #calculated stats
+        #self.__ERA = 0
+        #self.__gamePitchedRank = 0
         
         #fielding
         return
 
     def __str__(self):
+
         s = "Player: %s\n" % str(self.__playerGUID)
-        s += "--- HITTING ---\n"
-        s += "\tAt Bats: %s\n" % str(self.__atBatResults)
-        s += "\tKd: %d\n" % self.__Kd
-        s += "\tNum At Bats: %d\n" % self.__atBats
-        s += "\tRBIs: %d\n" % self.__rbis
-        s += "\tRuns: %d\n" % self.__runs
-        s += "\tHits: %d\n" % self.__hits
-        s += "\tWalks: %d\n" % self.__walks
-        s += "--- PITCHING ---\n"
-        s += "Batter Results: %s\n" % str(self.__battersFaced)
-        s += "\tKs: %d\n" % self.__Ks
-        s += "\tWalks: %d\n" % self.__walksThrown
-        s += "\tHits: %d\n" % self.__hitsAllowed
-        s += "\tHRs: %d\n" % self.__HRsAllowed
-        s += "\tRuns: %d\n" % self.__earnedRuns
-        s += "\tOuts Pitched: %d\n" % self.__outsPitched
-        s += "\tTot Pitches: %d\n" % self.__totPitches
-        s += "\tTot Strikes: %d\n" % self.__totStrikesThrown
-        s += "\tTot Balls: %d\n" % self.__totBalls
+        if self.__atBatCount > 0:
+
+            s += "--- HITTING ---\n"
+            s += "\tAt Bats: %s\n" % str(self.__atBatResults)
+            s += "\tKd: %d\n" % self.__Kd
+            s += "\tNum At Bats: %d\n" % self.__atBatCount
+            s += "\tRBIs: %d\n" % self.__rbis
+            s += "\tRuns: %d\n" % self.__runs
+            s += "\tHits: %d\n" % self.__hits
+            s += "\tWalks: %d\n" % self.__walks
+            s += "\tHBPs: %d\n" % self.__hbps
+            s += "\tHRs: %d\n" % self.__HRs
+            s += "\t1Bs: %d\n" % self.__1Bs
+            s += "\t2Bs: %d\n" % self.__2Bs
+            s += "\t3Bs: %d\n" % self.__3Bs
+
+            if self.__atBatCount > 0:
+                s += "\tBatAvg: %.3f\n" % (float(self.__hits) / float(self.__atBatCount))
+                s += "\tSlgPct: %.3f\n" % ((float(self.__HRs)*4 + float(self.__3Bs)*3 + float(self.__2Bs)*2 + float(self.__1Bs)) / float(self.__atBatCount))
+
+        if len(self.__battersFaced) > 0:
+            
+            s += "--- PITCHING ---\n"
+            s += "Batter Results: %s\n" % str(self.__battersFaced)
+            s += "\tKs: %d\n" % self.__Ks
+            s += "\tWalks: %d\n" % self.__walksThrown
+            s += "\tHits: %d\n" % self.__hitsAllowed
+            s += "\tRuns: %d\n" % self.__earnedRuns
+            s += "\tOuts Pitched: %d\n" % self.__outsPitched
+            s += "\tTot Pitches: %d\n" % self.__totPitchesThrown
+            s += "\tTot Strikes: %d\n" % self.__totStrikesThrown
+            s += "\tTot Balls: %d\n" % self.__totBallsThrown
+            s += "\tHBPs: %d\n" % self.__hbpsThrown
+            s += "\t1Bs: %d\n" % self.__1BsAllowed
+            s += "\t2Bs: %d\n" % self.__2BsAllowed
+            s += "\t3Bs: %d\n" % self.__3BsAllowed
+            s += "\tHRs: %d\n" % self.__HRsAllowed
+            s += "\tGRandSlamsAllowed: %d\n" % self.__grandSlamsAllowed
+        
+            if self.__outsPitched == 0:
+                s += "\tgame ERA: INF\n"
+            
+            elif self.__outsPitched > 0:
+                gamesPitched = float(self.__outsPitched) / (3.0*9.0) #outs per game
+                if gamesPitched > 0.0:
+                    s += "\tgame ERA: %.2f\n" % (float(self.__earnedRuns) / float(gamesPitched))
+                    
         return s
 
     def updatePlayerGameState(self, atBatEvent, isBatter):
         if isBatter:
             self.__atBatResults += [(atBatEvent.getPitcherGUID(), atBatEvent.getResultCode())]
+            
             if atBatEvent.countsAsAtBat():
-                self.__atBats += 1
+                self.__atBatCount += 1
+            
             if atBatEvent.StrikeOut():
                 self.__Kd += 1
+            
             if atBatEvent.Walk():
                 self.__walks += 1
+            
+            if atBatEvent.HitByPitch():
+                self.__hbps += 1
+            
             if atBatEvent.isHit():
                 self.__hits += 1
             
+            if atBatEvent.HomeRun():
+                if atBatEvent.runsScored() == 4:
+                    self.__grandSlams += 1
+
+                self.__HRs += 1
+            
+            if atBatEvent.Single():
+                self.__1Bs += 1
+            
+            if atBatEvent.Double():
+                self.__2Bs += 1
+            
+            if atBatEvent.Triple():
+                self.__3Bs += 1
+
+            self.__rbis += atBatEvent.runsScored()
+            
+
         else:
             self.__battersFaced += [(atBatEvent.getBatterGUID(), atBatEvent.getResultCode())]
+
+            (pitchesThrown, strikesThrown, ballsThrown) = atBatEvent.getPitchCounts()
+            self.__totPitchesThrown += pitchesThrown
+            self.__totStrikesThrown += strikesThrown
+            self.__totBallsThrown += ballsThrown
             if atBatEvent.StrikeOut():
                 self.__Ks += 1
+            
             if atBatEvent.Walk():
                 self.__walksThrown += 1
+            
             if atBatEvent.isHit():
                 self.__hitsAllowed += 1
-        return
+            
+            if atBatEvent.HitByPitch():
+                self.__hbpsThrown += 1
+            
+            if atBatEvent.HomeRun():
+                if atBatEvent.runsScored() == 4:
+                    self.__grandSlamsAllowed += 1
+                
+                   
+                self.__HRsAllowed += 1
+            
+            if atBatEvent.Single():
+                self.__1BsAllowed += 1
+            
+            if atBatEvent.Double():
+                self.__2BsAllowed += 1
+            
+            if atBatEvent.Triple():
+                self.__3BsAllowed += 1
 
+            self.__earnedRuns += atBatEvent.runsScored()
+            
+            self.__outsPitched += atBatEvent.outsMade()
+
+
+    def atBatCount(self):
+        return self.__atBatCount
+
+    def Hits(self):
+        return self.__hits
+
+    def Singles(self):
+        return self.__1Bs
+
+    def Doubles(self):
+        return self.__2Bs
+
+    def Triples(self):
+        return self.__3Bs
+
+    def HomeRuns(self):
+        return self.__HRs
+
+    def Walks(self):
+        return self.__walks
+
+    def GrandSlams(self):
+        return self.__grandSlams
+
+    def checkHitCycle(self):
+        if self.__1Bs > 0 and self.__2Bs > 0 and self.__3Bs > 0 and self.__HRs > 0:
+            return 1
+            
+        return 0
 
     #def getBattersFaced(self):
     #    return self.__battersFaced

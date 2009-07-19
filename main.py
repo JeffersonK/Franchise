@@ -31,7 +31,6 @@ f2.addPlayers(playerList2)
 f2.setLineup()
 f2.setRotation()
 
-PlayerDB.gsPlayerDB.writeAll()
 
 tgs1 = Franchise.TeamGameState(f1)
 tgs2 = Franchise.TeamGameState(f2)
@@ -39,6 +38,19 @@ tgs2 = Franchise.TeamGameState(f2)
 gameState = GameState.GameState(tgs1,tgs2)
 
 sim = SimRunner.SimRunner(gameState)
-sim.run(-1)
+while 1:
+    gameEvents = sim.step()
+    print "Game Events: %s\n" % str(gameEvents)
+    if "GAMEOVER" in gameEvents:#gameEvents[-1].gameOver():
+        break
 
+#call this after the sim to get relevent events
+gameEvents = gameState.getGameEvents()
 
+endGameTeamEvents1 = f1.updateFranchiseStats(tgs1, True)
+print endGameTeamEvents1
+
+endGameTeamEvents2 = f2.updateFranchiseStats(tgs2, False)
+print endGameTeamEvents1
+
+PlayerDB.gsPlayerDB.writeAll()

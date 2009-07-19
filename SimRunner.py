@@ -16,14 +16,15 @@ class SimRunner:
     #
     #Run the game simulation forward nsteps
     #######
-    def run(self, nsteps=1):
+    def step(self, nsteps=1):
 
         i = 0
+        events = []
         if not self.__isRunning:
-            self.__simObject.initSim()
+            events += self.__simObject.initSim()
             self.__isRunning = not self.__isRunning
 
-        if nsteps == -1: #run to done
+        """if nsteps == -1: #run to done
 
             while 1:
                 self.__simObject.stepSim()
@@ -33,16 +34,16 @@ class SimRunner:
                     return i
                 i += 1
                 
-        else:
+        else:"""
 
-            while i < nsteps:
-                self.__simObject.stepSim()
-                if self.__simObject.isSimDone():
-                    self.__simObject.finishSim()
-                    return i
-                i += 1
+        while i < nsteps:
+            events = self.__simObject.stepSim()
+            if self.__simObject.isSimDone():
+                events += self.__simObject.finishSim()
+                return events
+            i += 1
         
-        return i
+        return events
 
 
 ##########
