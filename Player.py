@@ -45,10 +45,19 @@ class Player:
     
 
         #Pitcher Stats
+        self.__totBattersFaced = 0
         self.__totKs = 0
         self.__totWalksThrown = 0
         self.__totOutsPitched = 0
         self.__totEarnedRuns = 0
+        self.__totStrikesThrown = 0
+        self.__totPitchesThrown = 0
+        self.__totHitsAllowed = 0
+        self.__totHRAllowed = 0
+
+        self.__wins = 0
+        self.__loses = 0
+        self.__starts = 0
         
         #Abilities as pitcher 0-10
         #__stamina = 0
@@ -114,6 +123,10 @@ class Player:
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
 
+    def updateStatsFromGame(self, playerGameState):
+        #playerGameState.
+        return
+
     def isPitcher(self):
         return self.__position == 'P'
 
@@ -155,7 +168,9 @@ class PlayerGameState:
         self.__runs = 0
         self.__walks = 0
         
+
         #pitching
+        self.__started = 0
         self.__battersFaced = [] #(batter playerGUID, AtBatResultStr)
         self.__ks = 0
         self.__walksThrown = 0

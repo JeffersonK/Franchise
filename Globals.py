@@ -2,17 +2,18 @@
 gsPlayerPositions = ['P','C','1B','2B','3B','SS','LF','CF','RF']
 
 #don't change this order !!! (add things to the front if they are always possible)
-gsBatterResults = ['S','2B','3B','HR','BB','SO','HBP','GO','AO','SAC','DP','TP']#,'IBB']
-gsSINGLEOUTS = ['GO','SO','AO','SAC']
-gsHITS = ['S','2B','3B','HR']
-gsDONTADDPITCH = ['SO','BB']
-gsMAXPITCHCOUNT = 10
-gsMAXGAMEINNINGS = 9
-gsOUTSPERINNING = 3
+#gsBatterResults = ['S','2B','3B','HR','BB','SO','HBP','GO','AO','SAC','DP','TP']#,'IBB']
+#gsSINGLEOUTPLAYS = ['GO','SO','AO','SAC']
+#gsMULTIOUTSPLAYS = ['DP','TP']
+#gsHITS = ['S','2B','3B','HR']
+#gsDONTADDPITCH = ['SO','BB']
+#gsMAXPITCHCOUNT = 10
+#gsMAXGAMEINNINGS = 9
+#gsOUTSPERINNING = 3
 gsBATTING_LINEUP_LENGTH = 9
-gsBASEEMPTY = -1
+#gsBASEEMPTY = -1
 gsPLAYERFREEAGENT = -1
-gsNOTATBAT = ['BB','HBP']
+#gsNOTATBAT = ['BB','HBP']
 
 #can happen anytime
 #['S','2B','3B','HR','BB','SO','HBP','GO','AO']

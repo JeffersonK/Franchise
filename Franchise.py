@@ -1,6 +1,8 @@
 import random
-from Globals import *
-from Player import *
+#from Globals import *
+import Globals
+import Player
+#from Player import *
 
 class FranchiseDB:
     def __init__(self):
@@ -127,7 +129,60 @@ class Franchise:
     def owner(self):
         return self.__owner
 
+########
+#
+#
+########
+class TeamGameState:
+    
+    def __init__(self, franchise):
+        #last pitcher in this list is the current pitcher
+        #list of tuples (number of outs, pitcher object)
+        self.__franchiseGUID = franchise#franchise.getFranchiseGUID()
 
+        self.__pitchers = [] 
+
+        self.__nextBatterIndex = 0
+        self.__playerStates = {}
+        self.__lineup = []
+
+        self.__runs = 0
+        self.__hits = 0
+              
+        nextPitcher = franchise.nextPitcherInRotation()
+        self.__pitchers = [(0, nextPitcher)]
+
+        for playerGUID in franchise.getPlayerGUIDs():
+            self.__playerStates[playerGUID] = Player.PlayerGameState(playerGUID)
+            
+        self.__lineup = franchise.getLineup()
+
+    def __str__(self):
+        s = ""
+        return s
+
+    def incRunsScored(self, n=1):
+        self.__runs += n
+        return self.__runs
+
+    def getRunsScored(self):
+        return self.__runs
+
+    def updatePlayerState(self, playerGUID, playerGameState):
+        if playerGUID not in self.__playerStates:
+            return -1
+
+        playerState = self.__playerStates[playerGUID]
+        
+    def getCurrentPitcherGUID(self):
+        return self.__pitchers[-1][1]
+
+    def getNextBatterGUID(self):
+        return self.__lineup[self.__nextBatterIndex]
+
+    def advanceBattingLineup(self):
+        self.__nextBatterIndex = (self.__nextBatterIndex + 1) % len(self.__lineup)
+        
 #import pickle
 def main():
     f1 = Franchise("frza", "frzaites", globalState.nextFranchiseGUID())
