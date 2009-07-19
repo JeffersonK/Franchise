@@ -123,8 +123,7 @@ class Player:
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
 
-    def updateStatsFromGame(self, playerGameState):
-        #playerGameState.
+    def updatePlayerStats(self, playerGameState):
         return
 
     def isPitcher(self):
@@ -161,18 +160,23 @@ class PlayerGameState:
         self.__playerGUID = playerGUID
 
         #hitting 
-        self.__atBatResult = [] #(pitcher playerGUID, AtBatResultStr)
+        self.__atBatResults = [] #(pitcher playerGUID, AtBatResultStr)
         self.__atBats = 0
         self.__hits = 0
+        self.__HRs = 0
+        self.__1B = 0
+        self.__2B = 0
+        self.__3B = 0
         self.__rbis = 0
         self.__runs = 0
         self.__walks = 0
+        self.__Kd = 0
         
 
         #pitching
         self.__started = 0
         self.__battersFaced = [] #(batter playerGUID, AtBatResultStr)
-        self.__ks = 0
+        self.__Ks = 0
         self.__walksThrown = 0
         self.__hitsAllowed = 0
         self.__HRsAllowed = 0
@@ -184,18 +188,21 @@ class PlayerGameState:
         
         
         #fielding
-        
         return
 
     def __str__(self):
         s = "Player: %s\n" % str(self.__playerGUID)
         s += "--- HITTING ---\n"
-        s += "\tAt Bats: %s\n" % str(self.__atBats)
+        s += "\tAt Bats: %s\n" % str(self.__atBatResults)
+        s += "\tKd: %d\n" % self.__Kd
+        s += "\tNum At Bats: %d\n" % self.__atBats
         s += "\tRBIs: %d\n" % self.__rbis
         s += "\tRuns: %d\n" % self.__runs
+        s += "\tHits: %d\n" % self.__hits
+        s += "\tWalks: %d\n" % self.__walks
         s += "--- PITCHING ---\n"
         s += "Batter Results: %s\n" % str(self.__battersFaced)
-        s += "\tKs: %d\n" % self.__ks
+        s += "\tKs: %d\n" % self.__Ks
         s += "\tWalks: %d\n" % self.__walksThrown
         s += "\tHits: %d\n" % self.__hitsAllowed
         s += "\tHRs: %d\n" % self.__HRsAllowed
@@ -206,8 +213,31 @@ class PlayerGameState:
         s += "\tTot Balls: %d\n" % self.__totBalls
         return s
 
-    def getBattersFaced(self):
-        return self.__battersFaced
+    def updatePlayerGameState(self, atBatEvent, isBatter):
+        if isBatter:
+            self.__atBatResults += [(atBatEvent.getPitcherGUID(), atBatEvent.getResultCode())]
+            if atBatEvent.countsAsAtBat():
+                self.__atBats += 1
+            if atBatEvent.StrikeOut():
+                self.__Kd += 1
+            if atBatEvent.Walk():
+                self.__walks += 1
+            if atBatEvent.isHit():
+                self.__hits += 1
+            
+        else:
+            self.__battersFaced += [(atBatEvent.getBatterGUID(), atBatEvent.getResultCode())]
+            if atBatEvent.StrikeOut():
+                self.__Ks += 1
+            if atBatEvent.Walk():
+                self.__walksThrown += 1
+            if atBatEvent.isHit():
+                self.__hitsAllowed += 1
+        return
+
+
+    #def getBattersFaced(self):
+    #    return self.__battersFaced
 
     #def getAtBats(self):
     #    return self.__atBats
@@ -217,7 +247,7 @@ class PlayerGameState:
     #    return self.__atBats
 
     #For Hitters
-    def incRunsScored(self):
+    """def incRunsScored(self):
         self.__runs += 1
         return self.__runs
 
@@ -272,7 +302,7 @@ class PlayerGameState:
         self.__totStrikesThrown += totStrikesThrown
         self.__totBalls += totBalls
         
-        return
+        return"""
 
 
 ##########

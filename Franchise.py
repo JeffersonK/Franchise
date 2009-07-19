@@ -168,12 +168,29 @@ class TeamGameState:
     def getRunsScored(self):
         return self.__runs
 
-    def updatePlayerState(self, playerGUID, playerGameState):
-        if playerGUID not in self.__playerStates:
-            return -1
-
-        playerState = self.__playerStates[playerGUID]
+    def updateTeamGameState(self, atBatEvent, isBatter):
+        #will update team stats and find appropriate playerGameState 
+        #and call its update function
         
+        print "TODO: update TeamGameStats"
+        if isBatter:
+            playerGUID = atBatEvent.getBatterGUID()
+        else:
+            playerGUID = atBatEvent.getPitcherGUID()
+
+        if playerGUID not in self.__playerStates:
+            print "shit is whack"
+            return -1
+        
+        playerObj = self.__playerStates[playerGUID]
+        playerObj.updatePlayerGameState(atBatEvent, isBatter)
+
+        return 0
+
+    #FOR DEBUGGING
+    def printPlayerGameState(self, playerGUID):
+        print self.__playerStates[playerGUID]
+
     def getCurrentPitcherGUID(self):
         return self.__pitchers[-1][1]
 

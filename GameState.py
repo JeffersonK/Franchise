@@ -87,6 +87,9 @@ class AtBatResult:
     def isOut(self):
         return self.__resultCode in self.gsOUTEVENTS
 
+    def countsAsAtBat(self):
+        return self.__resultCode not in self.gsNOTATBAT
+
     def runsScored(self):
         return len(self.__runnersScored)
 
@@ -98,6 +101,9 @@ class AtBatResult:
 
     def Single(self):
         return self.__resultCode == 'S'
+
+    def isHit(self):
+        return self.__resultCode in self.gsHITS
 
     def Double(self):
         return self.__resultCode == '2B'
@@ -264,6 +270,17 @@ class GameState:
             offenseTeam = self.__AwayTeam
 
         return offenseTeam
+
+    def _getDefenseTeamObject(self):
+
+        defenseTeam = None
+
+        if not self.__homeTeamUp:
+            defenseTeam = self.__HomeTeam
+        else:
+            defenseTeam = self.__AwayTeam
+
+        return defenseTeam
 
     #who scored is implicit from who is up
     #should return whether end of game
@@ -443,12 +460,22 @@ class GameState:
 
     #update the play log
     def handleEndAtBat(self, atBatEventObj):
-        #here is where you update playerGameState Stats
+
         teamObj = self._getOffenseTeamObject()
-        #teamObj.incRunsScored(atBatEventObj.runsScored())
+
         teamObj.advanceBattingLineup()
+
         #need to do for AO and SO because handleRunnerAdvanced is not called
         self.__bases[0] = self.gsBASEEMPTY
+
+        #here is where you update playerGameState Stats
+        teamObj.updateTeamGameState(atBatEventObj, True)
+        
+        defTeamObj = self._getDefenseTeamObject()
+
+        defTeamObj.updateTeamGameState(atBatEventObj, False)
+
+        print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
         return
 
     #should be called before handleStartAtBat or after handleEndAtBat() 
