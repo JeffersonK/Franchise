@@ -1,15 +1,6 @@
 import Globals
-import PlayerDB
+#import PlayerDB
 import cPickle
-
-def generateTeam():
-    team = {}
-    for pos in Globals.gsPlayerPositions:
-        p = Player(Globals.globalState.nextPlayerGUID(), pos)
-        PlayerDB.gsPlayerDB.addPlayer(p.guid(), p)
-        team[p.guid()] = pos
-
-    return team
 
 class Player:
 
@@ -93,13 +84,13 @@ class Player:
         fmt =  "{'playerGUID':%d,'position':'%s','franchiseGUID':%d,'totKs':%d," + \
             "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
-            "'tot3Bs':%d,'totHR':%d,'totWalks':%d}"
+            "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
                       self.__totEarnedRuns, self.__totAtBats, self.__totHits, 
                       self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
-                      self.__totWalks)
+                      self.__totWalks, self.__grandSlams, self.__cyclesHit)
 
 
 
@@ -121,11 +112,13 @@ class Player:
         #batting stats
         self.__totAtBats = d['totAtBats']
         self.__totHits = d['totHits']
-        self.__tot1b = d['tot1b']
-        self.__tot2b = d['tot2b']
-        self.__tot3b = d['tot3b']
-        self.__totHR = d['totHR']
+        self.__tot1Bs = d['tot1Bs']
+        self.__tot2Bs = d['tot2Bs']
+        self.__tot3Bs = d['tot3Bs']
+        self.__totHRs = d['totHR']
         self.__totWalks = d['totWalks']
+        self.__grandSlams = d['grandSlams']
+        self.__cyclesHit = d['cyclesHit']
 
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
@@ -149,8 +142,8 @@ class Player:
         #need helper function to compute stats so we dno't repete the logic
         return ['+1 EXP']
 
-    def isPitcher(self):
-        return self.__position == 'P'
+    #def isPitcher(self):
+    #    return self.__position == 'P'
 
     def getPosition(self):
         return self.__position
@@ -158,23 +151,23 @@ class Player:
     def guid(self):
         return self.__playerGUID
 
-    def incTotKs(self, n=1):
-        self.__totKs += n
+    #def incTotKs(self, n=1):
+    #    self.__totKs += n
         return self.__totKs
 
-    def incTotWalks(self, n=1):
-        self.__totWalks += n
+    #def incTotWalks(self, n=1):
+    #    self.__totWalks += n
         return self.__totWalks
 
-    def incTotWalksThrown(self, n=1):
-        self.__totWalksThrown += n
-        return self.__totWalksThrown
+    #def incTotWalksThrown(self, n=1):
+    #    self.__totWalksThrown += n
+    #    return self.__totWalksThrown
 
     def setPlayerFranchise(self, franchiseGUID):
         self.__franchiseGUID = franchiseGUID
 
-    def savePlayerUpdates(self):
-        return PlayerDB.gsPlayerDB.write(self.__playerGUID)
+    #def savePlayerUpdates(self):
+    #    return PlayerDB.gsPlayerDB.write(self.__playerGUID)
 
     #def handlePlayerPlayedGame(self)
 
@@ -467,21 +460,20 @@ class PlayerGameState:
 #
 ##########
 def testSerialization():
-    guid = Globals.globalState.nextPlayerGUID()
+    #guid = Globals.globalState.nextPlayerGUID()
+    #playerObj = Player(guid,"P")
 
-    playerObj = Player(guid,"P")
-
-    PlayerDB.gsPlayerDB.addPlayer(guid, playerObj)
+    #PlayerDB.gsPlayerDB.addPlayer(guid, playerObj)
     
-    handle = PlayerDB.gsPlayerDB.getPlayerHandle(guid)
+    #handle = PlayerDB.gsPlayerDB.getPlayerHandle(guid)
     
-    if handle == playerObj:
-        print "PASS"
-
+    #if handle == playerObj:
+    #    print "PASS"
     return
 
 def main():
-    testSerialization()
+    #testSerialization()
+    return
     
 if __name__ == "__main__":
     main()

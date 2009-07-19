@@ -139,8 +139,11 @@ class Franchise:
                 return []
 
             playerState = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
+
             #print playerState
             updatePlayerStatsEvents += [playerState.updatePlayerStats(playerGameState)]
+
+            PlayerDB.gsPlayerDB.write(playerGUID)
 
         return updatePlayerStatsEvents
 

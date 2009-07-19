@@ -2,35 +2,57 @@ import Globals
 import Franchise
 import Player
 import GameState
-import PlayerDB
+#import PlayerDB
 #import Stadium
 import SimRunner
 #import pprint
+import ObjectDB
+
+
+PlayerDB = ObjectDB.ObjectDB("players", "plr")
+
+def generateTeam():
+    team = {}
+    for pos in Globals.gsPlayerPositions:
+        p = Player(Globals.globalState.nextPlayerGUID(), pos)
+        PlayerDB.addObject(p.guid(), p)
+        team[p.guid()] = pos
+
+    return team
 
 f1 = Franchise.Franchise("frza", "frzaites", Globals.globalState.nextFranchiseGUID())
-playerList1 = Player.generateTeam()
-f1.addPlayers(playerList1)
 
-#for playerGUID in range(0,9):#playerList1.keys():
+#GENERATE 1
+#playerDict1 = Player.generateTeam()
+#for playerGUID in playerDict1.keys():
 #    handle = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
-#    f1.addPlayers({playerGUID:handle.getPosition()})
 #    handle.setPlayerFranchise(f1.getFranchiseGUID())
+#f1.addPlayers(playerDict1)
+
+#LOAD 1
+for playerGUID in range(0,9):#playerList1.keys():
+    handle = PlayerDB.getObjectHandle(playerGUID)
+    f1.addPlayers({playerGUID:handle.getPosition()})
 
 f1.setLineup()
 f1.setRotation()
 
 f2 = Franchise.Franchise("jza", "jzites", Globals.globalState.nextFranchiseGUID())
-playerList2 = Player.generateTeam()
 
-#for playerGUID in range(9,18):#playerList2.keys():
+# GENERATE 2
+#playerDict2 = Player.generateTeam()
+#for playerGUID in playerDict2.keys():
 #    handle = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
-#    f2.addPlayers({playerGUID:handle.getPosition()})
 #    handle.setPlayerFranchise(f2.getFranchiseGUID())
+#f2.addPlayers(playerDict2)
+
+#LOAD 2
+for playerGUID in range(9,18):#playerList2.keys():
+    handle = PlayerDB.getObjectHandle(playerGUID)
+    f2.addPlayers({playerGUID:handle.getPosition()})
     
-f2.addPlayers(playerList2)
 f2.setLineup()
 f2.setRotation()
-
 
 tgs1 = Franchise.TeamGameState(f1)
 tgs2 = Franchise.TeamGameState(f2)
@@ -53,4 +75,4 @@ print endGameTeamEvents1
 endGameTeamEvents2 = f2.updateFranchiseStats(tgs2, False)
 print endGameTeamEvents1
 
-PlayerDB.gsPlayerDB.writeAll()
+PlayerDB.writeAll()
