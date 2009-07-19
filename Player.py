@@ -39,6 +39,7 @@ class Player:
         #expereince
         #age
         #gamesPlayed
+        self.__games = 0
 
         #Pitcher Stats
         self.__totBattersFaced = 0
@@ -83,18 +84,23 @@ class Player:
     def __getstate__(self):
         fmt =  "{'playerGUID':%d,'position':'%s','franchiseGUID':%d,'totKs':%d," + \
             "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
+            "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
-            "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d}"
+            "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
-                      self.__totEarnedRuns, self.__totAtBats, self.__totHits, 
+                      self.__totEarnedRuns, self.__wins, self.__losses, self.__starts,
+                      self.__totAtBats, self.__totHits, 
                       self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
-                      self.__totWalks, self.__grandSlams, self.__cyclesHit)
+                      self.__totWalks, self.__grandSlams, self.__cyclesHit, self.__games)
 
 
 
     def __setstate__(self, dictstr):
+
+        print "TODO: check for eval errors!!!"
+
         d = eval(dictstr)
         self.__playerGUID = d['playerGUID']
         self.__franchiseGUID = d['franchiseGUID']
@@ -103,7 +109,10 @@ class Player:
         self.__totWalksThrown = d['totWalksThrown']
         self.__totOutsPitched = d['totOutsPitched']
         self.__totEarnedRuns = d['totEarnedRuns']
-        
+        self.__wins = d['wins']
+        self.__losses = d['losses']
+        self.__starts = d['starts']
+
         #abilities as pitcher 0-10
         #__stamina = 0
         #__control = 0
@@ -119,6 +128,8 @@ class Player:
         self.__totWalks = d['totWalks']
         self.__grandSlams = d['grandSlams']
         self.__cyclesHit = d['cyclesHit']
+        self.__games = d['games']
+
 
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
@@ -127,6 +138,10 @@ class Player:
     #it is a change in the player state
     #here is where a player will gain ablities when their stats are updated
     def updatePlayerStats(self, playerGameState):
+
+        if playerGameState.played():
+            self.__games += 1
+
         self.__totAtBats += playerGameState.atBatCount()
         self.__totHits += playerGameState.Hits()
         self.__tot1Bs += playerGameState.Singles()
@@ -136,7 +151,7 @@ class Player:
         self.__totWalks += playerGameState.Walks()
         self.__grandSlams += playerGameState.GrandSlams()
         self.__cyclesHit += playerGameState.checkHitCycle()
-        
+
         #self._updateBatAvg()
         #self._updateSlgPct()
         #need helper function to compute stats so we dno't repete the logic
@@ -165,9 +180,6 @@ class Player:
 
     def setPlayerFranchise(self, franchiseGUID):
         self.__franchiseGUID = franchiseGUID
-
-    #def savePlayerUpdates(self):
-    #    return PlayerDB.gsPlayerDB.write(self.__playerGUID)
 
     #def handlePlayerPlayedGame(self)
 
@@ -354,6 +366,17 @@ class PlayerGameState:
             
             self.__outsPitched += atBatEvent.outsMade()
 
+    def played(self):
+        if self.__atBatCount > 0:
+            return True
+        
+        if self.__totPitchesThrown > 0:
+            return True
+        
+        if self.Walks() > 0:
+            return True
+
+        return False
 
     def atBatCount(self):
         return self.__atBatCount

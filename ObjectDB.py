@@ -36,7 +36,6 @@ class ObjectDB:
     #
     #
     def writeAll(self):
-        print self.__dbcache
         for objGUID in self.__dbcache.keys():
             self.write(objGUID)
             

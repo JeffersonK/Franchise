@@ -8,48 +8,63 @@ import SimRunner
 #import pprint
 import ObjectDB
 
+LOAD = 1
+GENERATE = 0
 
 PlayerDB = ObjectDB.ObjectDB("players", "plr")
+FranchiseDB = ObjectDB.ObjectDB("franchises", "frn")
 
 def generateTeam():
     team = {}
     for pos in Globals.gsPlayerPositions:
-        p = Player(Globals.globalState.nextPlayerGUID(), pos)
+        p = Player.Player(Globals.globalState.nextPlayerGUID(), pos)
         PlayerDB.addObject(p.guid(), p)
         team[p.guid()] = pos
-
     return team
 
-f1 = Franchise.Franchise("frza", "frzaites", Globals.globalState.nextFranchiseGUID())
+f1 = None
+f2 = None
 
 #GENERATE 1
-#playerDict1 = Player.generateTeam()
-#for playerGUID in playerDict1.keys():
-#    handle = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
-#    handle.setPlayerFranchise(f1.getFranchiseGUID())
-#f1.addPlayers(playerDict1)
+if GENERATE:
+    f1 = Franchise.Franchise("frza", "frzaites", Globals.globalState.nextFranchiseGUID())
+    FranchiseDB.addObject(f1.guid(), f1)
+
+    playerDict1 = generateTeam()
+    for playerGUID in playerDict1.keys():
+        handle = PlayerDB.getObjectHandle(playerGUID)
+        handle.setPlayerFranchise(f1.guid())
+    f1.addPlayers(playerDict1)
 
 #LOAD 1
-for playerGUID in range(0,9):#playerList1.keys():
-    handle = PlayerDB.getObjectHandle(playerGUID)
-    f1.addPlayers({playerGUID:handle.getPosition()})
+if LOAD:
+    f1 = FranchiseDB.getObjectHandle(0)
+    for playerGUID in range(0,9):#playerList1.keys():
+        handle = PlayerDB.getObjectHandle(playerGUID)
+        f1.addPlayers({playerGUID:handle.getPosition()})
 
+    
 f1.setLineup()
 f1.setRotation()
 
-f2 = Franchise.Franchise("jza", "jzites", Globals.globalState.nextFranchiseGUID())
+
 
 # GENERATE 2
-#playerDict2 = Player.generateTeam()
-#for playerGUID in playerDict2.keys():
-#    handle = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
-#    handle.setPlayerFranchise(f2.getFranchiseGUID())
-#f2.addPlayers(playerDict2)
+if GENERATE:
+    f2 = Franchise.Franchise("jza", "jzites", Globals.globalState.nextFranchiseGUID())
+    FranchiseDB.addObject(f2.guid(), f2)
+    playerDict2 = generateTeam()
+    for playerGUID in playerDict2.keys():
+        handle = PlayerDB.getObjectHandle(playerGUID)
+        handle.setPlayerFranchise(f2.guid())
+    f2.addPlayers(playerDict2)
 
 #LOAD 2
-for playerGUID in range(9,18):#playerList2.keys():
-    handle = PlayerDB.getObjectHandle(playerGUID)
-    f2.addPlayers({playerGUID:handle.getPosition()})
+if LOAD:
+    f2 = FranchiseDB.getObjectHandle(1)
+    for playerGUID in range(9,18):#playerList2.keys():
+        handle = PlayerDB.getObjectHandle(playerGUID)
+        f2.addPlayers({playerGUID:handle.getPosition()})
     
 f2.setLineup()
 f2.setRotation()
@@ -66,7 +81,19 @@ while 1:
     if "GAMEOVER" in gameEvents:#gameEvents[-1].gameOver():
         break
 
-#call this after the sim to get relevent events
+playerGameStates = tgs1.getPlayerGameStates()
+updatePlayerStatsEvents = []
+for (playerGUID, playerGameState) in playerGameStates.items():
+    handle = PlayerDB.getObjectHandle(playerGUID)
+    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameState)
+
+playerGameStates = tgs2.getPlayerGameStates()
+updatePlayerStatsEvents = []
+for (playerGUID, playerGameState) in playerGameStates.items():
+    handle = PlayerDB.getObjectHandle(playerGUID)
+    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameState)
+
+#call this after the sim to get relevent events like who won
 gameEvents = gameState.getGameEvents()
 
 endGameTeamEvents1 = f1.updateFranchiseStats(tgs1, True)
@@ -76,3 +103,4 @@ endGameTeamEvents2 = f2.updateFranchiseStats(tgs2, False)
 print endGameTeamEvents1
 
 PlayerDB.writeAll()
+FranchiseDB.writeAll()

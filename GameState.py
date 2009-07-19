@@ -449,6 +449,7 @@ class GameState:
         return #runnersScored
     
     def getGameEvents(self):
+        #self.__HomeTeam.getRunsScored()
         return []
 
     #endSim()
@@ -473,6 +474,8 @@ class GameState:
 
     #startSim()
     def handleStartGame(self):
+        #give the pitchers the start
+        
         return ['Game Start'] #gameStateEvent('Start Game')
 
     def handleStartAtBat(self, atBatEventObj):

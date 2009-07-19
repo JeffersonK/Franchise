@@ -43,7 +43,7 @@ class Franchise:
 
         return
     
-    def getFranchiseGUID(self):
+    def guid(self):
         return self.__franchiseGUID
 
     def addPlayers(self, playerDict):
@@ -123,29 +123,51 @@ class Franchise:
 
         return s
 
+    def __getstate__(self):
+        fmt = "{'owner':'%s','teamName':'%s','franchiseGUID':%d," + \
+            "'players':%s,'lineup':%s,'rotation':%s,'wins':%d,'losses':%d}"
+        
+        return fmt % (self.__owner, self.__teamName, self.__franchiseGUID,
+                      str(self.__players), str(self.__lineup), str(self.__rotation),
+                      self.__wins, self.__losses)
+
+    def __setstate__(self, dictStr):
+        
+        print "TODO: check for eval errors!!!"
+        d = eval(dictStr)
+        self.__owner = d['owner']
+        self.__teamName = d['teamName']
+        self.__franchiseGUID = d['franchiseGUID']
+
+        #TODO: check for errors loading this !!!        
+        self.__players = d['players']#eval(d['players'])
+        self.__lineup = d['lineup']#eval(d['lineup'])
+        self.__rotation = d['rotation']#eval(d['rotation'])
+
+        self.__wins = d['wins']
+        self.__losses = d['losses']
+    
+
     #def teamName(self):
     #    return self.__teamName
 
     #def owner(self):
     #    return self.__owner
 
+    #update franchise specific stats
     #return events
-    def updateFranchiseStats(self, teamGameState, isWin):
-        playerGameStates = teamGameState.getPlayerGameStates()
-        updatePlayerStatsEvents = []
-        for (playerGUID, playerGameState) in playerGameStates.items():
-            if playerGUID not in self.__players:
-                print "Error Player %d not on this team\n" % playerGUID
-                return []
+    def updateFranchiseStats(self, franchiseGameState, isWin):
 
-            playerState = PlayerDB.gsPlayerDB.getPlayerHandle(playerGUID)
+        updateFranchiseStatsEvents = []
 
-            #print playerState
-            updatePlayerStatsEvents += [playerState.updatePlayerStats(playerGameState)]
+        if isWin:
+            self.__wins += 1
+            updateFranchiseStatsEvents += ['Win']
+        else:
+            self.__losses += 1
+            updateFranchiseStatsEvents += ['Loss']
 
-            PlayerDB.gsPlayerDB.write(playerGUID)
-
-        return updatePlayerStatsEvents
+        return updateFranchiseStatsEvents
 
 ########
 #
