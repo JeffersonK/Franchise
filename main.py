@@ -42,11 +42,9 @@ if LOAD:
     for playerGUID in range(0,9):#playerList1.keys():
         handle = PlayerDB.getObjectHandle(playerGUID)
         f1.addPlayers({playerGUID:handle.getPosition()})
-
     
 f1.setLineup()
 f1.setRotation()
-
 
 
 # GENERATE 2

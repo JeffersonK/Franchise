@@ -1,5 +1,10 @@
 import random
 
+nextPitch = 0
+gsPitches = None
+nextSwing = 0
+gsSwings = None
+
 ####
 #
 #
@@ -26,31 +31,124 @@ class AtBatResult:
         self.__batter_playerGUID = batterGUID
 
         self.__currentState = currentState
-        (numOuts, numOnBase) = self.__currentState
 
-        allowedEvents = self.gsBATTINGEVENTS[:]
-        if numOuts == 2 or numOnBase == 0:
-            allowedEvents.remove('SAC')
-            allowedEvents.remove('DP')
-            allowedEvents.remove('TP')
-
-        elif numOuts <= 1 and numOnBase > 0:
-            if numOuts == 0 and numOnBase >= 2:
-                #allowedEvents = allowedEvents
-                None
-            else:
-                allowedEvents.remove('SAC')
-                allowedEvents.remove('TP')
-
-        random.seed()
-        r = random.randint(0,len(allowedEvents)-1)
-        self.__resultCode = allowedEvents[r]
+        #we have to copy this because we are going to modify it
+        self.__allowedEvents = self.gsBATTINGEVENTS[:]
 
         #initialize pitch counts
         self.__fouls = 0
         self.__strikeCount = 0
         self.__ballCount = 0
         self.__totPitches = 0
+
+        #fill these in later
+        self.__atBatEventLog = [] #list of strings
+        self.__runnersOut = [] 
+        self.__runnersScored = [] #[playerGUID,]
+
+        global gsPitches
+        global gsSwings
+
+        if gsPitches == None:
+             file = open("pitch.loc", "r")
+             pitches = file.readline()
+             file.close()
+             gsPitches = eval(pitches)
+
+        if gsSwings == None:
+            file = open("swing.loc", "r")
+            swings = file.readline()
+            file.close()
+            gsSwings = eval(swings)
+
+
+    def _getNextPitch(self):
+        global gsPitches
+        global nextPitch
+        print gsPitches[nextPitch]
+        nextPitch += 1
+        return gsPitches[nextPitch]
+
+    def _getNextSwing(self):
+        global gsSwings
+        global nextSwing
+        print gsSwings[nextSwing]
+        nextSwing += 1
+        return gsSwings[nextSwing]
+
+    def simAtBat(self):
+        #TODO: handle fouls and HBP
+        while 1:            
+            pitch = self._getNextPitch()
+            self.__totPitches += 1
+
+            swing = self._getNextSwing()
+
+            if pitch == 0 and swing in range(0,5):
+                #or HBP
+                self.__ballCount += 1
+            
+            elif pitch == 0 and swing != 0:
+                self.__strikeCount += 1  
+            
+            elif pitch == swing:
+             #contact
+                self._generateAtBatResult()
+                return
+
+            else:
+                self.__strikeCount += 1
+
+            if self.__strikeCount == 3:
+                self.__resultCode = 'SO'
+                return
+
+            if self.__ballCount == 4:
+                self.__resultCode = 'BB'
+                return
+            
+        return
+
+    def _findAllowedEvents(self):
+        (numOuts, numOnBase) = self.__currentState
+
+        #allowedEvents = self.gsBATTINGEVENTS[:]
+        if numOuts == 2 or numOnBase == 0:
+            self.__allowedEvents.remove('SAC')
+            self.__allowedEvents.remove('DP')
+            self.__allowedEvents.remove('TP')
+
+        elif numOuts <= 1 and numOnBase > 0:
+            if numOuts == 0 and numOnBase >= 2:
+                #allowedEvents = allowedEvents
+                None
+            else:
+                self.__allowedEvents.remove('SAC')
+                self.__allowedEvents.remove('TP')
+
+        if self.__strikeCount < 3:
+            self.__allowedEvents.remove('SO')
+
+        if self.__ballCount < 4:
+            self.__allowedEvents.remove('BB')
+
+    def _generateAtBatResult(self):
+        self._findAllowedEvents()
+
+        if self.__ballCount == 4:
+            self.__resultCode == 'BB'
+            return
+
+        if self.__strikeCount == 3:
+            self.__resultCode == 'SO'
+            return
+        
+        random.seed()
+        r = random.randint(0,len(self.__allowedEvents)-1)
+        self.__resultCode = self.__allowedEvents[r]
+        return
+
+    def RANDOMLYgeneratePitchCount(self):
 
         #generate pitches
         if self.__resultCode == 'SO':
@@ -79,7 +177,6 @@ class AtBatResult:
             self.__totPitches += 1
 
     
-
         #fill these in later
         self.__atBatEventLog = [] #list of strings
         self.__runnersOut = [] 
@@ -541,7 +638,10 @@ class GameState:
         atBatEvent = AtBatResult(self._getNextBatterGUID(),
                                  self._getPitcherGUID(),
                                  self._getStateForNextAtBatEvent())
-          
+
+        atBatEvent.simAtBat()          
+        #atBatEvent.generateAtBatResult()
+
         print atBatEvent
         return atBatEvent
 

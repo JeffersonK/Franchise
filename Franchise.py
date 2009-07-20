@@ -2,7 +2,7 @@ import random
 #from Globals import *
 import Globals
 import Player
-import PlayerDB
+#import PlayerDB
 #from Player import *
 
 class FranchiseDB:

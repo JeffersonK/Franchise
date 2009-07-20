@@ -53,7 +53,7 @@ class Player:
         self.__totHRAllowed = 0
 
         self.__wins = 0
-        self.__loses = 0
+        self.__losses = 0
         self.__starts = 0
         
         #Abilities as pitcher 0-10
@@ -68,9 +68,12 @@ class Player:
         self.__tot2Bs = 0
         self.__tot3Bs = 0
         self.__totHRs = 0
-        self.__grandSlams = 0
+        self.__totRBIs = 0
+        self.__totRuns = 0
+        self.__timesKd = 0
         self.__totWalks = 0
         self.__cyclesHit = 0
+        self.__grandSlams = 0
 
         #Abilities as batter 0-10
         #__power = 0
@@ -86,14 +89,16 @@ class Player:
             "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
             "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
-            "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d}"
+            "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d," +\
+            "'totRBIs':%d,'totRuns':%d,'timesKd':%d}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
                       self.__totEarnedRuns, self.__wins, self.__losses, self.__starts,
                       self.__totAtBats, self.__totHits, 
                       self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
-                      self.__totWalks, self.__grandSlams, self.__cyclesHit, self.__games)
+                      self.__totWalks, self.__grandSlams, self.__cyclesHit, self.__games,
+                      self.__totRBIs, self.__totRuns, self.__timesKd)
 
 
 
@@ -130,6 +135,9 @@ class Player:
         self.__cyclesHit = d['cyclesHit']
         self.__games = d['games']
 
+        self.__totRBIs = d['totRBIs']
+        self.__totRuns = d['totRuns']
+        self.__timesKd = d['timesKd']
 
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
@@ -142,16 +150,31 @@ class Player:
         if playerGameState.played():
             self.__games += 1
 
+        #Batting Stats
         self.__totAtBats += playerGameState.atBatCount()
         self.__totHits += playerGameState.Hits()
+        self.__totWalks += playerGameState.Walks()
         self.__tot1Bs += playerGameState.Singles()
         self.__tot2Bs += playerGameState.Doubles()
         self.__tot3Bs += playerGameState.Triples()
         self.__totHRs += playerGameState.HomeRuns()
-        self.__totWalks += playerGameState.Walks()
         self.__grandSlams += playerGameState.GrandSlams()
+        self.__totRBIs += playerGameState.RBIs()
+        self.__totRuns += playerGameState.Runs()
+        self.__timesKd += playerGameState.timesKd()
+    
         self.__cyclesHit += playerGameState.checkHitCycle()
 
+
+        #Pitching Stats
+        #self.__starts += playerGameState.gotStart()
+        #self.__battersKd += playerGameState.BattersKd()
+        #self.__walksThrown += playerGameState.WalksThrown()
+        #self.__hitsAllowed += playerGameState.HitsAllowed()
+        #self.__HRsAllowed += playerGameState.HRsAllowed()
+        
+
+        
         #self._updateBatAvg()
         #self._updateSlgPct()
         #need helper function to compute stats so we dno't repete the logic
@@ -208,11 +231,6 @@ class PlayerGameState:
         self.__hbps = 0
         self.__grandSlams = 0
         
-        #caliculated stats
-        self.__battingAvg = 0
-        self.__onBasePct = 0 
-        self.__sluggingPct = 0
-
         #pitching
         self.__started = 0
         self.__battersFaced = [] #(batter playerGUID, AtBatResultStr)
@@ -232,10 +250,9 @@ class PlayerGameState:
         self.__outsPitched = 0
         
         #calculated stats
-        #self.__ERA = 0
         #self.__gamePitchedRank = 0
         
-        #fielding
+        #fielding stats
         return
 
     def __str__(self):
@@ -377,6 +394,15 @@ class PlayerGameState:
             return True
 
         return False
+
+    def RBIs(self):
+        return self.__rbis
+
+    def Runs(self):
+        return self.__runs
+
+    def timesKd(self):
+        return self.__Kd
 
     def atBatCount(self):
         return self.__atBatCount
