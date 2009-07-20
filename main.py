@@ -75,7 +75,7 @@ gameState = GameState.GameState(tgs1,tgs2)
 sim = SimRunner.SimRunner(gameState)
 while 1:
     gameEvents = sim.step()
-    print "Game Events: %s\n" % str(gameEvents)
+    #print "Game Events: %s\n" % str(gameEvents)
     if "GAMEOVER" in gameEvents:#gameEvents[-1].gameOver():
         break
 
@@ -95,10 +95,10 @@ for (playerGUID, playerGameState) in playerGameStates.items():
 gameEvents = gameState.getGameEvents()
 
 endGameTeamEvents1 = f1.updateFranchiseStats(tgs1, True)
-print endGameTeamEvents1
+#print endGameTeamEvents1
 
 endGameTeamEvents2 = f2.updateFranchiseStats(tgs2, False)
-print endGameTeamEvents1
+#print endGameTeamEvents1
 
 PlayerDB.writeAll()
 FranchiseDB.writeAll()

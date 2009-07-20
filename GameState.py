@@ -1,9 +1,10 @@
 import random
+import ProbabilityEngine as PrEng
 
 nextPitch = 0
 gsPitches = None
-nextSwing = 0
-gsSwings = None
+#nextSwing = 0
+#gsSwings = None
 
 ####
 #
@@ -41,6 +42,8 @@ class AtBatResult:
         self.__ballCount = 0
         self.__totPitches = 0
 
+        self.__contactMade = False
+
         #fill these in later
         self.__atBatEventLog = [] #list of strings
         self.__runnersOut = [] 
@@ -55,28 +58,63 @@ class AtBatResult:
              file.close()
              gsPitches = eval(pitches)
 
-        if gsSwings == None:
-            file = open("swing.loc", "r")
-            swings = file.readline()
-            file.close()
-            gsSwings = eval(swings)
+        #if gsSwings == None:
+        #    file = open("swing.loc", "r")
+        #    swings = file.readline()
+        #    file.close()
+        #    gsSwings = eval(swings)
 
 
     def _getNextPitch(self):
         global gsPitches
         global nextPitch
-        print gsPitches[nextPitch]
+        #print gsPitches[nextPitch]
         nextPitch += 1
         return gsPitches[nextPitch]
 
-    def _getNextSwing(self):
-        global gsSwings
-        global nextSwing
-        print gsSwings[nextSwing]
-        nextSwing += 1
-        return gsSwings[nextSwing]
+    #def _getNextSwing(self):
+    #    global gsSwings
+    #    global nextSwing
+    #    print gsSwings[nextSwing]
+    #    nextSwing += 1
+    #    return gsSwings[nextSwing]
 
     def simAtBat(self):
+        while 1:
+            pitchZone = self._getNextPitch()
+            self.__totPitches += 1
+
+            if pitchZone == 9:
+                self.__ballCount += 1
+
+            
+            else:
+                pr = PrEng.PrContact(PrEng.pitcherAbil, 
+                                     PrEng.batterAbil,
+                                     ('fastball', pitchZone))
+
+                r = random.randint(0,999)
+                if r <= (pr * 1000):
+                    #fuckin' contact!
+                    self.__contactMade = True
+                    self._generateAtBatResult()
+                    return
+
+                else:
+                    #he whiff'd!
+                    self.__strikeCount += 1
+
+            if self.__strikeCount == 3:
+                self.__resultCode = 'SO'
+                return
+
+            if self.__ballCount == 4:
+                self.__resultCode = 'BB'
+                return
+            
+        return
+
+    def _simAtBat(self):
         #TODO: handle fouls and HBP
         while 1:            
             pitch = self._getNextPitch()
@@ -131,6 +169,11 @@ class AtBatResult:
 
         if self.__ballCount < 4:
             self.__allowedEvents.remove('BB')
+        
+        if self.__contactMade:
+            self.__allowedEvents.remove('HBP')
+
+        return
 
     def _generateAtBatResult(self):
         self._findAllowedEvents()
@@ -311,7 +354,7 @@ class GameState:
         self.__gameEventLog = []
 
     def __str__(self):
-        header    =  "%d - %d  %s of %d  %d outs\n" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored(), "bottom" if self.__homeTeamUp else "top", self.__inning, self.__outs)
+        header    =  "H:%d - A:%d  %s of %d  %d outs\n" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored(), "bottom" if self.__homeTeamUp else "top", self.__inning, self.__outs)
         second =     "              %d    \n" % self.__bases[2]
         thirdfirst = "           %d  %d  %d\n" % (self.__bases[3], self._getPitcherGUID(), self.__bases[1])
         home =       "              %d    \n" % self.__bases[0]
@@ -642,7 +685,7 @@ class GameState:
         atBatEvent.simAtBat()          
         #atBatEvent.generateAtBatResult()
 
-        print atBatEvent
+        #print atBatEvent
         return atBatEvent
 
     def initSim(self):

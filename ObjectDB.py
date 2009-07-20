@@ -61,7 +61,7 @@ class ObjectDB:
             file.close()
             return 0
 
-        print filename
+        #print filename
         file = open(filename, "w+")
         if file == None:
             return -1
