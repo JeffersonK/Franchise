@@ -15,8 +15,8 @@
 
 from cmath import *
 from random import random
-from numpy import *
 #from numarray import *
+from numpy import *
 from inspect import isfunction
 
 # Constants
@@ -304,6 +304,7 @@ def betapdf(x, a, b, c, d):
 # b: float, scale parameter
 def betacdf(x, a, b, c, d):
 	pass
+
 
 x = """
 #--#--------
