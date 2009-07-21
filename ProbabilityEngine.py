@@ -5,6 +5,10 @@ import array
 #Chi => Zone
 #mu => pitch
 
+######
+#
+# Chi2
+######
 Chi2Normal = 1.0
 Chi2PrimeMin = 0.018
 Chi2PrimeMax = 3.862#Chi2Normal - Chi2PrimMin
@@ -15,39 +19,63 @@ Chi2PitcherMax = Chi2PrimeMax - Chi2Normal
 Chi2BatterMin = 0.0
 Chi2PitcherMin = 0.0
 
-Chi2b0 = Chi2BatterMin
-Chi2p0 = Chi2PitcherMin
+Chi2b0 = Chi2BatterMin + .25
+Chi2p0 = Chi2PitcherMin #+ 2.862
 
 PITCHERCHI2FIXED = 1.0
 BATTERMUFIXED = 0.0
+
+######
+#
+# Mu
+######
+
+
+MuPrimeMax = 3.65
+
+MuBatterMin = 0.0
+MuPitcherMin = 0.0#2.5
+
+MuBatterMax = MuPrimeMax
+MuPitcherMax = MuPrimeMax
+
+minPower = 1
+batterPowerZones = [minPower, minPower, minPower,
+                    minPower, minPower, minPower,
+                    minPower, minPower, minPower]
+                    
 
 batterZoneMastery = [Chi2b0, Chi2b0, Chi2b0,
                      Chi2b0, Chi2b0, Chi2b0,
                      Chi2b0, Chi2b0, Chi2b0]
 
-batterPitchMastery = {'curve':1, 
-                       'fastball':1,
-                       'slider':1,
-                       'offspeed':1,
-                       'knucleball':1}
+batterPitchMastery = {'curveball':MuBatterMin, 
+                       'fastball':MuBatterMin,
+                       'slider':MuBatterMin,
+                       'changeup':MuBatterMin,
+                       'knuckleball':MuBatterMin}
 
 pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
                       Chi2p0, Chi2p0, Chi2p0,
                       Chi2p0, Chi2p0, Chi2p0]
 
 
-pitcherPitchMastery = {'curve':1, 
-                       'fastball':1,
-                       'slider':1,
-                       'offspeed':1,
-                       'knucleball':1}
+pitcherPitchMastery = {'curveball':MuPitcherMin, 
+                       'fastball':MuPitcherMin,
+                       'slider':MuPitcherMin,
+                       'changeup':MuPitcherMin,
+                       'knuckleball':MuPitcherMin}
 
 pitcherAbil = {'zoneMastery':pitcherZoneMastery,
                'pitchMastery':pitcherPitchMastery}
 
 batterAbil = {'zoneMastery':batterZoneMastery,
-               'pitchMastery':batterPitchMastery}
+              'pitchMastery':batterPitchMastery,
+              'powerZones':batterPowerZones}
 
+#
+#
+#
 def Chi2Prime(Chi2Batter, Chi2Pitcher):
     if Chi2Batter > Chi2BatterMax:
         print "Chi2BatterMax Error: %f > %f.\n" % (Chi2Batter, Chi2BatterMax)
@@ -58,6 +86,20 @@ def Chi2Prime(Chi2Batter, Chi2Pitcher):
 
     Chi2prime = Chi2Normal - Chi2Batter + Chi2Pitcher
     return Chi2prime
+#
+#
+#
+def MuPrime(MuBatter, MuPitcher):
+    
+    if MuPitcher > MuBatter:
+        return MuPitcher - MuBatter
+    
+    #else muB >= muP
+    return 0.0
+
+
+#def PrPower(pitcherAbilities, batterAbilities, 
+
 
 #
 # 
@@ -72,16 +114,32 @@ def PrContact(pitcherAbilities, batterAbilities, pitchAttrs):
     batterZoneMastery = batterAbilities['zoneMastery']
     pitcherZoneMastery = pitcherAbilities['zoneMastery']
 
-    batterMu = 0.0 #subtracts from pitcherMu for given pitch type
-                   #if a batter skill > a pitcher skill 
-    #batterStdDev = 1.0
-    #pitcherMu = 0.0
-    #batterStdDev = 1.0
+    batterPitchMastery = batterAbilities['pitchMastery']
+    pitcherPitchMastery = pitcherAbilities['pitchMastery']
+
+    #set to defaults
+    pitcherMu = 0.0
+    batterMu = 0.0 
+    if pitchType not in pitcherPitchMastery:
+        print "pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+    else:
+        pitcherMu = pitcherPitchMastery[pitchType]
+
+    if pitchType not in batterPitchMastery:
+        print "pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+    else:
+        batterMu = batterPitchMastery[pitchType]
+
+    #subtracts from pitcherMu for given pitch type
+    #if a batter skill > a pitcher skill 
+
+    muPrime = MuPrime(batterMu, pitcherMu)
 
     chi2prime = Chi2Prime(batterZoneMastery[pitchZone], pitcherZoneMastery[pitchZone])
+
     probOfContact = numIntegrate(100, -5, 5, 
                                  chi2prime, BATTERMUFIXED,
-                                 PITCHERCHI2FIXED, 0.0)
+                                 PITCHERCHI2FIXED, muPrime)
                                  
                                  
 

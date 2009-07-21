@@ -2,6 +2,28 @@ import Globals
 #import PlayerDB
 import cPickle
 
+
+class PlayerAbilities:
+
+    def __init__(self):
+        #batter abilities
+        self.__powerZones = []
+        self.__zoneMastery = []
+        self.__pitchMastery = []
+        self.__patience = 0
+        self.__prestige = 0
+        self.__speed = 0
+        self.__defense = 0
+
+        #pitcher abilities
+        self.__zoneMastery = []
+        self.__pitchMastery = []
+class PlayerStats:
+    def __init__(self):
+
+
+
+        
 class Player:
 
 
@@ -24,7 +46,6 @@ class Player:
         #Player Personality/Character
         #__firstName = "Moonbeam"
         #__lastName = "McFly"
-        #__picture = None
         #__experience = None
         #__playerHomeTown =
         #__playerSalaryHistory =
@@ -55,6 +76,7 @@ class Player:
         self.__wins = 0
         self.__losses = 0
         self.__starts = 0
+    
         
         #Abilities as pitcher 0-10
         #__stamina = 0

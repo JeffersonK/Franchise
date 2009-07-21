@@ -6,23 +6,157 @@ gsPitches = None
 #nextSwing = 0
 #gsSwings = None
 
+CURVEBALL = 'CRV'
+FASTBALL = 'FST'
+SLIDER = 'SLD'
+CHANGEUP = 'CHNG'
+KNUCKLEBALL = 'KNCK'
+SINKER = 'SINK'
+SPITBALL = 'SPIT'
+
+PITCHTYPES = [FASTBALL, CURVEBALL, SLIDER,
+              CHANGEUP, KNUCKLEBALL, SINKER, SPITBALL]
+
+
+#x,y from top left as origin going down
+ZONES = [(0,0),(1,0),(2,0),
+         (0,1),(1,1),(2,1),
+         (0,2),(1,2),(2,2)]
+STRIKEZONE = range(9)
+BALL = 9
+
+gsBATTINGEVENTS = ['S','2B','3B','HR','BB','SO','HBP',
+                       'GO','AO','SAC','DP','TP']#,'IBB']
+gsHITS = ['S','2B','3B','HR']
+gsNOTATBAT = ['BB','HBP']
+gsDONTADDPITCH = ['SO','BB']
+gsSINGLEOUTPLAYS = ['GO','SO','AO','SAC']
+gsMULTIOUTPLAYS = ['DP','TP']
+gsOUTEVENTS = gsSINGLEOUTPLAYS + gsMULTIOUTPLAYS
+gsRUNNERSADVANCEEVENTS = gsHITS + ['BB','HBP','SAC']
+gsMAXPITCHCOUNT = 10
+  
+
+THETA_LEFTFIELD_FOULPOLE = 0
+THETA_RIGHTFIELD_FOULPOLE = 90
+
+#Simple Model for infielder ranges 
+THETA_THIRDBASERANGE = range(3,15)
+THETA_SSRANGE = range(25,40)
+THETA_SECONDBASERANGE = range(50, 65)
+THETA_FIRSTBASERANGE = range(75, 87)
+
+class DefensiveFieldState:
+#holds position and locations
+#as well as the abilities of players at those positions
+    def __init__(self, FieldGeometry=None, PlayerFielderAbilities=None):
+        self.__palyers = PlayerFielderAbilities
+        
+
+    def simFieldBallContact(self, batBallContactResult):
+        (theta, phi, radius) = batBallContactResult.getHitParams()
+
+        if theta < THETA_LEFTFIELD_FOULPOLE or theta > THETA_RIGHTFIELD_FOULPOLE:
+            return 'FOUL'
+
+        if phi:
+            #its in the air
+            if radius < 120:
+                return 'AO'
+            
+            if radius < 220:
+                return 'S'
+
+            if radius < 350:
+                return 'AO'
+
+            if radius < 375:
+                return '2B'
+
+            if radius < 400:
+                return '3B'
+
+            else:
+                return 'HR'
+        
+        else:
+            #its a ground ball
+            if theta < min(THETA_THIRDBASERANGE):#up the 3rd base line
+                return '2B'
+
+            if theta in THETA_THIRDBASERANGE:
+                return 'GO'
+
+            if theta < min(THETA_SSRANGE):
+                return 'S'
+
+            if theta in THETA_SSRANGE:
+                return 'GO'
+
+            if theta < min(THETA_SECONDBASERANGE):
+                return 'S'
+
+            if theta in THETA_SECONDBASERANGE:
+                return 'GO'
+
+            if theta < min(THETA_FIRSTBASERANGE):
+                return 'S'
+
+            if theta in THETA_FIRSTBASERANGE:
+                return 'GO'
+
+            if theta <= THETA_RIGHTFIELD_FOULPOLE:
+                return '2B'
+
+        return "unmatched case in simFieldBallContact"
+
+class BatBallContactResult:
+    
+    def __init__(self,
+                 batterAbil=None,
+                 pitcherAbil=None):
+        
+
+        #0 is first base line
+        #90 is third base line
+        # < 0 is foul ball
+        #> 90 is foul ball
+        self.__Theta = random.randint(-10,100)
+
+        #R is Radius or distance of hit, if its in the Air
+        #this is where it will land
+        #if its a grandball this the power which can eventually determine error rates
+        #NOTE: this will become magnitude or velocity of ball off the bat
+        #      which together will determine the distance with _phi
+        self.__Radius = random.randint(1,450)
+
+        #the angle that the ball leaves the bat
+        #for now 0 is a ground ball and 1 is in the air
+        self.__Phi = random.randint(0,1)
+                 
+
+    def getHitParams(self):
+        return (self.__Theta, self.__Phi, self.__Radius)
+
 ####
 #
 #
 ####
 class AtBatResult:
 
-    gsBATTINGEVENTS = ['S','2B','3B','HR','BB','SO','HBP',
-                       'GO','AO','SAC','DP','TP']#,'IBB']
-    gsHITS = ['S','2B','3B','HR']
-    gsNOTATBAT = ['BB','HBP']
-    gsDONTADDPITCH = ['SO','BB']
-    gsSINGLEOUTPLAYS = ['GO','SO','AO','SAC']
-    gsMULTIOUTPLAYS = ['DP','TP']
-    gsOUTEVENTS = gsSINGLEOUTPLAYS + gsMULTIOUTPLAYS
-    gsRUNNERSADVANCEEVENTS = gsHITS + ['BB','HBP','SAC']
-    gsMAXPITCHCOUNT = 10
+    #TODO: MOVE THIS STUFF OUT OF THE OBEJCT
 
+    #gsBATTINGEVENTS = ['S','2B','3B','HR','BB','SO','HBP',
+    #                   'GO','AO','SAC','DP','TP']#,'IBB']
+    #gsHITS = ['S','2B','3B','HR']
+    #gsNOTATBAT = ['BB','HBP']
+    #gsDONTADDPITCH = ['SO','BB']
+    #gsSINGLEOUTPLAYS = ['GO','SO','AO','SAC']
+    #gsMULTIOUTPLAYS = ['DP','TP']
+    #gsOUTEVENTS = gsSINGLEOUTPLAYS + gsMULTIOUTPLAYS
+    #gsRUNNERSADVANCEEVENTS = gsHITS + ['BB','HBP','SAC']
+    #gsMAXPITCHCOUNT = 10
+    
     def __init__(self, 
                  batterGUID, 
                  pitcherGUID,
@@ -34,7 +168,7 @@ class AtBatResult:
         self.__currentState = currentState
 
         #we have to copy this because we are going to modify it
-        self.__allowedEvents = self.gsBATTINGEVENTS[:]
+        self.__allowedEvents = gsBATTINGEVENTS[:]
 
         #initialize pitch counts
         self.__fouls = 0
@@ -48,9 +182,10 @@ class AtBatResult:
         self.__atBatEventLog = [] #list of strings
         self.__runnersOut = [] 
         self.__runnersScored = [] #[playerGUID,]
+        self.__resultCode = ""
 
         global gsPitches
-        global gsSwings
+        
 
         if gsPitches == None:
              file = open("pitch.loc", "r")
@@ -58,19 +193,22 @@ class AtBatResult:
              file.close()
              gsPitches = eval(pitches)
 
+        #global gsSwings
         #if gsSwings == None:
         #    file = open("swing.loc", "r")
         #    swings = file.readline()
         #    file.close()
         #    gsSwings = eval(swings)
 
+    def _logAtBatEvent(self, eventStr):
+        self.__atBatEventLog += [eventStr]
 
     def _getNextPitch(self):
         global gsPitches
         global nextPitch
         #print gsPitches[nextPitch]
         nextPitch += 1
-        return gsPitches[nextPitch]
+        return ('fastball', gsPitches[nextPitch])
 
     #def _getNextSwing(self):
     #    global gsSwings
@@ -79,39 +217,64 @@ class AtBatResult:
     #    nextSwing += 1
     #    return gsSwings[nextSwing]
 
-    def simAtBat(self):
-        while 1:
-            pitchZone = self._getNextPitch()
-            self.__totPitches += 1
-
-            if pitchZone == 9:
-                self.__ballCount += 1
-
+    def simPitch(self, pitcherAbil=PrEng.pitcherAbil, batterAbil=PrEng.batterAbil, pitch=None):
+        pitchType = None
+        pitchZone = -1
+        
+        if pitch == None:
+            (pitchType, pitchZone) = self._getNextPitch()
+        else:
+            (pitchType, pitchZone) = pitch
             
-            else:
-                pr = PrEng.PrContact(PrEng.pitcherAbil, 
-                                     PrEng.batterAbil,
-                                     ('fastball', pitchZone))
-
-                r = random.randint(0,999)
-                if r <= (pr * 1000):
-                    #fuckin' contact!
-                    self.__contactMade = True
-                    self._generateAtBatResult()
-                    return
-
-                else:
-                    #he whiff'd!
-                    self.__strikeCount += 1
-
-            if self.__strikeCount == 3:
-                self.__resultCode = 'SO'
-                return
-
+        self.__totPitches += 1
+            
+        if pitchZone not in STRIKEZONE:
+            self.__ballCount += 1
+            
             if self.__ballCount == 4:
                 self.__resultCode = 'BB'
-                return
+                #self._logAtBatEvent("%d is walked." % self.__playerGUID)
+                return 'BB'  
+            else:
+                return 'BALL'
+
+        else:
+            pr = PrEng.PrContact(pitcherAbil, 
+                                 batterAbil,
+                                 (pitchType, pitchZone))
+
+        r = random.randint(0,999)
+        if r <= (pr * 1000):
+            #fuckin' contact!
+            self.__contactMade = True
+            #self.__resultCode = 'HR'
+            self._generateAtBatResult()
+            if self.__resultCode == 'FOUL':
+                if self.__strikeCount < 2:
+                    self.__strikeCount += 1
+                    self.__resultCode = ""
+            else:
+                return 'CONTACT'
+
+        #else:
+        #he whiff'd!
+        self.__strikeCount += 1
             
+        if self.__strikeCount == 3:
+            self.__resultCode = 'SO'
+            #self._logAtBatEvent("%d goes down swinging." % self.__batter_playerGUID)
+            return 'SO'
+        else:
+            return 'STRIKE'
+
+    def simAtBat(self, pitcherAbil=PrEng.pitcherAbil, batterAbil=PrEng.batterAbil, pitch=None):
+
+        while 1:
+            ret = self.simPitch(pitcherAbil, batterAbil, pitch)
+            if ret == 'FOUL':
+                continue
+            if ret != 'BALL' and  ret != 'STRIKE': #or FOUL
+                return ret
         return
 
     def _simAtBat(self):
@@ -131,7 +294,7 @@ class AtBatResult:
             
             elif pitch == swing:
              #contact
-                self._generateAtBatResult()
+                self._OLDgenerateAtBatResult()
                 return
 
             else:
@@ -147,35 +310,56 @@ class AtBatResult:
             
         return
 
+    def _safeRemoveEvent(self, list, eventStr):
+        if eventStr in list:
+            list.remove(eventStr)
+
     def _findAllowedEvents(self):
         (numOuts, numOnBase) = self.__currentState
 
         #allowedEvents = self.gsBATTINGEVENTS[:]
         if numOuts == 2 or numOnBase == 0:
-            self.__allowedEvents.remove('SAC')
-            self.__allowedEvents.remove('DP')
-            self.__allowedEvents.remove('TP')
-
+            self._safeRemoveEvent(self.__allowedEvents, 'SAC')
+            self._safeRemoveEvent(self.__allowedEvents, 'DP')
+            self._safeRemoveEvent(self.__allowedEvents, 'TP')
+            
         elif numOuts <= 1 and numOnBase > 0:
             if numOuts == 0 and numOnBase >= 2:
                 #allowedEvents = allowedEvents
                 None
             else:
-                self.__allowedEvents.remove('SAC')
-                self.__allowedEvents.remove('TP')
+                self._safeRemoveEvent(self.__allowedEvents, 'SAC')
+                self._safeRemoveEvent(self.__allowedEvents, 'TP')
 
         if self.__strikeCount < 3:
-            self.__allowedEvents.remove('SO')
+            self._safeRemoveEvent(self.__allowedEvents, 'SO')
 
         if self.__ballCount < 4:
-            self.__allowedEvents.remove('BB')
+            self._safeRemoveEvent(self.__allowedEvents, 'BB')
         
         if self.__contactMade:
-            self.__allowedEvents.remove('HBP')
+            self._safeRemoveEvent(self.__allowedEvents, 'HBP')
 
         return
 
     def _generateAtBatResult(self):
+        self._findAllowedEvents()
+
+        #if self.__ballCount == 4:
+        #    self.__resultCode == 'BB'
+        #    return
+
+        #if self.__strikeCount == 3:
+        #    self.__resultCode == 'SO'
+        #    return
+
+        bbcr = BatBallContactResult()
+        fieldState = DefensiveFieldState()
+        result = fieldState.simFieldBallContact(bbcr)
+        print bbcr.getHitParams()
+        self.__resultCode = result
+
+    def _OLDgenerateAtBatResult(self):
         self._findAllowedEvents()
 
         if self.__ballCount == 4:
@@ -189,6 +373,9 @@ class AtBatResult:
         random.seed()
         r = random.randint(0,len(self.__allowedEvents)-1)
         self.__resultCode = self.__allowedEvents[r]
+
+        #if self__resultCode == 'HR':
+        #TODO: populate event log for different kinds of events    
         return
 
     def RANDOMLYgeneratePitchCount(self):
@@ -208,7 +395,7 @@ class AtBatResult:
 
         if self.__strikeCount >= 2:
             self.__fouls = random.randint(self.__ballCount + self.__strikeCount,
-                                          self.gsMAXPITCHCOUNT)
+                                          gsMAXPITCHCOUNT)
             self.__totPitches = self.__ballCount + self.__strikeCount + self.__fouls
         else:
             self.__totPitches = self.__ballCount + self.__strikeCount
@@ -216,14 +403,8 @@ class AtBatResult:
         if self.__resultCode == 'HBP':
             self.__ballCount += 1
 
-        if self.__resultCode not in self.gsDONTADDPITCH:
+        if self.__resultCode not in gsDONTADDPITCH:
             self.__totPitches += 1
-
-    
-        #fill these in later
-        self.__atBatEventLog = [] #list of strings
-        self.__runnersOut = [] 
-        self.__runnersScored = [] #[playerGUID,]
 
         return
     
@@ -238,10 +419,10 @@ class AtBatResult:
         return self.__atBatEventLog
 
     def isOut(self):
-        return self.__resultCode in self.gsOUTEVENTS
+        return self.__resultCode in gsOUTEVENTS
 
     def outsMade(self):
-        if self.__resultCode in self.gsSINGLEOUTPLAYS:
+        if self.__resultCode in gsSINGLEOUTPLAYS:
             return 1
 
         if self.DoublePlay():
@@ -253,55 +434,55 @@ class AtBatResult:
         return 0
 
     def countsAsAtBat(self):
-        return self.__resultCode not in self.gsNOTATBAT
+        return self.__resultCode not in gsNOTATBAT
 
     def runsScored(self):
         return len(self.__runnersScored)
 
     def runnersAdvance(self):
-        return self.__resultCode in self.gsRUNNERSADVANCEEVENTS
+        return self.__resultCode in gsRUNNERSADVANCEEVENTS
 
     def teamScored(self):
         return len(self.__runnersScored) > 0
 
     def Single(self):
-        return self.__resultCode == 'S'
+        return self.__resultCode.startswith('S')
 
     def isHit(self):
-        return self.__resultCode in self.gsHITS
+        return self.__resultCode in gsHITS
 
     def Double(self):
-        return self.__resultCode == '2B'
+        return self.__resultCode.startswith('2B')
 
     def Triple(self):
-        return self.__resultCode == '3B'
+        return self.__resultCode.startswith('3B')
 
     def HomeRun(self):
-        return self.__resultCode == 'HR'
+        return self.__resultCode.startswith('HR')
 
     def Walk(self):
-        return self.__resultCode == 'BB'
+        return self.__resultCode.startswith('BB')
 
     def HitByPitch(self):
-        return self.__resultCode == 'HBP'
+        return self.__resultCode.startswith('HBP')
 
     def StrikeOut(self):
-        return self.__resultCode == 'SO'
+        return self.__resultCode.startswith('SO')
 
     def GroundOut(self):
-        return self.__resultCode == 'GO'
+        return self.__resultCode.startswith('GO')
 
     def FlyOut(self):
-        return self.__resultCode == 'AO'
+        return self.__resultCode.startswith('AO')
 
     def SacrificeOut(self):
-        return self.__resultCode == 'SAC'
+        return self.__resultCode.startswith('SAC')
 
     def DoublePlay(self):
-        return self.__resultCode == 'DP'
+        return self.__resultCode.startswith('DP')
 
     def TriplePlay(self):
-        return self.__resultCode == 'TP'
+        return self.__resultCode.startswith('TP')
 
     def setRunnersScored(self, runnerGUIDList):
         self.__runnersScored = runnerGUIDList
@@ -638,7 +819,6 @@ class GameState:
             (endTeamAtBat, endGame) = self._handleOut(atBatEventObj)
             return (endTeamAtBat, endGame)
 
-
         return (False, False)
 
     #update the play log
@@ -657,7 +837,6 @@ class GameState:
         defTeamObj = self._getDefenseTeamObject()
 
         defTeamObj.updateTeamGameState(atBatEventObj, False)
-
         
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
