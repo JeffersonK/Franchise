@@ -1,7 +1,8 @@
 import pystats
 import array
+import PlayerAbilities
 
-
+xxx = """
 #Chi => Zone
 #mu => pitch
 
@@ -73,18 +74,20 @@ batterAbil = {'zoneMastery':batterZoneMastery,
               'pitchMastery':batterPitchMastery,
               'powerZones':batterPowerZones}
 
+"""
+
 #
 #
 #
 def Chi2Prime(Chi2Batter, Chi2Pitcher):
-    if Chi2Batter > Chi2BatterMax:
-        print "Chi2BatterMax Error: %f > %f.\n" % (Chi2Batter, Chi2BatterMax)
+    if Chi2Batter > PlayerAbilities.gsChi2BatterMax:
+        print "Chi2BatterMax Error: %f > %f.\n" % (Chi2Batter, PlayerAbilities.gsChi2BatterMax)
         return 
 
-    if Chi2Pitcher > Chi2PitcherMax:
-        print "Chi2PitcherMax Error: %f > %f.\n" % (Chi2Pitcher, Chi2PitcherMax)
+    if Chi2Pitcher > PlayerAbilities.gsChi2PitcherMax:
+        print "Chi2PitcherMax Error: %f > %f.\n" % (Chi2Pitcher, PlayerAbilities.gsChi2PitcherMax)
 
-    Chi2prime = Chi2Normal - Chi2Batter + Chi2Pitcher
+    Chi2prime = PlayerAbilities.gsChi2Normal - Chi2Batter + Chi2Pitcher
     return Chi2prime
 #
 #
@@ -108,14 +111,17 @@ def PrContact(pitcherAbilities, batterAbilities, pitchAttrs):
     
     (pitchType, pitchZone) = pitchAttrs
     
-    #TODO: check pitchZone is valid
-    #TODO: check pitchType is valid
+    print "TODO: check pitchZone is valid"
+    print "TODO: check pitchType is valid"
+    
+    #print pitcherAbilities
+    #print batterAbilities
+   
+    batterZoneMastery = batterAbilities.getBattingZoneMasteryMatrix()#['zoneMastery']
+    pitcherZoneMastery = pitcherAbilities.getPitchingZoneMasteryMatrix()#['zoneMastery']
 
-    batterZoneMastery = batterAbilities['zoneMastery']
-    pitcherZoneMastery = pitcherAbilities['zoneMastery']
-
-    batterPitchMastery = batterAbilities['pitchMastery']
-    pitcherPitchMastery = pitcherAbilities['pitchMastery']
+    batterPitchMastery = batterAbilities.getBattingPitchMasteryMatrix()#['pitchMastery']
+    pitcherPitchMastery = pitcherAbilities.getPitchingPitchMasteryMatrix()#['pitchMastery']
 
     #set to defaults
     pitcherMu = 0.0
@@ -138,8 +144,8 @@ def PrContact(pitcherAbilities, batterAbilities, pitchAttrs):
     chi2prime = Chi2Prime(batterZoneMastery[pitchZone], pitcherZoneMastery[pitchZone])
 
     probOfContact = numIntegrate(100, -5, 5, 
-                                 chi2prime, BATTERMUFIXED,
-                                 PITCHERCHI2FIXED, muPrime)
+                                 chi2prime, PlayerAbilities.gsBATTERMUFIXED,
+                                 PlayerAbilities.gsPITCHERCHI2FIXED, muPrime)
                                  
                                  
 

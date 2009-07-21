@@ -1,29 +1,12 @@
 import random
 import ProbabilityEngine as PrEng
-
+from FieldGameState import *
+from Player import *
+import PlayerDB
 nextPitch = 0
 gsPitches = None
 #nextSwing = 0
 #gsSwings = None
-
-CURVEBALL = 'CRV'
-FASTBALL = 'FST'
-SLIDER = 'SLD'
-CHANGEUP = 'CHNG'
-KNUCKLEBALL = 'KNCK'
-SINKER = 'SINK'
-SPITBALL = 'SPIT'
-
-PITCHTYPES = [FASTBALL, CURVEBALL, SLIDER,
-              CHANGEUP, KNUCKLEBALL, SINKER, SPITBALL]
-
-
-#x,y from top left as origin going down
-ZONES = [(0,0),(1,0),(2,0),
-         (0,1),(1,1),(2,1),
-         (0,2),(1,2),(2,2)]
-STRIKEZONE = range(9)
-BALL = 9
 
 gsBATTINGEVENTS = ['S','2B','3B','HR','BB','SO','HBP',
                        'GO','AO','SAC','DP','TP']#,'IBB']
@@ -36,80 +19,6 @@ gsOUTEVENTS = gsSINGLEOUTPLAYS + gsMULTIOUTPLAYS
 gsRUNNERSADVANCEEVENTS = gsHITS + ['BB','HBP','SAC']
 gsMAXPITCHCOUNT = 10
   
-
-THETA_LEFTFIELD_FOULPOLE = 0
-THETA_RIGHTFIELD_FOULPOLE = 90
-
-#Simple Model for infielder ranges 
-THETA_THIRDBASERANGE = range(3,15)
-THETA_SSRANGE = range(25,40)
-THETA_SECONDBASERANGE = range(50, 65)
-THETA_FIRSTBASERANGE = range(75, 87)
-
-class DefensiveFieldState:
-#holds position and locations
-#as well as the abilities of players at those positions
-    def __init__(self, FieldGeometry=None, PlayerFielderAbilities=None):
-        self.__palyers = PlayerFielderAbilities
-        
-
-    def simFieldBallContact(self, batBallContactResult):
-        (theta, phi, radius) = batBallContactResult.getHitParams()
-
-        if theta < THETA_LEFTFIELD_FOULPOLE or theta > THETA_RIGHTFIELD_FOULPOLE:
-            return 'FOUL'
-
-        if phi:
-            #its in the air
-            if radius < 120:
-                return 'AO'
-            
-            if radius < 220:
-                return 'S'
-
-            if radius < 350:
-                return 'AO'
-
-            if radius < 375:
-                return '2B'
-
-            if radius < 400:
-                return '3B'
-
-            else:
-                return 'HR'
-        
-        else:
-            #its a ground ball
-            if theta < min(THETA_THIRDBASERANGE):#up the 3rd base line
-                return '2B'
-
-            if theta in THETA_THIRDBASERANGE:
-                return 'GO'
-
-            if theta < min(THETA_SSRANGE):
-                return 'S'
-
-            if theta in THETA_SSRANGE:
-                return 'GO'
-
-            if theta < min(THETA_SECONDBASERANGE):
-                return 'S'
-
-            if theta in THETA_SECONDBASERANGE:
-                return 'GO'
-
-            if theta < min(THETA_FIRSTBASERANGE):
-                return 'S'
-
-            if theta in THETA_FIRSTBASERANGE:
-                return 'GO'
-
-            if theta <= THETA_RIGHTFIELD_FOULPOLE:
-                return '2B'
-
-        return "unmatched case in simFieldBallContact"
-
 class BatBallContactResult:
     
     def __init__(self,
@@ -158,13 +67,16 @@ class AtBatResult:
     #gsMAXPITCHCOUNT = 10
     
     def __init__(self, 
-                 batterGUID, 
-                 pitcherGUID,
+                 batterGUID,batterAbil,
+                 pitcherGUID, pitcherAbil,
                  currentState): #(numOuts, numOnBase)
             
         self.__pitcher_playerGUID = pitcherGUID
+        self.__pitcherAbil = pitcherAbil
+        
         self.__batter_playerGUID = batterGUID
-
+        self.__batterAbil = batterAbil
+        
         self.__currentState = currentState
 
         #we have to copy this because we are going to modify it
@@ -217,7 +129,14 @@ class AtBatResult:
     #    nextSwing += 1
     #    return gsSwings[nextSwing]
 
-    def simPitch(self, pitcherAbil=PrEng.pitcherAbil, batterAbil=PrEng.batterAbil, pitch=None):
+    def simPitch(self, pitcherAbil=None, batterAbil=None, pitch=None):
+
+        if pitcherAbil == None:
+            pitcherAbil = self.__pitcherAbil
+        
+        if batterAbil == None:
+            batterAbil = self.__batterAbil
+
         pitchType = None
         pitchZone = -1
         
@@ -228,7 +147,7 @@ class AtBatResult:
             
         self.__totPitches += 1
             
-        if pitchZone not in STRIKEZONE:
+        if pitchZone not in gsSTRIKEZONE:
             self.__ballCount += 1
             
             if self.__ballCount == 4:
@@ -267,8 +186,13 @@ class AtBatResult:
         else:
             return 'STRIKE'
 
-    def simAtBat(self, pitcherAbil=PrEng.pitcherAbil, batterAbil=PrEng.batterAbil, pitch=None):
-
+    def simAtBat(self, pitcherAbil=None, batterAbil=None, pitch=None):
+        if pitcherAbil == None:
+            pitcherAbil = self.__pitcherAbil
+        
+        if batterAbil == None:
+            batterAbil = self.__batterAbil
+        
         while 1:
             ret = self.simPitch(pitcherAbil, batterAbil, pitch)
             if ret == 'FOUL':
@@ -523,8 +447,13 @@ class GameState:
     gsBASEEMPTY = -1
    
 
-    def __init__(self, HomeTeam, AwayTeam):
+    def __init__(self, HomeTeam, AwayTeam, playerDB):
 
+        #this is a reference to the global object
+        #that acts as the caching interface to persistent player
+        #objects
+        self.__playerDB = playerDB
+        
         self.__HomeTeam = HomeTeam
         self.__AwayTeam = AwayTeam
         self.__bases = [self.gsBASEEMPTY]*4
@@ -547,7 +476,13 @@ class GameState:
             return self.__HomeTeam.getNextBatterGUID()
         
         return self.__AwayTeam.getNextBatterGUID()
+    
+    def _getPlayerAbilities(self, guid):
         
+        player = self.__playerDB.getObjectHandle(guid)
+        if player != None:
+            return player.getPlayerAbilities()
+        return None
 
     def _getPitcherGUID(self):
         if self.__homeTeamUp:
@@ -856,9 +791,23 @@ class GameState:
     #
     
     def generateSimEvent(self):
+
+        batterGUID = self._getNextBatterGUID()
+        batterAbilities = self._getPlayerAbilities(batterGUID)
+        if batterAbilities == None:
+            print "could't get batter abilities"
+            return None
         
+        pitcherGUID = self._getPitcherGUID()
+        pitcherAbilities = self._getPlayerAbilities(pitcherGUID)
+        if pitcherAbilities == None:
+            print "could't get pitcher abilities"
+            return None
+
         atBatEvent = AtBatResult(self._getNextBatterGUID(),
+                                 batterAbilities,
                                  self._getPitcherGUID(),
+                                 pitcherAbilities,
                                  self._getStateForNextAtBatEvent())
 
         atBatEvent.simAtBat()          

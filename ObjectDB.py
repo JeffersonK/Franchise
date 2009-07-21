@@ -86,6 +86,8 @@ class ObjectDB:
     #
     #
     def _checkCache(self, objectGUID):
+        #print "%d %s" % (objectGUID, self.__dbcache)
+
         if objectGUID in self.__dbcache:
             return self.__dbcache[objectGUID]
 
@@ -115,6 +117,8 @@ class ObjectDB:
     #
     def getObjectHandle(self, ObjectGUID):
 
+        #print "%d %s" % (ObjectGUID, self.__dbcache)
+
         ObjectObj = self._checkCache(ObjectGUID)
 
         if ObjectObj != None:
@@ -134,6 +138,8 @@ class ObjectDB:
             self.__dbcache[ObjectGUID] = ObjectObj
             return ObjectObj
 
+    def __str__(self):
+        return str(self.__dbcache)
     #
     #flush to disk and
     #remove from the cache, 

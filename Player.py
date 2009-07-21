@@ -1,31 +1,47 @@
 import Globals
-#import PlayerDB
 import cPickle
+import PlayerAbilities
+
+gsCURVEBALL = 'CRV'
+gsFASTBALL = 'FST'
+gsSLIDER = 'SLD'
+gsCHANGEUP = 'CHNG'
+gsKNUCKLEBALL = 'KNCK'
+gsSINKER = 'SINK'
+gsSPITBALL = 'SPIT'
+gsFORKBALL = 'FORK'
+
+gsPITCHTYPES = [gsFASTBALL, 
+                gsCURVEBALL, 
+                gsSLIDER,
+                gsCHANGEUP, 
+                gsKNUCKLEBALL, 
+                gsSINKER, 
+                gsSPITBALL,
+                gsFORKBALL]
+
+#x,y from top left as origin going down
+gsZONES = [(0,0),(1,0),(2,0),
+         (0,1),(1,1),(2,1),
+         (0,2),(1,2),(2,2)]
+gsSTRIKEZONE = range(9)
+gsBALL = 9
+
+gsPLAYERPOSITIONS = {1:'P',2:'C',3:'1B',
+                     4:'2B',5:'3B',6:'SS',
+                     7:'LF',8:'CF',9:'RF'}
 
 
-class PlayerAbilities:
-
-    def __init__(self):
-        #batter abilities
-        self.__powerZones = []
-        self.__zoneMastery = []
-        self.__pitchMastery = []
-        self.__patience = 0
-        self.__prestige = 0
-        self.__speed = 0
-        self.__defense = 0
-
-        #pitcher abilities
-        self.__zoneMastery = []
-        self.__pitchMastery = []
+#
+#
+# Container for player stats both during the game 
+# and persistently stored with the player
 class PlayerStats:
     def __init__(self):
-
-
+        return
 
         
 class Player:
-
 
     def __init__(self, playerGUID, position):
 
@@ -35,11 +51,13 @@ class Player:
         if position.upper() not in Globals.gsPlayerPositions:
             return None
         
+        #TODO: change this to an integer
         self.__position = position.upper()
         
         self.__franchiseGUID = Globals.gsPLAYERFREEAGENT
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
         
+        self.__playerAbilities = PlayerAbilities.PlayerAbilities()
         #self.__isAAAPlayer
         #self.__dateDrafted
 
@@ -48,14 +66,6 @@ class Player:
         #__lastName = "McFly"
         #__experience = None
         #__playerHomeTown =
-        #__playerSalaryHistory =
-        #__temper = 
-        #__attitude =
-        #__clutch = 
-        #__leadership =
-        #__morale =
-        #__happiness =
-
     
         #expereince
         #age
@@ -76,13 +86,7 @@ class Player:
         self.__wins = 0
         self.__losses = 0
         self.__starts = 0
-    
-        
-        #Abilities as pitcher 0-10
-        #__stamina = 0
-        #__control = 0
-        #__power = 0
-
+            
         #Batting stats
         self.__totAtBats = 0
         self.__totHits = 0
@@ -97,13 +101,6 @@ class Player:
         self.__cyclesHit = 0
         self.__grandSlams = 0
 
-        #Abilities as batter 0-10
-        #__power = 0
-        #__contact = 0
-
-        #Abilities as runner
-
-        #Abilities as fielder
         return
 
     def __getstate__(self):
@@ -112,7 +109,7 @@ class Player:
             "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
             "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d," +\
-            "'totRBIs':%d,'totRuns':%d,'timesKd':%d}"
+            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,playerAbilities:%s}"
 
         return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
@@ -120,7 +117,7 @@ class Player:
                       self.__totAtBats, self.__totHits, 
                       self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
                       self.__totWalks, self.__grandSlams, self.__cyclesHit, self.__games,
-                      self.__totRBIs, self.__totRuns, self.__timesKd)
+                      self.__totRBIs, self.__totRuns, self.__timesKd, self.__playerAbilities.__getstate__())
 
 
 
@@ -140,11 +137,6 @@ class Player:
         self.__losses = d['losses']
         self.__starts = d['starts']
 
-        #abilities as pitcher 0-10
-        #__stamina = 0
-        #__control = 0
-        #__power = 0
-
         #batting stats
         self.__totAtBats = d['totAtBats']
         self.__totHits = d['totHits']
@@ -161,12 +153,18 @@ class Player:
         self.__totRuns = d['totRuns']
         self.__timesKd = d['timesKd']
 
+        #player abilities
+        self.__playerAbilities = d['playerAbilities']
+
     def __str__(self):
         return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
 
     #we should generate events when we update stats because
     #it is a change in the player state
     #here is where a player will gain ablities when their stats are updated
+    def getPlayerAbilities(self):
+        return self.__playerAbilities
+
     def updatePlayerStats(self, playerGameState):
 
         if playerGameState.played():
