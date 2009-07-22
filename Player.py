@@ -58,13 +58,12 @@ class Player:
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
         
         self.__playerAbilities = PlayerAbilities.PlayerAbilities()
-        #self.__isAAAPlayer
-        #self.__dateDrafted
 
         #Player Personality/Character
-        #__firstName = "Moonbeam"
-        #__lastName = "McFly"
-        #__experience = None
+        self.__firstName = "Moonbeam"
+        self.__lastName = "McFly"
+        self.__experiencePoints = 0
+        self.__level = 0
         #__playerHomeTown =
     
         #expereince
@@ -104,14 +103,17 @@ class Player:
         return
 
     def __getstate__(self):
-        fmt =  "{'playerGUID':%d,'position':'%s','franchiseGUID':%d,'totKs':%d," + \
+        fmt =  "{'playerGUID':%d,'firstName':'%s','lastName':'%s','experiencePoints':%d,'level':%d," +\
+            "'position':'%s','franchiseGUID':%d,'totKs':%d," + \
             "'totWalksThrown':%d,'totOutsPitched':%d,'totEarnedRuns':%d," + \
             "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
             "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d," +\
-            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,playerAbilities:%s}"
+            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,'playerAbilities':%s}"
 
-        return fmt % (self.__playerGUID, self.__position, self.__franchiseGUID,
+        return fmt % (self.__playerGUID, self.__firstName, self.__lastName, 
+                      self.__experiencePoints,self.__level,
+                      self.__position, self.__franchiseGUID,
                       self.__totKs, self.__totWalksThrown, self.__totOutsPitched,
                       self.__totEarnedRuns, self.__wins, self.__losses, self.__starts,
                       self.__totAtBats, self.__totHits, 
@@ -154,10 +156,21 @@ class Player:
         self.__timesKd = d['timesKd']
 
         #player abilities
-        self.__playerAbilities = d['playerAbilities']
+        self.__level = d['level']
+        self.__firstName = d['firstName']
+        self.__lastName = d['lastName']
+        self.__experiencePoints = d['experiencePoints']
+        
+        abilities = d['playerAbilities']
+        self.__playerAbilities = PlayerAbilities.PlayerAbilities(abilities['batting'],
+                                                                 abilities['pitching'],
+                                                                 abilities['running'],
+                                                                 abilities['fielding'],
+                                                                 abilities['character'])
 
     def __str__(self):
-        return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
+        return self.__getstate__()
+        #return "PlayerGUID: %d Position:'%s'" % (self.__playerGUID, self.__position)
 
     #we should generate events when we update stats because
     #it is a change in the player state

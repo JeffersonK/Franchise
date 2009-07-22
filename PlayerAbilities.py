@@ -65,42 +65,57 @@ pitcherPitchMastery = {'curveball':gsMuPitcherMin,
 
 
 #PITCHING
-pitcherAbil = {'zoneMastery':pitcherZoneMastery, #pitchers effectiveness at throwing pitches by zone
-               'pitchMastery':pitcherPitchMastery,#how good a pitcher is at throwing various pitches
-               'strength':0,#affects the speed of the pitches thrown
-               'control':0, #affects if a whether a pitch is a ball or not
-               'stamina':0,   #affects how many pitches they can throw before their accuracy and speed are temporarily affected
-               }
+defaultpitcherAbil = {'zoneMastery':pitcherZoneMastery, #pitchers effectiveness at throwing pitches by zone
+                      'pitchMastery':pitcherPitchMastery,#how good a pitcher is at throwing various pitches
+                      'strength':0,#affects the speed of the pitches thrown
+                      'control':0, #affects if a whether a pitch is a ball or not
+                      'stamina':0,   #affects how many pitches they can throw before their accuracy and speed are temporarily affected
+                      }
 
 #BATTER abilities
-batterAbil = {'zoneMastery':batterZoneMastery,#how good a batter is at making contact with a pitch in a given location
-              'pitchMastery':batterPitchMastery,#how good a batter is at making contact with a certain kind of pitch
-              'powerZones':batterPowerZones, #effects the zones where hitters have power
-              'patience':0, #effects how often the batter chances balls/bad pitches
-              }
+defaultbatterAbil = {'zoneMastery':batterZoneMastery,#how good a batter is at making contact with a pitch in a given location
+                     'pitchMastery':batterPitchMastery,#how good a batter is at making contact with a certain kind of pitch
+                     'powerZones':batterPowerZones, #effects the zones where hitters have power
+                     'patience':0, #effects how often the batter chances balls/bad pitches
+                     }
 
 #FIELDING
-fieldingAbil = {'defense':0, #effects the range/radius of the player on defense
-                }
+defaultfieldingAbil = {'defense':0, #effects the range/radius of the player on defense
+                       }
  
 #RUNNING   
-runningAbil = {'speed':0, #effects whether extra bases can be squeezed out on hits
-               }
+defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed out on hits
+                      }
 
 #CHARACTER
-characterAbil = {'leadership':0, #makes everyone on the team a little better
-                 'prestige':0, #affects how much money the player draws per game
-                 }
+defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
+                        'prestige':0, #affects how much money the player draws per game
+                        }
 
 class PlayerAbilities:
 
-    def __init__(self):
+    def __init__(self, batting=None, pitching=None, running=None, fielding=None, character=None):
 
-        self.__fielding = fieldingAbil
-        self.__batting = batterAbil
-        self.__pitching = pitcherAbil
-        self.__running = runningAbil
-        self.__character = characterAbil
+        if fielding == None:
+            self.__fielding = defaultfieldingAbil
+        else:
+            self.__fielding = fielding
+        if batting == None:
+            self.__batting = defaultbatterAbil
+        else:
+            self.__batting = batting
+        if pitching == None:
+            self.__pitching = defaultpitcherAbil
+        else:
+            self.__pitching = pitching
+        if running == None:
+            self.__running = defaultrunningAbil
+        else:
+            self.__running = running
+        if character == None:
+            self.__character = defaultcharacterAbil
+        else:
+            self.__character = character
         
         return
 

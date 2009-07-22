@@ -13,16 +13,26 @@ import ObjectDB
 #initPlayerDB()
 #initFranchiseDB()
 
-LOAD = 0
-GENERATE = 1
+LOAD = 1
+GENERATE = 0
 
 gsPlayerDB = ObjectDB.ObjectDB("players", "plr")
 gsFranchiseDB = ObjectDB.ObjectDB("franchises", "frn")
+gsGlobalDB = ObjectDB.ObjectDB("globals", "gbl")
+
+globalState = None
+
+if GENERATE:
+    globalState = Globals.GlobalState()
+    gsGlobalDB.addObject(0,globalState)
+
+if LOAD:
+    globalState = gsGlobalDB.getObjectHandle(0)
 
 def generateTeam():
     team = {}
     for pos in Globals.gsPlayerPositions:
-        p = Player.Player(Globals.globalState.nextPlayerGUID(), pos)
+        p = Player.Player(globalState.nextPlayerGUID(), pos)
         gsPlayerDB.addObject(p.guid(), p)
         team[p.guid()] = pos
     return team
@@ -32,7 +42,7 @@ f2 = None
 
 #GENERATE 1
 if GENERATE:
-    f1 = Franchise.Franchise("frza", "frzaites", Globals.globalState.nextFranchiseGUID())
+    f1 = Franchise.Franchise("frza", "frzaites", globalState.nextFranchiseGUID())
     gsFranchiseDB.addObject(f1.guid(), f1)
 
     playerDict1 = generateTeam()
@@ -54,7 +64,7 @@ f1.setRotation()
 
 # GENERATE 2
 if GENERATE:
-    f2 = Franchise.Franchise("jza", "jzites", Globals.globalState.nextFranchiseGUID())
+    f2 = Franchise.Franchise("jza", "jzites", globalState.nextFranchiseGUID())
     gsFranchiseDB.addObject(f2.guid(), f2)
     playerDict2 = generateTeam()
     for playerGUID in playerDict2.keys():
@@ -105,5 +115,6 @@ endGameTeamEvents1 = f1.updateFranchiseStats(tgs1, True)
 endGameTeamEvents2 = f2.updateFranchiseStats(tgs2, False)
 #print endGameTeamEvents1
 
+gsGlobalDB.writeAll()
 gsPlayerDB.writeAll()
 gsFranchiseDB.writeAll()
