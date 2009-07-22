@@ -2,7 +2,7 @@ import Globals
 import Franchise
 import Player
 import GameState
-
+import TeamGameState
 import SimRunner
 import ObjectDB
 
@@ -82,8 +82,8 @@ if LOAD:
 f2.setLineup()
 f2.setRotation()
 
-tgs1 = Franchise.TeamGameState(f1)
-tgs2 = Franchise.TeamGameState(f2)
+tgs1 = TeamGameState.TeamGameState(f1)
+tgs2 = TeamGameState.TeamGameState(f2)
 
 gameState = GameState.GameState(tgs1,tgs2,gsPlayerDB)
 

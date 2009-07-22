@@ -1,8 +1,11 @@
 
+
+#TODO: make class for FieldGeometry
 gsTHETA_LEFTFIELD_FOULPOLE = 0
 gsTHETA_RIGHTFIELD_FOULPOLE = 90
 
-#Simple Model for infielder ranges 
+
+#Simple Defensive Model for infielder ranges 
 gsTHETA_THIRDBASERANGE = range(2,15)
 gsTHETA_SSRANGE = range(20,41)
 gsTHETA_SECONDBASERANGE = range(46, 61)
@@ -13,12 +16,17 @@ gsOUTFIELDSHALLOW = 210
 gsOUTFIELDERMAXRADIUS = 350
 gsOUTFIELDDOUBLE = 400#385
 #gsOUTFIELDTRIPLE = 400
+
 class DefensiveFieldState:
 #holds position and locations of base runners
 #as well as the abilities of players at those positions
-    def __init__(self, FieldGeometry=None, PlayerFielderAbilities=None):
-        self.__players = PlayerFielderAbilities
-        
+    def __init__(self, baseState=None, outCount=None, 
+                 FieldGeometry=None, PlayerFielderAbilities=None):
+        self.__playersFielders = PlayerFielderAbilities
+
+        self.__bases = baseState
+        self.__outs = outCount
+
 
     def getInfieldLoc(self, theta, radius):
         if radius < 20:
