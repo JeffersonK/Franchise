@@ -15,7 +15,7 @@ gsChi2PitcherMax = gsChi2PrimeMax - gsChi2Normal
 gsChi2BatterMin = 0.0
 gsChi2PitcherMin = 0.0
 
-Chi2b0 = gsChi2BatterMin + .25
+Chi2b0 = gsChi2BatterMin #+ .25
 Chi2p0 = gsChi2PitcherMin #+ 2.862
 
 gsPITCHERCHI2FIXED = 1.0

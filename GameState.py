@@ -8,9 +8,9 @@ gsPitches = None
 #nextSwing = 0
 #gsSwings = None
 
-gsBATTINGEVENTS = ['S','2B','3B','HR','BB','SO','HBP',
+gsBATTINGEVENTS = ['1B','2B','3B','HR','BB','SO','HBP',
                        'GO','AO','SAC','DP','TP']#,'IBB']
-gsHITS = ['S','2B','3B','HR']
+gsHITS = ['1B','2B','3B','HR']
 gsNOTATBAT = ['BB','HBP']
 gsDONTADDPITCH = ['SO','BB']
 gsSINGLEOUTPLAYS = ['GO','SO','AO','SAC']
@@ -168,7 +168,7 @@ class AtBatResult:
             self.__contactMade = True
             #self.__resultCode = 'HR'
             self._generateAtBatResult()
-            if self.__resultCode == 'FOUL':
+            if self.__resultCode.startswith('FOUL'):
                 if self.__strikeCount < 2:
                     self.__strikeCount += 1
                     self.__resultCode = ""
@@ -287,11 +287,11 @@ class AtBatResult:
         self._findAllowedEvents()
 
         if self.__ballCount == 4:
-            self.__resultCode == 'BB'
+            self.__resultCode = 'BB'
             return
 
         if self.__strikeCount == 3:
-            self.__resultCode == 'SO'
+            self.__resultCode = 'SO'
             return
         
         random.seed()
@@ -343,10 +343,13 @@ class AtBatResult:
         return self.__atBatEventLog
 
     def isOut(self):
-        return self.__resultCode in gsOUTEVENTS
+        x = [outevent for outevent in gsOUTEVENTS if self.__resultCode.startswith(outevent)] 
+        return len(x) != 0#self.__resultCode in gsOUTEVENTS
 
     def outsMade(self):
-        if self.__resultCode in gsSINGLEOUTPLAYS:
+        x = [outevent for outevent in gsSINGLEOUTPLAYS if self.__resultCode.startswith(outevent)] 
+        #if self.__resultCode in gsSINGLEOUTPLAYS:
+        if len(x) != 0:
             return 1
 
         if self.DoublePlay():
@@ -358,22 +361,26 @@ class AtBatResult:
         return 0
 
     def countsAsAtBat(self):
-        return self.__resultCode not in gsNOTATBAT
+        x = [event for event in gsNOTATBAT if self.__resultCode.startswith(event)] 
+        return len(x) > 0
+        #return self.__resultCode not in gsNOTATBAT
 
     def runsScored(self):
         return len(self.__runnersScored)
 
     def runnersAdvance(self):
-        return self.__resultCode in gsRUNNERSADVANCEEVENTS
+        x = [event for event in gsRUNNERSADVANCEEVENTS if self.__resultCode.startswith(event)] 
+        return len(x) > 0
 
     def teamScored(self):
         return len(self.__runnersScored) > 0
 
     def Single(self):
-        return self.__resultCode.startswith('S')
+        return self.__resultCode.startswith('1B')
 
     def isHit(self):
-        return self.__resultCode in gsHITS
+        x = [event for event in gsHITS if self.__resultCode.startswith(event)]
+        return len(x) != 0 #self.__resultCode in gsHITS
 
     def Double(self):
         return self.__resultCode.startswith('2B')
@@ -643,7 +650,6 @@ class GameState:
     #if was a HomeRun includes man at bat in list
     def _handleAdvanceAllRunners(self, atBatResultObj):
         
-
         runnersScored = []
         basesReversed = self.__bases[:]
         basesReversed.reverse()
@@ -737,6 +743,7 @@ class GameState:
     def handleStartAtBat(self, atBatEventObj):
         #put batter in 0th place 
         self.__bases[0] = atBatEventObj.getBatterGUID()
+        #print self
         return
 
     def handleAtBatResult(self, atBatEventObj):
