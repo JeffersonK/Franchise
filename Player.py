@@ -1,16 +1,8 @@
 import Globals
 import cPickle
 import PlayerAbilities
+import PlayerStats
 
-#
-#
-# Container for player stats both during the game 
-# and persistently stored with the player
-class PlayerStats:
-    def __init__(self):
-        return
-
-        
 class Player:
 
     def __init__(self, playerGUID, position):
@@ -18,7 +10,7 @@ class Player:
         #Book Keeping
         self.__playerGUID = playerGUID
 
-        if position.upper() not in Globals.gsPlayerPositions:
+        if position.upper() not in Globals.gsPOSITION_POSSTR.values():
             return None
         
         #TODO: change this to an integer
@@ -28,6 +20,9 @@ class Player:
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
         
         self.__playerAbilities = PlayerAbilities.PlayerAbilities()
+
+        self.__pitcherStats = PlayerStats.PitcherStats()
+        self.__batterStats = PlayerStats.BatterStats()
 
         #Player Personality/Character
         self.__firstName = "Moonbeam"
@@ -79,7 +74,7 @@ class Player:
             "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
             "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d," +\
-            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,'playerAbilities':%s}"
+            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,'playerAbilities':%s,'batterStats':\"%s\",'pitcherStats':\"%s\"}"
 
         return fmt % (self.__playerGUID, self.__firstName, self.__lastName, 
                       self.__experiencePoints,self.__level,
@@ -89,7 +84,8 @@ class Player:
                       self.__totAtBats, self.__totHits, 
                       self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs,
                       self.__totWalks, self.__grandSlams, self.__cyclesHit, self.__games,
-                      self.__totRBIs, self.__totRuns, self.__timesKd, self.__playerAbilities.__getstate__())
+                      self.__totRBIs, self.__totRuns, self.__timesKd, self.__playerAbilities.__getstate__(),
+                      self.__batterStats.__getstate__(), self.__pitcherStats.__getstate__())
 
 
 
@@ -137,6 +133,14 @@ class Player:
                                                                  abilities['running'],
                                                                  abilities['fielding'],
                                                                  abilities['character'])
+
+        batterStatsStr = d['batterStats']
+        self.__batterStats = PlayerStats.BatterStats().__setstate__(batterStatsStr)
+        
+        pitcherStatsStr = d['pitcherStats']
+
+        self.__pitcherStats = PlayerStats.PitcherStats().__setstate__(pitcherStatsStr)
+
 
     def __str__(self):
         return self.__getstate__()

@@ -129,7 +129,7 @@ class PlayerAbilities:
 
     
     def __setstate__(self, dictStr):
-        print "TODO: check for eval errors"
+        print "TODO: check for eval errors in PlayerAbility __setstate__"
         d = eval(dictStr)
         self.__fielding = d['fielding']
         self.__batting = d['batting']

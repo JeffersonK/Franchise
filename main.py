@@ -25,13 +25,12 @@ globalState = None
 if GENERATE:
     globalState = Globals.GlobalState()
     gsGlobalDB.addObject(0,globalState)
-
 if LOAD:
     globalState = gsGlobalDB.getObjectHandle(0)
 
 def generateTeam():
     team = {}
-    for pos in Globals.gsPlayerPositions:
+    for pos in Globals.gsPOSITION_POSSTR.values():#gsPlayerPositions:
         p = Player.Player(globalState.nextPlayerGUID(), pos)
         gsPlayerDB.addObject(p.guid(), p)
         team[p.guid()] = pos
