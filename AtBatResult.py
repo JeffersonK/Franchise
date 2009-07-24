@@ -88,6 +88,14 @@ class Play:
     def runsScoredOnPlay(self):
         return 0#self.__runsScoredOnPlay #TODO: implement
 
+    def isHit(self):
+        if self.isSingle() or \
+                self.isDouble() or \
+                self.isTriple() or \
+                self.isHomeRun():
+            return True
+        return False
+
     def isSingle(self):
         return self.__playResultEncoding.startswith(gsATBATRESULT_SINGLE)
 
@@ -99,6 +107,12 @@ class Play:
 
     def isHomeRun(self):
         return self.__playResultEncoding.startswith(gsATBATRESULT_HOMERUN)
+
+    def isGrandSlam(self):
+        if self.isHomeRun() and self.runsScoredOnPlay() == 4: #bases loaded
+            return True
+
+        return False
 
     def isOut(self):
         if self.__playResultEncoding.startswith(gsATBATRESULT_GROUNDOUT):
@@ -114,8 +128,12 @@ class Play:
 
     def isStrikeOut(self):
         if self.__playResultEncoding.startswith(gsATBATRESULT_STRIKEOUT):
+            return True        
+        return False
+
+    def isWalk(self):
+        if self.__playResultEncoding.startswith(gsATBATRESULT_WALK):
             return True
-        
         return False
 
     def isDoublePlay(self):
@@ -172,7 +190,8 @@ class AtBatResult:
         self.__batterGUID = batterGUID
         self.__batterAbil = batterAbil
         self.__batterStats = BatterStats(gsSTATSUBTYPE_SINGLEPLAYSTATS)
-    
+        self.__batterStats.addAtBat()
+
         self.__fieldState = fieldState
 
         #we have to copy this because we are going to modify it
@@ -334,7 +353,13 @@ class AtBatResult:
                                self.__pitcherStats.getBalls(), 
                                self.__pitchStats.getStrikes(), 
                                gsATBATRESULT_WALK) #earlyResultCode
-
+                
+                
+                #TODO: need to use fieldState to determine who 
+                #      scored and set appropriately
+                #      in the playObj because in the case of a WALK/HBP runs can
+                #      score without a ball being in play
+                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_WALK, playObj)
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_WALK, playObj)
                 
                 del(playObj)
@@ -344,7 +369,11 @@ class AtBatResult:
                 return gsPITCHCALL_WALK
 
             else:
+                #this addPitchReceived does nothing for now 
+                #because we don't track
+                #individual pitches for batters
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_BALL)
+                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_BALL, 0)
                 return gsPITCHCALL_BALL
 
         #else:
@@ -371,7 +400,9 @@ class AtBatResult:
             if playObj.isFoul():#.startswith(gsPITCHCALL_FOUL):
                 self.__contactMade = False
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_FOUL)
+                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, 0, gsPITCHCALL_FOUL)
                 self.__resultCode = gsNULL_ATBATRESULT_CODE
+
                 #help python garbage collection
                 del(playObj)
                 playObj = None
@@ -380,6 +411,7 @@ class AtBatResult:
                 playObj.createPlayEncoding()
                 self.__resultCode = str(playObj)
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, None, playObj)                
+                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, None, 0, playObj)                
                 return gsPITCHCALL_CONTACT
 
         #else:
@@ -392,12 +424,16 @@ class AtBatResult:
                            self.__pitcherStats.getBalls(), 
                            self.__pitcherStats.getStrikes(),
                            gsATBATRESULT_STRIKEOUT) #earlyResultCode
+
             self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_STRIKEOUT, playObj)
+            self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_STRIKEOUT, 0, playObj)
+
             self.__resultCode = gsPITCHCALL_STRIKEOUT
             return gsPITCHCALL_STRIKEOUT
         else:
             #its just a strike
             self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE)
+            self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE, 0)
             return gsPITCHCALL_STRIKE
 
     #########

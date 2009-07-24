@@ -115,90 +115,17 @@ class PlayerGameState:
                     
         return s
 
+    def getPlayerGameStateStats(self):
+        return self.__playerGameStats
+
     def updatePlayerGameState(self, atBatEvent, isBatter):
         
         if isBatter:
             self.__playerGameStats += atBatEvent.getBatterStats()
 
-            #OLD
-            self.__atBatResults += [(atBatEvent.getPitcherGUID(), atBatEvent.getResultCode())]
-            
-            if atBatEvent.countsAsAtBat():
-                self.__atBatCount += 1
-            
-            if atBatEvent.StrikeOut():
-                self.__Kd += 1
-            
-            if atBatEvent.Walk():
-                self.__walks += 1
-            
-            if atBatEvent.HitByPitch():
-                self.__hbps += 1
-            
-            if atBatEvent.isHit():
-                self.__hits += 1
-            
-            if atBatEvent.HomeRun():
-                if atBatEvent.runsScored() == 4:
-                    self.__grandSlams += 1
-
-                self.__HRs += 1
-            
-            if atBatEvent.Single():
-                self.__1Bs += 1
-            
-            if atBatEvent.Double():
-                self.__2Bs += 1
-            
-            if atBatEvent.Triple():
-                self.__3Bs += 1
-
-            self.__rbis += atBatEvent.runsScored()
-            
-
         else:
 
             self.__playerGameStats += atBatEvent.getPitcherStats()
-            #print self.__playerGameStats
-
-            #OLD
-            self.__battersFaced += [(atBatEvent.getBatterGUID(), atBatEvent.getResultCode())]
-
-            (pitchesThrown, strikesThrown, ballsThrown) = atBatEvent.getPitchCounts()
-            self.__totPitchesThrown += pitchesThrown
-            self.__totStrikesThrown += strikesThrown
-            self.__totBallsThrown += ballsThrown
-            if atBatEvent.StrikeOut():
-                self.__Ks += 1
-            
-            if atBatEvent.Walk():
-                self.__walksThrown += 1
-            
-            if atBatEvent.isHit():
-                self.__hitsAllowed += 1
-            
-            if atBatEvent.HitByPitch():
-                self.__hbpsThrown += 1
-            
-            if atBatEvent.HomeRun():
-                if atBatEvent.runsScored() == 4:
-                    self.__grandSlamsAllowed += 1
-                
-                   
-                self.__HRsAllowed += 1
-            
-            if atBatEvent.Single():
-                self.__1BsAllowed += 1
-            
-            if atBatEvent.Double():
-                self.__2BsAllowed += 1
-            
-            if atBatEvent.Triple():
-                self.__3BsAllowed += 1
-
-            self.__earnedRuns += atBatEvent.runsScored()
-            
-            self.__outsPitched += atBatEvent.outsMade()
 
     def played(self):
         if self.__atBatCount > 0:

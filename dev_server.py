@@ -34,6 +34,7 @@ from twisted.internet import reactor
 import json
 import cPickle
 import pprint
+import os
 class DeviceServerSideProtocol(LineReceiver):
     
     #delimiter = "/r/n"  # you can change this to be anything
@@ -52,18 +53,20 @@ class DeviceServerSideProtocol(LineReceiver):
 	readplayer = "READPLAYER("
 
 	if line.startswith(readplayer) and line.endswith(')'):
-		playerGUID = int(line[len(readplayer):-1])
-		file = open("players/%d.plr" % playerGUID, "r")
-		#plyr = file.read()
-		plyr = cPickle.load(file)
-		file.close()
-		print plyr	
-		#plyrdict = eval(plyr)
-		plyr = eval(str(plyr))
-		jsonobj = json.dumps(str(plyr))
-		self.sendLine(jsonobj)
-		#self.sendLine(str(plyr))
-	       	#self.sendLine("You said: %s" % line)
+            playerGUID = int(line[len(readplayer):-1])
+            if os.path.exists("players/%d.plr" % playerGUID):
+                file = open("players/%d.plr" % playerGUID, "r")
+
+#plyr = file.read()
+                plyr = cPickle.load(file)
+                file.close()
+            #print plyr	
+            #plyrdict = eval(plyr)
+                plyr = eval(str(plyr))
+                jsonobj = json.dumps(str(plyr))
+                self.sendLine(jsonobj)
+            #self.sendLine(str(plyr))
+            #self.sendLine("You said: %s" % line)
 
 
 class DeviceServerSideFactory(Factory):

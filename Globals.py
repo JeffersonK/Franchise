@@ -38,6 +38,9 @@ gsPITCHCALL_HITBYPITCH = 'HBP'
 # FMT for an AT BAT Result is:
 #         RESULT_CODE (batterGUID, pitcherGUID, pitchType, pitchZone, pitchSpeed, pitchCount, hitLocation (coordinates off the bat), fielderGUID(or NONE), RunnerAdvance List or NONE)
 #
+# RUNNERADV format is runnerGUID(base0, baseF) : 
+#            where 0 is home first is 1, etc...
+#
 gsNULL_ATBATRESULT_CODE = ""
 gsATBATRESULT_SINGLE = '1B'
 #gsSINGLE_RESULT_FMT = '1B(

@@ -90,7 +90,7 @@ class PitcherStats:
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
 
-        self.__batterResults += other.__batterResults
+
 
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
             self.__saves += other.__saves
@@ -114,6 +114,11 @@ class PitcherStats:
                     self.__longestLosingStreak = self.__currentLosingStreak
             
                 self.__currentWinStreak = 0
+
+            #save a game's results as a sub-list
+            self.__batterResults += [other.__batterResults]
+        else:
+            self.__batterResults += other.__batterResults
 
         self.__totBattersFaced += other.__totBattersFaced
         self.__totKs += other.__totKs
@@ -283,27 +288,35 @@ class PitcherStats:
     def statType(self):
         return self.__statType
 
-    #can't call this on stat objects read from disk because it doesn't persist
+    def isPitcherStats(self):
+        return self.__statType == gsSTATTYPE_PITCHER_STATS
+
+    def isBatterStats(self):
+        return self.__statType == gsSTATTYPE_BATTER_STATS
+
+    #can't call this on stat objects read 
+    #from disk because it doesn't persist
     def statSubType(self):
         return self.__statSubType
 
     def addBatterFaced(self):
         self.__totBattersFaced += 1
 
-    #def addK(self):
-    #    self.__totKs += 1
-        
-    #def addWalk(self):
-    #    self.__totWalksThrown += 1
+    #START GAME FUNCTIONS
+    # should only be called at the start of the game
+    # by the PlayerGameState object when the stats object
+    # is initialized
+    def incGamesStarted(self):
+        self.__starts += 1
 
-    #def addOuts(self, n=1):
-    #    self.__totOutsThrown += n
+    #END OF GAME FUNCTIONS 
+    # these are functions that should only be called
+    # at the end of the game by the TeamGameState wrapper 
+    def incLosses(self):
+        self.__losses += 1
 
-    #def addDoublePlay(self):
-    #    self.__totDPsThrown += 1
-
-    #def addTriplePlay(self):
-    #    self.__totTPsThrown += 1
+    def incWins(self):
+        self.__wins += 1
 
     def addEarnedRuns(self, n=1):
         self.__totEarnedRuns += n
@@ -413,6 +426,7 @@ class BatterStats:
 
         self.__totHits = initValue #perZone
         self.__currentHitStreak = initValue
+        self.__longestHitStreak = initValue
         self.__totCycles = initValue
 
         self.__totHRs = initValue
@@ -424,7 +438,7 @@ class BatterStats:
         self.__tot3Bs = initValue
 
         self.__totKd = initValue
-        self.__totDBHitInto = initValue
+        self.__totDPHitInto = initValue
         self.__totTPHitInto = initValue
 
         self.__totWalks = initValue
@@ -443,6 +457,12 @@ class BatterStats:
     def statType(self):
         return self.__statType
 
+    def isPitcherStats(self):
+        return self.__statType == gsSTATTYPE_PITCHER_STATS
+
+    def isBatterStats(self):
+        return self.__statType == gsSTATTYPE_BATTER_STATS
+
     #can't call this on objects read from disk because it doesn't persist
     def statSubType(self):
         return self.__statSubType
@@ -451,7 +471,6 @@ class BatterStats:
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
 
-        self.__atBatResults += other.__atBatResults
         self.__gamesPlayed += other.__gamesPlayed
         self.__totAtBats += other.__totAtBats
         self.__totHits += other.__totHits
@@ -459,9 +478,21 @@ class BatterStats:
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
             if self.__totHits > 0:
                 self.__currentHitStreak += 1
+
+            if self.__currentHitStreak > self.__longestHitStreak:
+                self.__longestHitStreak = self.__currentHitStreak
+
             #make sure we checked for cycles first
             self.__totCycles += other.__totCycles
-        
+
+            #to make this a list of lists add [] then each game is a sub list
+            #we probably need to limit how much history we keep here
+            #but it is good to save until the end of the game for post processing
+            #as well as testing purposes
+            self.__atBatResults += [other.__atBatResults]
+        else:
+            self.__atBatResults += other.__atBatResults            
+
         self.__totHRs += other.__totHRs
         if other.__longestHR > self.__longestHR:
             self.__longestHR = other.__longestHR
@@ -470,7 +501,7 @@ class BatterStats:
         self.__tot2Bs += other.__tot2Bs
         self.__tot3Bs += other.__tot3Bs
         self.__totKd += other.__totKd
-        self.__totDBHitInto += other.__totDBHitInto
+        self.__totDPHitInto += other.__totDPHitInto
         self.__totTPHitInto += other.__totTPHitInto
         self.__totWalks += other.__totWalks
         self.__totHBP += other.__totHBP
@@ -490,6 +521,7 @@ class BatterStats:
             "'gamesPlayed':%d," + \
             "'totHits':%d," + \
             "'currentHitStreak':%d," + \
+            "'longestHitStreak':%d," + \
             "'totCycles':%d," + \
             "'totHRs':%d," + \
             "'longestHR':%d," + \
@@ -498,7 +530,7 @@ class BatterStats:
             "'tot2Bs':%d," + \
             "'tot3Bs':%d," + \
             "'totKd':%d," + \
-            "'totDBHitInto':%d," + \
+            "'totDPHitInto':%d," + \
             "'totTPHitInto':%d," + \
             "'totWalks':%d," + \
             "'totHBP':%d," + \
@@ -510,11 +542,12 @@ class BatterStats:
             "'totRBIsWithRunnersInScoringPos':%d," + \
             "'totRunnersLeftInScoringPos':%d}"
 
-        return dictStr % (self.__statType, self.__atBatResults, 
-                          self.__gamesPlayed, self.__totAtBats,self.__totHits,
-                          self.__currentHitStreak, self.__totCycles, self.__totHRs, 
+        return dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
+                          self.__gamesPlayed, self.__totHits,
+                          self.__currentHitStreak, self.__longestHitStreak,
+                          self.__totCycles, self.__totHRs, 
                           self.__longestHR, self.__totGrandSlams, self.__tot1Bs, 
-                          self.__tot2Bs, self.__tot3Bs, self.__totKd, self.__totDBHitInto, 
+                          self.__tot2Bs, self.__tot3Bs, self.__totKd, self.__totDPHitInto, 
                           self.__totTPHitInto, self.__totWalks, self.__totHBP, 
                           self.__totIBB, self.__totRuns, self.__totRBIs, 
                           self.__totAtBatsWithRunnersInScoringPos, 
@@ -543,6 +576,7 @@ class BatterStats:
         self.__gamesPlayed = d['gamesPlayed']
         self.__totHits = d['totHits']
         self.__currentHitStreak = d['currentHitStreak']
+        self.__longestHitStreak = d['longestHitStreak']
         self.__totCycles = d['totCycles']
 
         self.__totHRs = d['totHRs']
@@ -554,7 +588,7 @@ class BatterStats:
         self.__tot3Bs = d['tot3Bs']
 
         self.__totKd = d['totKd']
-        self.__totDBHitInto = d['totDBHitInto']
+        self.__totDPHitInto = d['totDPHitInto']
         self.__totTPHitInto = d['totTPHitInto']
 
         self.__totWalks = d['totWalks']
@@ -573,9 +607,67 @@ class BatterStats:
     def __str__(self):
         return self.__getstate__()
 
+    #
+    #
+    #This shold only be called on the initialization 
+    # of the stats in the PlayerGameState object
     def setGamesPlayed(self, n):
         self.__gamesPlayed = n
 
+    #
+    #
+    #called in init of AtBatResult()
+    def addAtBat(self):
+        self.__totAtBats += 1
+
+    def addPitchReceived(self, pitchType, pitchZone, pitchSpeed, pitchCall, 
+                         runnersInScoringPos, playObj=None):
+        if playObj != None:
+
+            self.__atBatResults += [str(playObj)]
+
+            #Check for runners in scoring position
+            if runnersInScoringPos > 0:
+                self.__totAtBatsWithRunnersInScoringPos += 1
+                if playObj.isHit():#if its a hit
+                    self.__totHitsWithRunnersInScoringPos += 1
+                    self.__totRBIsWithRunnersInScoringPos += playObj.runsScoredOnPlay()
+                elif playObj.isOut() and \
+                        playObj.runsScoredOnPlay() < playObject.runnersInScoringPos():
+                    self.__totRunnersLeftInScoringPos += \
+                        playObject.runnersInScoringPos() - playObj.runsScoredOnPlay()
+
+            #inc total hits
+            if playObj.isHit():
+                self.__totHits += 1
+
+            if playObj.isOut():#Out
+                None
+            elif playObj.isSingle():
+                self.__tot1Bs += 1
+            elif playObj.isDouble():#Double
+                self.__tot2Bs += 1
+            elif playObj.isTriple():#Triple
+                self.__tot3Bs += 1
+            elif playObj.isHomeRun():#Homer
+                self.__totHRs += 1
+                self.__longestHR = playObj.getHitDistance()
+            elif playObj.isDoublePlay():#double play
+                self.__totDPHitInto += 1
+            elif playObj.isTriplePlay():#triple play
+                self.__totTPHitInto += 1
+            
+            self.__totRBIs += playObj.runsScoredOnPlay()
+            if playObj.isGrandSlam():
+                self.__totGrandSlams += 1
+
+        
+        if pitchCall == gsPITCHCALL_WALK:
+            self.__totWalks += 1
+        elif pitchCall == gsPITCHCALL_STRIKEOUT:
+            self.__totKd += 1
+
+            
 #TODO: Class FielderStats
 
 x = """class PlayerStats:

@@ -17,7 +17,6 @@ class TeamGameState:
         self.__nextBatterIndex = 0
         self.__playerStates = {}
         self.__lineup = []
-
         self.__runs = 0
               
         nextPitcherGUID = franchise.nextPitcherInRotation()
@@ -29,6 +28,7 @@ class TeamGameState:
             self.__playerStates[playerGUID] = PlayerGameState.PlayerGameState(playerGUID, pos)
             
         self.__playerStates[self.__pitchers[0][1]] = PlayerGameState.PlayerGameState(self.__pitchers[0][1], gsPOSITION_POSSTR[gsPITCHER_POSCODE])
+
 
     def __str__(self):
         s = "TeamGameState Object(%s):" % id(self)
@@ -57,6 +57,10 @@ class TeamGameState:
     def getPlayerGameStates(self):
         return self.__playerStates
 
+    def handleEndOfGame(self):#
+        #getEndOfGameAchievements
+        return
+
     def updateTeamGameState(self, atBatEvent, isBatter):
         #will update team stats and find appropriate playerGameState 
         #and call its update function
@@ -75,11 +79,7 @@ class TeamGameState:
         playerObj = self.__playerStates[playerGUID]
 
         playerObj.updatePlayerGameState(atBatEvent, isBatter)
-        return 0
-
-    #FOR DEBUGGING
-    #def printPlayerGameState(self, playerGUID):
-    #    print self.__playerStates[playerGUID]
+        return
 
     def getCurrentPitcherGUID(self):
         return self.__pitchers[-1][1]

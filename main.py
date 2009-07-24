@@ -95,15 +95,15 @@ while 1:
 
 playerGameStates = tgs1.getPlayerGameStates()
 updatePlayerStatsEvents = []
-for (playerGUID, playerGameState) in playerGameStates.items():
+for (playerGUID, playerGameStats) in playerGameStates.iteritems():
     handle = gsPlayerDB.getObjectHandle(playerGUID)
-    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameState)
+    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameStats)
 
 playerGameStates = tgs2.getPlayerGameStates()
 updatePlayerStatsEvents = []
-for (playerGUID, playerGameState) in playerGameStates.items():
+for (playerGUID, playerGameStats) in playerGameStates.iteritems():
     handle = gsPlayerDB.getObjectHandle(playerGUID)
-    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameState)
+    updaterPlaterStatsEvents = handle.updatePlayerStats(playerGameStats)
 
 #call this after the sim to get relevent events like who won
 gameEvents = gameState.getGameEvents()

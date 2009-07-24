@@ -359,10 +359,10 @@ class GameState:
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
         #DEBUG
-        #print atBatEventObj#.__pitcherStats
+        print atBatEventObj#.__pitcherStats
         #print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
         
-        #print self
+        print self
         
         return
 
