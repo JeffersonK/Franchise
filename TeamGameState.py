@@ -71,7 +71,9 @@ class TeamGameState:
             print "!!!!!!!!!!!! shit is whack !!!!!!!!!!!!!!!"
             return -1
         
+        #print "playerGUID:%d isBatter:%s" % (playerGUID, isBatter)
         playerObj = self.__playerStates[playerGUID]
+
         playerObj.updatePlayerGameState(atBatEvent, isBatter)
         return 0
 

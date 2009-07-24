@@ -139,7 +139,9 @@ class PitcherStats:
 
         self.__totStrikesThrown += other.__totStrikesThrown
         self.__totBallsThrown += other.__totBallsThrown
+        
         self.__totHitsAllowed += other.__totHitsAllowed
+        
         self.__totBattersHBP += other.__totBattersHBP
         self.__totHRsAllowed += other.__totHRsAllowed
         self.__totGrandSlamsAllowed += other.__totGrandSlamsAllowed
@@ -316,26 +318,33 @@ class PitcherStats:
     #pitchSpeed: velocity
     def addPitchThrown(self, pitchType, pitchZone, pitchSpeed, pitchCall, playObj=None):
         if playObj != None:
+            #Tally Play Stats
             self.__batterResults += [str(playObj)]
-            if playObj.isSingle():
-                self.__tot1BsAllowed += 1
-            elif playObj.isDouble():
-                self.__tot2BsAllowed += 1
-            elif playObj.isTriple():
-                self.__tot3BsAllowed += 1
-            elif playObj.isHomeRun():
-                self.__totHRsAllowed += 1
-            elif playObj.isOut():
-                self.__totOutsThrown += 1
-            elif playObj.isDoublePlay():
-                self.__totDPsThrown += 1
-            elif playObj.isTriplePlay():
-                self.__totTPsThrown += 1
             
-                
+            if playObj.isSingle():#Single
+                self.__totHitsAllowed += 1
+                self.__tot1BsAllowed += 1
+            elif playObj.isDouble():#Double
+                self.__totHitsAllowed += 1
+                self.__tot2BsAllowed += 1
+            elif playObj.isTriple():#Triple
+                self.__totHitsAllowed += 1
+                self.__tot3BsAllowed += 1
+            elif playObj.isHomeRun():#Homer
+                self.__totHitsAllowed += 1
+                self.__totHRsAllowed += 1
+                self.__longestHRAllowed = playObj.getHitDistance()
+            elif playObj.isOut():#Out
+                self.__totOutsThrown += 1
+            elif playObj.isDoublePlay():#double play
+                self.__totDPsThrown += 1
+            elif playObj.isTriplePlay():#triple play
+                self.__totTPsThrown += 1
+                            
             #always check to see if a play generated earned runs
             self.__totEarnedRuns += playObj.runsScoredOnPlay()
 
+        #Tally Pitch Stats
         self.__totPitchesThrown += 1
 
         if pitchType == gsCURVEBALL:
@@ -358,7 +367,7 @@ class PitcherStats:
         if self.__fastestPitchThrown < pitchSpeed:
             self.__fastestPitchThrown = pitchSpeed
         
-        if pitchCall == None and playObj != None:
+        if pitchCall == None:# and playObj != None:
             None
         elif pitchCall == gsPITCHCALL_STRIKE:
             self.__totStrikesThrown += 1

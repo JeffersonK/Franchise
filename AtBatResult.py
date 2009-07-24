@@ -38,7 +38,7 @@ class Play:
         self.__ballCount = ballCount
 
         #Calculated After Object Creation
-        self.__where = None#(where the ball was hit to)
+        self.__where = (-99,-99)#None#(where the ball was hit to)
         self.__fieldersInPlay = None #(i.e. - 6-4-3)
         self.__runnersScored = None #(i.e. guid list)
 
@@ -72,10 +72,21 @@ class Play:
     def setResult(self, resultString):
         self.__playResultEncoding = resultString
 
+    def setHitEndLocation(self, theta, r):
+        self.__where = (theta, r)
+
+    def setFieldersInPlay(self, posStr):
+        self.__fieldersInPlay = posStr
+
     #TODO: Need 'set' funcs for each piece of data in the Play Encoding
+    def getHitDistance(self):
+        return self.__where[1] #(theta, r)
+
+    def isFoul(self):
+        return self.__playResultEncoding.startswith(gsPITCHCALL_FOUL)
 
     def runsScoredOnPlay(self):
-        return 0 #TODO: implement
+        return 0#self.__runsScoredOnPlay #TODO: implement
 
     def isSingle(self):
         return self.__playResultEncoding.startswith(gsATBATRESULT_SINGLE)
@@ -96,7 +107,15 @@ class Play:
             return True
         elif self.__playResultEncoding.startswith(gsATBATRESULT_SACOUT):
             return True
+        elif self.__playResultEncoding.startswith(gsATBATRESULT_STRIKEOUT):
+            return True
 
+        return False
+
+    def isStrikeOut(self):
+        if self.__playResultEncoding.startswith(gsATBATRESULT_STRIKEOUT):
+            return True
+        
         return False
 
     def isDoublePlay(self):
@@ -188,19 +207,30 @@ class AtBatResult:
         #    gsSwings = eval(swings)
 
     def __del__(self):
-        self.__pitcherAbil = None
+        #TODO: make sure we aren't causing memory leak
+        
+        #don't delete these next TWO  objects because 
+        #they are references from the player object
+        self.__pitcherAbil = None 
         self.__batterAbil = None
+
         self.__fieldState = None
-        #del(self.__pitcherStats)
+
+        del(self.__pitcherStats)
         self.__pitcherStats = None
-        #del(self.__batterStats)
+        del(self.__batterStats)
         self.__batterStats = None
 
     def __str__(self):
         s = "AtBatEvent Object(%d):" % id(self)
         s += self.__getstate__()
         return s
-        
+    
+    def getPitcherStats(self):
+        return self.__pitcherStats
+
+    def getBatterStats(self):
+        return self.__batterStats
 
     def __getstate__(self):
         s = "{'pitcherGUID':%d," +\
@@ -332,14 +362,13 @@ class AtBatResult:
         if r <= (pr * 1000):
             #fuckin' contact!
             self.__contactMade = True
-            #self._generateAtBatResult()
             playObj = Play(self.__batterGUID, self.__pitcherGUID,
                            pitchType, pitchZone, 0, 
                            self.__pitcherStats.getBalls(), 
                            self.__pitcherStats.getStrikes())
             self.simBallInPlay(playObj)
 
-            if self.__resultCode.startswith(gsPITCHCALL_FOUL):
+            if playObj.isFoul():#.startswith(gsPITCHCALL_FOUL):
                 self.__contactMade = False
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_FOUL)
                 self.__resultCode = gsNULL_ATBATRESULT_CODE
@@ -348,7 +377,8 @@ class AtBatResult:
                 playObj = None
  
             else:
-                
+                playObj.createPlayEncoding()
+                self.__resultCode = str(playObj)
                 self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, None, playObj)                
                 return gsPITCHCALL_CONTACT
 
@@ -404,10 +434,15 @@ class AtBatResult:
         
         bbcr = BatBallContactResult()
         fieldState = DefensiveFieldState()#self.__bases, self.__outs)#FieldGeometry, None)
-        result = fieldState.simFieldBallContact(bbcr)
+        (result, fielder, r) = fieldState.simFieldBallContact(bbcr)
         #print bbcr.getHitParams()
+        print "%s %s %d" % (result, fielder, r)
+        playObj.setFieldersInPlay(fielder)
+        playObj.setHitEndLocation(0, r)
         playObj.setResult(result)
-        self.__resultCode = result
+
+        #playObj.createPlayEncoding()
+        #self.__resultCode = playObj.#result
         
     OLD = """def _simAtBat(self):
         #TODO: handle fouls and HBP

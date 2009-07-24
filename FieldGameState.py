@@ -75,7 +75,7 @@ class DefensiveFieldState:
         #if radius < gsINFIELDMAXRADIUS:
         #    return 'INF'
         #if radius < gs
-        return "%s" % radius
+        return radius#"%s" % radius
 
     def getOutfieldLoc(self, theta):
         if theta < 33:
@@ -89,55 +89,55 @@ class DefensiveFieldState:
         (theta, phi, radius) = batBallContactResult.getHitParams()
 
         if theta < gsTHETA_LEFTFIELD_FOULPOLE or theta > gsTHETA_RIGHTFIELD_FOULPOLE:
-            return 'FOUL'
+            return ('FOUL', None, radius)
 
         if phi:
             #its in the air
             if radius < gsMAXINFIELDRADIUS:
-                return 'AO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
-            
+                #return 'AO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                return ('AO', self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
             if radius < gsOUTFIELDSHALLOW:
-                return '1B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '1B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('1B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if radius < gsOUTFIELDERMAXRADIUS:
-                return 'AO(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return 'AO(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('AO', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if radius < gsOUTFIELDDOUBLE:
-                return '2B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '2B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('2B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             #if radius < gsOUTFIELDTRIPLE:
             #    return '3B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
 
             else:
-                return 'HR(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-        
+                #return 'HR(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('HR', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
         else:
             #its a ground ball
             if theta < min(gsTHETA_THIRDBASERANGE):#up the 3rd base line
-                return '3B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '3B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('3B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if theta in gsTHETA_THIRDBASERANGE:
-                return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
-
+                #return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                return ('GO', self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
             if theta < min(gsTHETA_SSRANGE):
-                return 'S(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '1B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('1B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if theta in gsTHETA_SSRANGE:
-                return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
-
+                #return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                return ('GO', self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
             if theta < min(gsTHETA_SECONDBASERANGE):
-                return 'S(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '1B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('1B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if theta in gsTHETA_SECONDBASERANGE:
-                return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
-
+                #return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                return ('GO', self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
             if theta < min(gsTHETA_FIRSTBASERANGE):
-                return 'S(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '1B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('1B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
             if theta in gsTHETA_FIRSTBASERANGE:
-                return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
-
+                #return 'GO(%s,%s)' % (self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                return ('GO', self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
             if theta <= gsTHETA_RIGHTFIELD_FOULPOLE:
-                return '3B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
-
+                #return '3B(%s,%s)' % (self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
+                return ('3B', self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
         return "unmatched case in simFieldBallContact"

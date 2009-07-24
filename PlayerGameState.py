@@ -9,10 +9,9 @@ class PlayerGameState:
         self.__position = position
         self.__playerGameStats = None
         if position == gsPOSITION_POSSTR[gsPITCHER_POSCODE]:
-            self.__playerGameStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
+            self.__playerGameStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS)            
         else:
-            self.__playerGameStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS)
-        
+            self.__playerGameStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
         #hitting 
         self.__atBatResults = [] #(pitcher playerGUID, AtBatResultStr)
         self.__atBatCount = 0
@@ -119,6 +118,9 @@ class PlayerGameState:
     def updatePlayerGameState(self, atBatEvent, isBatter):
         
         if isBatter:
+            self.__playerGameStats += atBatEvent.getBatterStats()
+
+            #OLD
             self.__atBatResults += [(atBatEvent.getPitcherGUID(), atBatEvent.getResultCode())]
             
             if atBatEvent.countsAsAtBat():
@@ -155,6 +157,11 @@ class PlayerGameState:
             
 
         else:
+
+            self.__playerGameStats += atBatEvent.getPitcherStats()
+            print self.__playerGameStats
+
+            #OLD
             self.__battersFaced += [(atBatEvent.getBatterGUID(), atBatEvent.getResultCode())]
 
             (pitchesThrown, strikesThrown, ballsThrown) = atBatEvent.getPitchCounts()

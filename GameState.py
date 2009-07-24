@@ -345,17 +345,21 @@ class GameState:
         #need to do for AO and SO because handleRunnerAdvanced is not called
         self.__bases[0] = self.gsBASEEMPTY
         
+        #print "Updating Offensive Team State"
+        #print atBatEventObj
+        
         #here is where you update playerGameState Stats
         teamObj.updateTeamGameState(atBatEventObj, True)
         
         defTeamObj = self._getDefenseTeamObject()
 
+        #print "Updating Defensive Team State"
         defTeamObj.updateTeamGameState(atBatEventObj, False)
         
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
         #DEBUG
-        print atBatEventObj#.__pitcherStats
+        #print atBatEventObj#.__pitcherStats
         #print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
         print self
         
