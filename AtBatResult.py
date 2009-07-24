@@ -436,7 +436,7 @@ class AtBatResult:
         fieldState = DefensiveFieldState()#self.__bases, self.__outs)#FieldGeometry, None)
         (result, fielder, r) = fieldState.simFieldBallContact(bbcr)
         #print bbcr.getHitParams()
-        print "%s %s %d" % (result, fielder, r)
+        #print "%s %s %d" % (result, fielder, r)
         playObj.setFieldersInPlay(fielder)
         playObj.setHitEndLocation(0, r)
         playObj.setResult(result)

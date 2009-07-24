@@ -159,7 +159,7 @@ class PlayerGameState:
         else:
 
             self.__playerGameStats += atBatEvent.getPitcherStats()
-            print self.__playerGameStats
+            #print self.__playerGameStats
 
             #OLD
             self.__battersFaced += [(atBatEvent.getBatterGUID(), atBatEvent.getResultCode())]

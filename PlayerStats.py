@@ -227,8 +227,9 @@ class PitcherStats:
             setattr(self, "__"+key, defaultVal)
 
     def __setstate__(self, dictStr):
-        d = eval(dictStr)
-        
+        #print dictStr
+        #d = eval(dictStr)
+        d = dictStr
         self.safe_setstatevar('statType', d, gsSTATTYPE_PITCHER_STATS)
         #self.__statType = d['statType']
         self.__batterResults = d['batterResults']
@@ -531,8 +532,10 @@ class BatterStats:
             
 
     def __setstate__(self, dictStr):
-        d = eval(dictStr)
-        
+        #print type(dictStr)
+        #print dictStr
+        #d = eval(dictStr)
+        d = dictStr
         #self.__statType = d['statType']
         self.safe_setstatevar('statType', d, gsSTATTYPE_BATTER_STATS)
         self.__atBatResults = d['atBatResults']

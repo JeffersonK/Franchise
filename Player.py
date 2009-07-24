@@ -74,7 +74,7 @@ class Player:
             "'wins':%d,'losses':%d,'starts':%d," +\
             "'totAtBats':%d,'totHits':%d,'tot1Bs':%d,'tot2Bs':%d," + \
             "'tot3Bs':%d,'totHR':%d,'totWalks':%d,'grandSlams':%d,'cyclesHit':%d,'games':%d," +\
-            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,'playerAbilities':%s,'batterStats':\"%s\",'pitcherStats':\"%s\"}"
+            "'totRBIs':%d,'totRuns':%d,'timesKd':%d,'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
         return fmt % (self.__playerGUID, self.__firstName, self.__lastName, 
                       self.__experiencePoints,self.__level,

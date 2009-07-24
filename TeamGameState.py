@@ -78,8 +78,8 @@ class TeamGameState:
         return 0
 
     #FOR DEBUGGING
-    def printPlayerGameState(self, playerGUID):
-        print self.__playerStates[playerGUID]
+    #def printPlayerGameState(self, playerGUID):
+    #    print self.__playerStates[playerGUID]
 
     def getCurrentPitcherGUID(self):
         return self.__pitchers[-1][1]

@@ -102,7 +102,7 @@ class GameState:
 
         #DEBUG
         #print self
-        print "--- CHANGE SIDES --- (homeTeamUp:%s)" % self.__homeTeamUp
+        #print "--- CHANGE SIDES --- (homeTeamUp:%s)" % self.__homeTeamUp
 
         #DEBUG
         if not self._isEndTeamAtBat():
@@ -361,7 +361,8 @@ class GameState:
         #DEBUG
         #print atBatEventObj#.__pitcherStats
         #print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
-        print self
+        
+        #print self
         
         return
 
