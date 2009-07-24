@@ -50,7 +50,15 @@ class Franchise:
             if self.__players == None:
                 return -1
             elif len(self.__players) >= Globals.gsBATTING_LINEUP_LENGTH:
-                self.__lineup = self.__players.keys()[0:Globals.gsBATTING_LINEUP_LENGTH]
+                #self.__lineup = self.__players
+                count = 0
+                #print self.__players
+                for (guid, pos) in self.__players.iteritems():
+                    if pos != Globals.gsPOSITION_POSSTR[Globals.gsPITCHER_POSCODE]:
+                        self.__lineup += [(guid, pos)]
+                        count += 1
+                    if count == Globals.gsBATTING_LINEUP_LENGTH:
+                        break
                 return 0
             else:
                 print "Lineup has less than %d players" % Globals.gsBATTING_LINEUP_LENGTH
@@ -68,7 +76,8 @@ class Franchise:
         return 
 
     def getLineup(self):
-        return self.__lineup
+        #return a copy
+        return self.__lineup[:]
 
     def setRotation(self, playerGUIDList=None):
         if playerGUIDList == None:

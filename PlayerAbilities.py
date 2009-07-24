@@ -1,3 +1,5 @@
+from Globals import *
+
 #Chi => Zone
 #mu => pitch
 
@@ -45,22 +47,31 @@ batterZoneMastery = [Chi2b0, Chi2b0, Chi2b0,
                      Chi2b0, Chi2b0, Chi2b0,
                      Chi2b0, Chi2b0, Chi2b0]
 
-batterPitchMastery = {'curveball':gsMuBatterMin, 
-                       'fastball':gsMuBatterMin,
-                       'slider':gsMuBatterMin,
-                       'changeup':gsMuBatterMin,
-                       'knuckleball':gsMuBatterMin}
 
 pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
                       Chi2p0, Chi2p0, Chi2p0,
                       Chi2p0, Chi2p0, Chi2p0]
 
 
-pitcherPitchMastery = {'curveball':gsMuPitcherMin, 
-                       'fastball':gsMuPitcherMin,
-                       'slider':gsMuPitcherMin,
-                       'changeup':gsMuPitcherMin,
-                       'knuckleball':gsMuPitcherMin}
+
+batterPitchMastery = {}
+pitcherPitchMastery = {}
+for pitchType in gsPITCHTYPES:
+    batterPitchMastery[pitchType] = gsMuBatterMin
+    pitcherPitchMastery[pitchType] = gsMuPitcherMin
+
+#{'curveball':gsMuBatterMin, 
+#                      'fastball':gsMuBatterMin,
+#                       'slider':gsMuBatterMin,
+#                       'changeup':gsMuBatterMin,
+#                       'knuckleball':gsMuBatterMin}
+
+#pitcherPitchMastery = {'curveball':gsMuPitcherMin, 
+#                       'fastball':gsMuPitcherMin,
+#                       'slider':gsMuPitcherMin,
+#                      'changeup':gsMuPitcherMin,
+#                       'knuckleball':gsMuPitcherMin}
+
 
 
 

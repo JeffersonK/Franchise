@@ -26,6 +26,13 @@ class DefensiveFieldState:
 
         self.__bases = baseState
         self.__outs = outCount
+        #self.__batBallContactResult = None
+        #self.__batterAtBatScoring = None
+        #self.__fieldGeometry = None
+        #self.__fielderAbilities = None
+        #self.__runnerAbilities = None
+        #self.__fieldState = None
+        
 
 
     def getInfieldLoc(self, theta, radius):

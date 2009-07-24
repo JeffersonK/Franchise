@@ -1,5 +1,26 @@
 import cPickle
+from Globals import *
 
+gsSTATTYPE_PITCHER_STATS = 'PITS'
+gsSTATTYPE_BATTER_STATS = 'BATS'
+gsSTATSUBTYPE_ENDGAMESTATS = 'GAME'
+gsSTATSUBTYPE_SINGLEPLAYSTATS = 'PLAY'
+
+#statSubType is used by the += operator to know which values should be added from the 'other' object
+#in InGameStats are one kind because we will accumlate per batter during a game, the other kind will accumulate
+#at the end of the game and be added to the persistant player stats
+#GAMESTAT is the stat we total at the end of the game
+#SINGLESTAT is the stat we total during the game
+
+
+###############################
+#
+#
+#
+#
+#
+#
+###############################
 
 #class PerZoneStat:
 #    def __init__(self, initValue=0):
@@ -7,13 +28,24 @@ import cPickle
 #        for i in gsNUMBERZONES:
 #            self.__statZones += [(initValue,initValue)
 
-    
+
+
+###############################
+#
+#
+#
+#
+#
+#
+###############################
 class PitcherStats:
-    def __init__(self, initValue=0):#should optionally take an atBatResult parse it and set values
+    def __init__(self, statSubType, initValue=0):#should optionally take an atBatResult parse it and set values
+        self.__statType = gsSTATTYPE_PITCHER_STATS
+        self.__statSubType = statSubType #this doesn't persist
         self.__batterResults = []#list of lists where inner list is a game
-        self.__starts = initValue
-        self.__wins = initValue
-        self.__currentWinStreak = initValue
+        self.__starts = initValue #set once per game
+        self.__wins = initValue #set once per game
+        self.__currentWinStreak = initValue 
         self.__longestWinStreak = initValue
         self.__losses = initValue
         self.__currentLosingStreak = initValue
@@ -30,6 +62,18 @@ class PitcherStats:
         self.__totTPsThrown = initValue
         self.__totEarnedRuns = initValue
         self.__totPitchesThrown = initValue
+
+        self.__fastestPitchThrown = initValue
+        self.__totFastballsThrown = initValue
+        self.__totCurveballsThrown = initValue
+        self.__totSlidersThrown = initValue
+        self.__totKnuckleballsThrown = initValue
+        self.__totChangeupsThrown = initValue
+        self.__totSinkersThrown = initValue
+        self.__totForkballsThrown = initValue
+        self.__totSpitballsThrown = initValue        
+
+
         self.__totStrikesThrown = initValue
         self.__totBallsThrown = initValue
         self.__totHitsAllowed = initValue
@@ -43,29 +87,34 @@ class PitcherStats:
         return
         
     def __iadd__(self, other):
-        self.__batterResults += other.__batterResults
-        self.__starts += other.__starts
-        
-        if other.__wins > 0:
-            self.__wins += other.__wins
-            self.__currentWinStreak += other.__currentWinStreak
-            if self.__currentWinStreak > self.__longestWinStreak:
-                self.__longestWinStreak = self.__currentWinStreak
-                
-            self.__currentLosingStreak = 0
-        
-        if other.__losses > 0:
-            self.__losses += other.__losses
-            self.__currentLosingStreak += other.__currentLosingStreak
-            if self.__currentLosingStreak > self.__longestLosingStreak:
-                self.__longestLosingStreak = self.__currentLosingStreak
-            
-            self.__currentWinStreak = 0
+        if self.statType() != other.statType():
+            print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
 
-        self.__saves += other.__saves
-        self.__shutouts += other.__shutouts
-        self.__noHitters += other.__noHitters
-        self.__perfectGames += other.__perfectGames
+        self.__batterResults += other.__batterResults
+
+        if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
+            self.__saves += other.__saves
+            self.__shutouts += other.__shutouts
+            self.__noHitters += other.__noHitters
+            self.__perfectGames += other.__perfectGames
+            self.__starts += other.__starts
+
+            if other.__wins > 0:
+                self.__wins += other.__wins
+                self.__currentWinStreak += other.__currentWinStreak
+                if self.__currentWinStreak > self.__longestWinStreak:
+                    self.__longestWinStreak = self.__currentWinStreak
+                    
+                self.__currentLosingStreak = 0
+        
+            if other.__losses > 0:
+                self.__losses += other.__losses
+                self.__currentLosingStreak += other.__currentLosingStreak
+                if self.__currentLosingStreak > self.__longestLosingStreak:
+                    self.__longestLosingStreak = self.__currentLosingStreak
+            
+                self.__currentWinStreak = 0
+
         self.__totBattersFaced += other.__totBattersFaced
         self.__totKs += other.__totKs
         self.__totWalksThrown += other.__totWalksThrown
@@ -74,20 +123,38 @@ class PitcherStats:
         self.__totTPsThrown += other.__totTPsThrown
         self.__totEarnedRuns += other.__totEarnedRuns
         self.__totPitchesThrown += other.__totPitchesThrown
+
+        if other.__fastestPitchThrown > self.__fastestPitchThrown:
+            self.__fastestPitchThrown = other.__fastestPitchThrown
+
+        self.__totFastballsThrown += other.__totFastballsThrown
+        self.__totCurveballsThrown += other.__totCurveballsThrown
+        self.__totSlidersThrown += other.__totSlidersThrown
+        self.__totKnuckleballsThrown +=  other.__totKnuckleballsThrown
+        self.__totChangeupsThrown += other.__totChangeupsThrown
+        self.__totSinkersThrown += other.__totSinkersThrown
+        self.__totForkballsThrown +=  other.__totForkballsThrown
+        self.__totSpitballsThrown += other.__totSpitballsThrown
+
+
         self.__totStrikesThrown += other.__totStrikesThrown
         self.__totBallsThrown += other.__totBallsThrown
         self.__totHitsAllowed += other.__totHitsAllowed
         self.__totBattersHBP += other.__totBattersHBP
         self.__totHRsAllowed += other.__totHRsAllowed
         self.__totGrandSlamsAllowed += other.__totGrandSlamsAllowed
-        self.__longestHRAllowed += other.__longestHRAllowed
+        
+        if other.__longestHRAllowed > self.__longestHRAllowed:
+            self.__longestHRAllowed = other.__longestHRAllowed
+        
         self.__tot1BsAllowed += other.__tot1BsAllowed
         self.__tot2BsAllowed += other.__tot2BsAllowed
         self.__tot3BsAllowed += other.__tot3BsAllowed
         return self
 
     def __getstate__(self):
-        dictStr = "{'batterResults':%s," + \
+        dictStr = "{'statType':'%s'," +\
+            "'batterResults':%s," + \
             "'starts':%d," + \
             "'wins':%d," + \
             "'currentWinStreak':%d," +\
@@ -107,6 +174,15 @@ class PitcherStats:
             "'totTPsThrown':%d," + \
             "'totEarnedRuns':%d," + \
             "'totPitchesThrown':%d," + \
+            "'fastestPitchThrown':%d," +\
+            "'totFastballsThrown':%d," +\
+            "'totCurveballsThrown':%d," +\
+            "'totSlidersThrown':%d," +\
+            "'totChangeupsThrown':%d," +\
+            "'totKnuckleballsThrown':%d," +\
+            "'totSinkersThrown':%d," +\
+            "'totForkballsThrown':%d," +\
+            "'totSpitballsThrown':%d," +\
             "'totStrikesThrown':%d," + \
             "'totBallsThrown':%d," + \
             "'totHitsAllowed':%d," + \
@@ -119,7 +195,8 @@ class PitcherStats:
             "'tot3BsAllowed':%d}"
             
         
-        return dictStr % (self.__batterResults, self.__starts, self.__wins,
+        return dictStr % (self.__statType,
+                          self.__batterResults, self.__starts, self.__wins,
                           self.__currentWinStreak, self.__longestWinStreak, 
                           self.__losses, self.__currentLosingStreak, 
                           self.__longestLosingStreak, self.__saves, 
@@ -127,6 +204,11 @@ class PitcherStats:
                           self.__totBattersFaced, self.__totKs, self.__totWalksThrown, 
                           self.__totOutsThrown, self.__totDPsThrown, self.__totTPsThrown, 
                           self.__totEarnedRuns, self.__totPitchesThrown, 
+                          self.__fastestPitchThrown, self.__totFastballsThrown,
+                          self.__totCurveballsThrown, self.__totSlidersThrown,
+                          self.__totChangeupsThrown, self.__totKnuckleballsThrown,
+                          self.__totSinkersThrown,
+                          self.__totForkballsThrown, self.__totSpitballsThrown,
                           self.__totStrikesThrown, self.__totBallsThrown, 
                           self.__totHitsAllowed, self.__totBattersHBP, 
                           self.__totHRsAllowed, self.__totGrandSlamsAllowed, 
@@ -134,8 +216,19 @@ class PitcherStats:
                           self.__tot2BsAllowed, self.__tot3BsAllowed)
 
 
+    def safe_setstatevar(self, key, dict, defaultVal):
+        val = None
+        try:
+            val = dict[key]
+            setattr(self, "__"+key, val)
+        except KeyError:
+            setattr(self, "__"+key, defaultVal)
+
     def __setstate__(self, dictStr):
         d = eval(dictStr)
+        
+        self.safe_setstatevar('statType', d, gsSTATTYPE_PITCHER_STATS)
+        #self.__statType = d['statType']
         self.__batterResults = d['batterResults']
         self.__starts = d['starts']
         self.__wins = d['wins']
@@ -156,6 +249,18 @@ class PitcherStats:
         self.__totTPsThrown = d['totTPsThrown']
         self.__totEarnedRuns = d['totEarnedRuns']
         self.__totPitchesThrown = d['totPitchesThrown']
+
+        self.__fastestPitchThrown = d['fastestPitchThrown']
+        self.__totFastballsThrown = d['totFastballsThrown']
+        self.__totCurveballsThrown = d['totCurveballsThrown']
+        self.__totKnuckleballsThrown = d['totKnuckleballsThrown']
+        self.__totSlidersThrown = d['totSlidersThrown']
+        self.__totChangeupsThrown = d['totChangeupsThrown']
+        self.__totSinkersThrown = d['totSinkersThrown']
+        self.__totForkballsThrown = d['totSinkersThrown']
+        self.__totSpitballsThrown = d['totSpitballsThrown']
+
+
         self.__totStrikesThrown = d['totStrikesThrown']
         self.__totBallsThrown = d['totBallsThrown']
         self.__totHitsAllowed = d['totHitsAllowed']
@@ -172,13 +277,131 @@ class PitcherStats:
     def __str__(self):
         return self.__getstate__()
 
+    def statType(self):
+        return self.__statType
+
+    #can't call this on stat objects read from disk because it doesn't persist
+    def statSubType(self):
+        return self.__statSubType
+
+    def addBatterFaced(self):
+        self.__totBattersFaced += 1
+
+    #def addK(self):
+    #    self.__totKs += 1
+        
+    #def addWalk(self):
+    #    self.__totWalksThrown += 1
+
+    #def addOuts(self, n=1):
+    #    self.__totOutsThrown += n
+
+    #def addDoublePlay(self):
+    #    self.__totDPsThrown += 1
+
+    #def addTriplePlay(self):
+    #    self.__totTPsThrown += 1
+
+    def addEarnedRuns(self, n=1):
+        self.__totEarnedRuns += n
+
+    def getStrikes(self):
+        return self.__totStrikesThrown
+
+    def getBalls(self):
+        return self.__totBallsThrown
+
+    #pitchType: fastball, curveball, etc...
+    #pitchCall: ball/strike/contact
+    #pitchSpeed: velocity
+    def addPitchThrown(self, pitchType, pitchZone, pitchSpeed, pitchCall, playObj=None):
+        if playObj != None:
+            self.__batterResults += [str(playObj)]
+            if playObj.isSingle():
+                self.__tot1BsAllowed += 1
+            elif playObj.isDouble():
+                self.__tot2BsAllowed += 1
+            elif playObj.isTriple():
+                self.__tot3BsAllowed += 1
+            elif playObj.isHomeRun():
+                self.__totHRsAllowed += 1
+            elif playObj.isOut():
+                self.__totOutsThrown += 1
+            elif playObj.isDoublePlay():
+                self.__totDPsThrown += 1
+            elif playObj.isTriplePlay():
+                self.__totTPsThrown += 1
+            
+                
+            #always check to see if a play generated earned runs
+            self.__totEarnedRuns += playObj.runsScoredOnPlay()
+
+        self.__totPitchesThrown += 1
+
+        if pitchType == gsCURVEBALL:
+            self.__totCurveballsThrown += 1
+        elif pitchType == gsFASTBALL:
+            self.__totFastballsThrown += 1
+        elif pitchType == gsSLIDER:
+            self.__totSlidersThrown += 1
+        elif pitchType == gsCHANGEUP:
+            self.__totChangeupsThrown += 1
+        elif pitchType == gsKNUCKLEBALL:
+            self.__totKnuckleballsThrown += 1
+        elif pitchType == gsSINKER:
+            self.__totSinkersThrown += 1
+        elif pitchType == gsSPITBALL:
+            self.__totSpitballsThrown += 1
+        elif pitchType == gsFORKBALL:
+            self.__totForkballsThrown += 1
+    
+        if self.__fastestPitchThrown < pitchSpeed:
+            self.__fastestPitchThrown = pitchSpeed
+        
+        if pitchCall == None and playObj != None:
+            None
+        elif pitchCall == gsPITCHCALL_STRIKE:
+            self.__totStrikesThrown += 1
+        elif pitchCall == gsPITCHCALL_BALL:
+            self.__totBallsThrown += 1
+        elif pitchCall == gsPITCHCALL_FOUL:
+            if self.__totStrikesThrown < gsMAXSTRIKECOUNT-1:
+                self.__totStrikesThrown += 1
+        elif pitchCall == gsPITCHCALL_STRIKEOUT:
+            self.__totStrikesThrown += 1
+            self.__totKs += 1
+        elif pitchCall == gsPITCHCALL_WALK:
+            self.__totBallsThrown += 1
+            self.__totWalksThrown += 1
+        else: #we missed a case
+            print "DEBUG: MISSED CASE in addPitchThrown(%s, %d, %d, %s, %s)" % (pitchType, 
+                                                                                pitchZone, 
+                                                                                pitchSpeed, 
+                                                                                str(pitchCall),#last 2 args could be None 
+                                                                                str(pitchResult))
+
+            
+        #TODO: track the zone the pitch was thrown to
+        
+###############################
+#
+#
+#
+#
+#
+#
+###############################
 class BatterStats:
 
-    def __init__(self, initValue=0):#should optionally take an atBatResult parse it and set values
+    def __init__(self, statSubType, initValue=0):#should optionally take an atBatResult parse it and set values
+        self.__statType = gsSTATTYPE_BATTER_STATS
+        self.__statSubType = statSubType
+
         self.__atBatResults = []
+        self.__gamesPlayed = initValue
         self.__totAtBats = initValue
 
-        self.__totHits = initValue
+        self.__totHits = initValue #perZone
         self.__currentHitStreak = initValue
         self.__totCycles = initValue
 
@@ -204,18 +427,31 @@ class BatterStats:
         self.__totHitsWithRunnersInScoringPos = initValue
         self.__totRBIsWithRunnersInScoringPos = initValue
         self.__totRunnersLeftInScoringPos = initValue
-
-
         return
 
 
+    def statType(self):
+        return self.__statType
+
+    #can't call this on objects read from disk because it doesn't persist
+    def statSubType(self):
+        return self.__statSubType
+
     def __iadd__(self, other):
+        if self.statType() != other.statType():
+            print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
+
         self.__atBatResults += other.__atBatResults
+        self.__gamesPlayed += other.__gamesPlayed
         self.__totAtBats += other.__totAtBats
         self.__totHits += other.__totHits
-        if self.__totHits > 0:
-            self.__currentHitStreak += 1
-        self.__totCycles += other.__totCycles
+        
+        if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
+            if self.__totHits > 0:
+                self.__currentHitStreak += 1
+            #make sure we checked for cycles first
+            self.__totCycles += other.__totCycles
+        
         self.__totHRs += other.__totHRs
         if other.__longestHR > self.__longestHR:
             self.__longestHR = other.__longestHR
@@ -238,8 +474,10 @@ class BatterStats:
         return self
 
     def __getstate__(self):
-        dictStr = "{'atBatResults':%s," + \
+        dictStr = "{'statType':'%s'," +\
+            "'atBatResults':%s," + \
             "'totAtBats':%d," + \
+            "'gamesPlayed':%d," + \
             "'totHits':%d," + \
             "'currentHitStreak':%d," + \
             "'totCycles':%d," + \
@@ -262,7 +500,8 @@ class BatterStats:
             "'totRBIsWithRunnersInScoringPos':%d," + \
             "'totRunnersLeftInScoringPos':%d}"
 
-        return dictStr % (self.__atBatResults, self.__totAtBats,self.__totHits,
+        return dictStr % (self.__statType, self.__atBatResults, 
+                          self.__gamesPlayed, self.__totAtBats,self.__totHits,
                           self.__currentHitStreak, self.__totCycles, self.__totHRs, 
                           self.__longestHR, self.__totGrandSlams, self.__tot1Bs, 
                           self.__tot2Bs, self.__tot3Bs, self.__totKd, self.__totDBHitInto, 
@@ -273,11 +512,23 @@ class BatterStats:
                           self.__totRBIsWithRunnersInScoringPos, 
                           self.__totRunnersLeftInScoringPos)
 
+    def safe_setstatevar(self, key, dict, defaultVal):
+        val = None
+        try:
+            val = dict[key]
+            setattr(self, "__"+key, val)
+        except KeyError:
+            setattr(self, "__"+key, defaultVal)
+            
+
     def __setstate__(self, dictStr):
         d = eval(dictStr)
+        
+        #self.__statType = d['statType']
+        self.safe_setstatevar('statType', d, gsSTATTYPE_BATTER_STATS)
         self.__atBatResults = d['atBatResults']
         self.__totAtBats = d['totAtBats']
-
+        self.__gamesPlayed = d['gamesPlayed']
         self.__totHits = d['totHits']
         self.__currentHitStreak = d['currentHitStreak']
         self.__totCycles = d['totCycles']
@@ -310,6 +561,9 @@ class BatterStats:
     def __str__(self):
         return self.__getstate__()
 
+    def setGamesPlayed(self, n):
+        self.__gamesPlayed = n
+
 #TODO: Class FielderStats
 
 x = """class PlayerStats:
@@ -334,19 +588,19 @@ x = """class PlayerStats:
 import json
 def main():
 
-    p1 = PitcherStats(2)
+    p1 = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS,2)
     print p1
     print
-    p2 = PitcherStats(1)
+    p2 = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS, 1)
     print p2
     print
     p1 += p2
     print p1
 
     print
-    b1 = BatterStats(2)
+    b1 = BatterStats(gsSTATSUBTYPE_SINGLEPLAYSTATS, 2)
     print b1
-    b2 = BatterStats(1)
+    b2 = BatterStats(gsSTATSUBTYPE_SINGLEPLAYSTATS, 1)
     print b2
     print 
     b1 += b2
@@ -361,14 +615,24 @@ def main():
     eval(b2.__getstate__())
     eval(p1.__getstate__())
 
-    ps = PitcherStats().__setstate__(p1.__getstate__())
+    ps = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS).__setstate__(p1.__getstate__())
     print ps
     #file = open("pitcher.stats", "w+")
     #cPickle.dump(file, "
 
-
-    js = json.dumps(PitcherStats().__getstate__())
+    js = json.dumps(PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS).__getstate__())
     print "JSON: %s\n" % js
+
+
+    p1 = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS)
+    p2 = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS, 1) 
+    p1 += p2
+    print p1
+    
+    b1 = BatterStats(gsSTATSUBTYPE_SINGLEPLAYSTATS)
+    b2 = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS, 1) 
+    b1 += b2
+    print b1
 
 if __name__ == "__main__":
     main()

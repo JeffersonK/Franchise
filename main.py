@@ -13,8 +13,8 @@ import ObjectDB
 #initPlayerDB()
 #initFranchiseDB()
 
-LOAD = 1
-GENERATE = 0
+LOAD = 0
+GENERATE = 1
 
 gsPlayerDB = ObjectDB.ObjectDB("players", "plr")
 gsFranchiseDB = ObjectDB.ObjectDB("franchises", "frn")

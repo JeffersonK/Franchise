@@ -111,8 +111,8 @@ def PrContact(pitcherAbilities, batterAbilities, pitchAttrs):
     
     (pitchType, pitchZone) = pitchAttrs
     
-    print "TODO: check pitchZone is valid"
-    print "TODO: check pitchType is valid"
+    #print "TODO: check pitchZone is valid"
+    #print "TODO: check pitchType is valid"
     
     #print pitcherAbilities
     #print batterAbilities

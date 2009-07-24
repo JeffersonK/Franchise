@@ -36,18 +36,17 @@ class GameState:
         self.__gameEventLog = []
 
     def __str__(self):
-        header    =  "H:%d - A:%d  %s of %d  %d outs\n" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored(), "bottom" if self.__homeTeamUp else "top", self.__inning, self.__outs)
+        header    =  "--- H:%d A:%d in %s of %d %d outs ---\n" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored(), "bottom" if self.__homeTeamUp else "top", self.__inning, self.__outs)
         second =     "              %d    \n" % self.__bases[2]
         thirdfirst = "           %d  %d  %d\n" % (self.__bases[3], self._getPitcherGUID(), self.__bases[1])
         home =       "              %d    \n" % self.__bases[0]
         return header + second + thirdfirst + home
     
+
     def _getNextBatterGUID(self):
-        
-        if self.__homeTeamUp:
-            return self.__HomeTeam.getNextBatterGUID()
-        
-        return self.__AwayTeam.getNextBatterGUID()
+        offenseTeamObj = self._getOffenseTeamObject()
+
+        return offenseTeamObj.getNextBatterGUID()
     
     def _getPlayerAbilities(self, guid):
         
@@ -57,10 +56,8 @@ class GameState:
         return None
 
     def _getPitcherGUID(self):
-        if self.__homeTeamUp:
-            return self.__AwayTeam.getCurrentPitcherGUID()
-
-        return self.__HomeTeam.getCurrentPitcherGUID()
+        defenseTeamObj = self._getDefenseTeamObject()
+        return defenseTeamObj.getCurrentPitcherGUID()
 
     def _appendGameEvents(self, eventList):
         self.__gameEventLog += eventList
@@ -102,6 +99,10 @@ class GameState:
     #should only called if we know its the end of the inning
     #should return whether end of game
     def handleChangeSides(self): #"handleEndInning()
+
+        #DEBUG
+        #print self
+        print "--- CHANGE SIDES --- (homeTeamUp:%s)" % self.__homeTeamUp
 
         #DEBUG
         if not self._isEndTeamAtBat():
@@ -186,7 +187,7 @@ class GameState:
     #should return (bool:is end of inning, bool:is end game) 
     #valid return states:
     #(true, true) 
-   #(true, false)
+    #(true, false)
     #(false, false)
     def _handleOut(self, atBatResultObj):
 
@@ -311,7 +312,10 @@ class GameState:
     def handleStartAtBat(self, atBatEventObj):
         #put batter in 0th place 
         self.__bases[0] = atBatEventObj.getBatterGUID()
-        #print self
+        
+        #print "--START AT BAT--"
+        #print self.__bases
+        
         return
 
     def handleAtBatResult(self, atBatEventObj):
@@ -333,14 +337,14 @@ class GameState:
 
     #update the play log
     def handleEndAtBat(self, atBatEventObj):
-
+        
         teamObj = self._getOffenseTeamObject()
 
         teamObj.advanceBattingLineup()
 
         #need to do for AO and SO because handleRunnerAdvanced is not called
         self.__bases[0] = self.gsBASEEMPTY
-
+        
         #here is where you update playerGameState Stats
         teamObj.updateTeamGameState(atBatEventObj, True)
         
@@ -350,8 +354,10 @@ class GameState:
         
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
-        print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
-
+        #DEBUG
+        print atBatEventObj#.__pitcherStats
+        #print teamObj.printPlayerGameState(atBatEventObj.getBatterGUID())
+        print self
         
         return
 
@@ -378,7 +384,7 @@ class GameState:
         if pitcherAbilities == None:
             print "could't get pitcher abilities"
             return None
-
+                
         atBatEvent = AtBatResult.AtBatResult(self._getNextBatterGUID(),
                                              batterAbilities,
                                              self._getPitcherGUID(),
@@ -386,9 +392,6 @@ class GameState:
                                              self._getStateForNextAtBatEvent())
 
         atBatEvent.simAtBat()          
-        #atBatEvent.generateAtBatResult()
-
-        #print atBatEvent
         return atBatEvent
 
     def initSim(self):

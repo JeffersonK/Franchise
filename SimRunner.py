@@ -38,7 +38,8 @@ class SimRunner:
 
         while i < nsteps:
             events = self.__simObject.stepSim()
-            print self.__simObject
+            #DEBUG
+            #print self.__simObject
             if self.__simObject.isSimDone():
                 events += self.__simObject.finishSim()
                 return events

@@ -1,7 +1,7 @@
 import Globals
 import cPickle
 import PlayerAbilities
-import PlayerStats
+from PlayerStats import *
 
 class Player:
 
@@ -21,8 +21,8 @@ class Player:
         
         self.__playerAbilities = PlayerAbilities.PlayerAbilities()
 
-        self.__pitcherStats = PlayerStats.PitcherStats()
-        self.__batterStats = PlayerStats.BatterStats()
+        self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS)
+        self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
 
         #Player Personality/Character
         self.__firstName = "Moonbeam"
@@ -135,11 +135,10 @@ class Player:
                                                                  abilities['character'])
 
         batterStatsStr = d['batterStats']
-        self.__batterStats = PlayerStats.BatterStats().__setstate__(batterStatsStr)
+        self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS).__setstate__(batterStatsStr)
         
         pitcherStatsStr = d['pitcherStats']
-
-        self.__pitcherStats = PlayerStats.PitcherStats().__setstate__(pitcherStatsStr)
+        self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS).__setstate__(pitcherStatsStr)
 
 
     def __str__(self):
