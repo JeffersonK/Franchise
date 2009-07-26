@@ -54,12 +54,28 @@ class TeamGameState:
     def getRunsScored(self):
         return self.__runs
 
+    #
+    #
+    #should sum up all batter players stats and 
+    #pitcher player stats into 1 stats object
+    #outside this we then bundle it up in a gameResultObject
+    def getTeamGameStatTotals(self):
+        print "TODO: implement getTeamGameStatTotals()"
+        return 
+
     def getPlayerGameStates(self):
         return self.__playerStates
 
     def handleEndOfGame(self):#
         #getEndOfGameAchievements
         return
+
+    def incPlayerRunsScored(self, playerGUID):
+        if playerGUID not in self.__playerStates:
+            print "DEBUG: Inconsistency, no playerGUID:%d in playerStates" % playerGUID
+        plyr = self.__playerStates[playerGUID]
+        plyrGameStats = plyr.getPlayerGameStats()
+        plyrGameStats.incRuns()
 
     def updateTeamGameState(self, atBatEvent, isBatter):
         #will update team stats and find appropriate playerGameState 
@@ -73,7 +89,7 @@ class TeamGameState:
             
         if playerGUID not in self.__playerStates:
             print "!!!!!!!!!!!! shit is whack !!!!!!!!!!!!!!!"
-            return -1
+            return
         
         #print "playerGUID:%d isBatter:%s" % (playerGUID, isBatter)
         playerObj = self.__playerStates[playerGUID]

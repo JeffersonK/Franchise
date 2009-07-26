@@ -99,6 +99,9 @@ class PitcherStats:
             self.__perfectGames += other.__perfectGames
             self.__starts += other.__starts
 
+            if other.__wins and other.__losses:
+                print "DEBUG: Inconsistency Wins and Losses both Non-Zero in stats from game!"
+            
             if other.__wins > 0:
                 self.__wins += other.__wins
                 self.__currentWinStreak += other.__currentWinStreak
@@ -107,7 +110,7 @@ class PitcherStats:
                     
                 self.__currentLosingStreak = 0
         
-            if other.__losses > 0:
+            elif other.__losses > 0:
                 self.__losses += other.__losses
                 self.__currentLosingStreak += other.__currentLosingStreak
                 if self.__currentLosingStreak > self.__longestLosingStreak:
@@ -318,8 +321,8 @@ class PitcherStats:
     def incWins(self):
         self.__wins += 1
 
-    def addEarnedRuns(self, n=1):
-        self.__totEarnedRuns += n
+    #def addEarnedRuns(self, n=1):
+    #    self.__totEarnedRuns += n
 
     def getStrikes(self):
         return self.__totStrikesThrown
@@ -476,13 +479,13 @@ class BatterStats:
         self.__totHits += other.__totHits
         
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
-            if self.__totHits > 0:
+            if other.__totHits > 0:
                 self.__currentHitStreak += 1
 
             if self.__currentHitStreak > self.__longestHitStreak:
                 self.__longestHitStreak = self.__currentHitStreak
 
-            #make sure we checked for cycles first
+            #TODO: make sure we checked for cycles first
             self.__totCycles += other.__totCycles
 
             #to make this a list of lists add [] then each game is a sub list
@@ -614,6 +617,14 @@ class BatterStats:
     def setGamesPlayed(self, n):
         self.__gamesPlayed = n
 
+
+    #
+    #
+    #need this because this is
+    #the only stat we currently track
+    #that can be updated 
+    def incRuns(self):
+        self.__totRuns += 1
     #
     #
     #called in init of AtBatResult()
@@ -651,6 +662,7 @@ class BatterStats:
                 self.__tot3Bs += 1
             elif playObj.isHomeRun():#Homer
                 self.__totHRs += 1
+                self.__totRuns += 1
                 self.__longestHR = playObj.getHitDistance()
             elif playObj.isDoublePlay():#double play
                 self.__totDPHitInto += 1

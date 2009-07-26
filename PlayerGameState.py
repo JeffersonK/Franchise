@@ -12,7 +12,9 @@ class PlayerGameState:
             self.__playerGameStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS)            
         else:
             self.__playerGameStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
-
+            #so that it gets added at the end of the game
+            self.__playerGameStats.setGamesPlayed(1)
+        
         return
 
     def __str__(self):
@@ -29,4 +31,13 @@ class PlayerGameState:
                     self.__position, 
                     str(self.__playerGameStats))
 
+    def getPlayerGameStateStats(self):
+        return self.__playerGameStats
+ 
+    def updatePlayerGameState(self, atBatEvent, isBatter):
+        
+        if isBatter:
+            self.__playerGameStats += atBatEvent.getBatterStats()
+        else:
+            self.__playerGameStats += atBatEvent.getPitcherStats()
 
