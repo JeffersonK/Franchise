@@ -297,8 +297,8 @@ class GameState:
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
         #DEBUG
-        print atBatEventObj
-        #print self
+        #print atBatEventObj
+        print self
         
         return
 
