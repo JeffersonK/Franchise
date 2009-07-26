@@ -59,7 +59,7 @@ class BasesState:
         return self.__bases[n]
 
 
-    def _manOn(self, n):
+    def manOn(self, n):
         if n < 0 or n > 3:
             print "DEBUG: Bad Argument passed to manOn()"
             return None
@@ -92,10 +92,8 @@ class BasesState:
             runnersScored = [basesReversed[0]]
             runnersScored = [runner for runner in runnersScored if runner != gsBASEEMPTY]            
             self.__bases = [gsBASEEMPTY] + self.__bases[0:3]
-
-
             
-        elif ABRCode == gsATBATRESULT_DOUBLE:#atBatResultObj.Double():
+        elif ABRCode == gsATBATRESULT_DOUBLE:
 
             i = 0
             while(i < 4):
@@ -111,7 +109,7 @@ class BasesState:
             self.__bases = [gsBASEEMPTY]*2 + self.__bases[0:2]
 
             
-        elif ABRCode == gsATBATRESULT_TRIPLE:#atBatResultObj.Triple():
+        elif ABRCode == gsATBATRESULT_TRIPLE:
             i = 0
             while(i < 4):
                 if self.__bases[i] != gsBASEEMPTY:
@@ -125,7 +123,7 @@ class BasesState:
             runnersScored = [runner for runner in runnersScored if runner != gsBASEEMPTY]            
             self.__bases = [gsBASEEMPTY]*3 + [self.__bases[0]]
 
-        elif ABRCode == gsATBATRESULT_HOMERUN:#atBatResultObj.HomeRun():
+        elif ABRCode == gsATBATRESULT_HOMERUN:
 
             i = 0
             while(i < 4):
@@ -137,7 +135,7 @@ class BasesState:
             runnersScored = [runner for runner in runnersScored if runner != gsBASEEMPTY]            
             self.__bases = [gsBASEEMPTY]*4
 
-        elif ABRCode == gsATBATRESULT_WALK:#atBatResultObj.Walk() or atBatResultObj.HitByPitch():
+        elif ABRCode == gsATBATRESULT_WALK:
             
             i = 0
             while(i < 4):
@@ -145,38 +143,48 @@ class BasesState:
                     runnersAdvanced += [(self.__bases[i],i,(i+1)%4)]
                 i += 1
                     
-            if not self._manOn(1):
+            if not self.manOn(1):
                 self.__bases[1] = self.__bases[0]
                 self.__bases[0] = gsBASEEMPTY
                 
-            elif self._manOn(1) and not self._manOn(2):
+            elif self.manOn(1) and not self.manOn(2):
                 self.__bases[2] = self.__bases[1]
                 self.__bases[1] = self.__bases[0]
                 self.__bases[0] = gsBASEEMPTY
 
-            elif self._manOn(1) and self._manOn(2) and not self._manOn(3):
+            elif self.manOn(1) and self.manOn(2) and not self.manOn(3):
                 self.__bases[3] = self.__bases[2]
                 self.__bases[2] = self.__bases[1]
                 self.__bases[1] = self.__bases[0]
                 self.__bases[0] = gsBASEEMPTY
 
-            elif self._manOn(1) and self._manOn(2) and self._manOn(3):
+            elif self.manOn(1) and self.manOn(2) and self.manOn(3):
                 runnersScored = [self.__bases[3]]
                 self.__bases = [gsBASEEMPTY] + self.__bases[0:3]
 
             else:
                 print "DEBUG: Hit Default Case in _handleAdvanceAllRunners()\n"
 
-        elif ABRCode == gsATBATRESULT_SACOUT:#atBatResultObj.SacrificeOut():
+        elif ABRCode == gsATBATRESULT_SACOUT:
 
             #TODO: runnersAdvanced
             runnersScored = [basesReversed[0]]
             runnersScored = [runner for runner in runnersScored if runner != gsBASEEMPTY]            
             self.__bases = [gsBASEEMPTY]*2 + self.__bases[1:3]
+
         
-        #atBatResultObj.setRunnersScored(runnersScored)
-        #print "+++++++++++++++ %s +++++++++++++++++" % runnersScored
-        return runnersAdvanced #runnersScored #list of runners scored
+        elif ABRCode == gsATBATRESULT_STRIKEOUT or\
+                ABRCode == gsATBATRESULT_GROUNDOUT or \
+                ABRCode == gsATBATRESULT_AIROUT:
+            
+            #return set of tuples that indicate that the runners did not move
+            i = 1
+            for runner in self.__bases[1:]:
+                if runner != gsBASEEMPTY:
+                    runnersAdvanced += [(runner, i, i)]
+                i += 1
+        
+        return runnersAdvanced #list of runners and how they advanced
 
 #holds position and locations of base runners
 #as well as the abilities of players at those positions
@@ -218,6 +226,16 @@ class DefensiveFieldState:
 
     def playerOn(self, n):
         return self.__basesState.playerOn(n)
+
+    def numRunnersInScoringPos(self):
+        cnt = 0
+        if self.__basesState.manOn(2):
+            cnt += 1
+        
+        if self.__basesState.manOn(3):
+            cnt += 1
+        
+        return cnt
 
     def reset(self):
         self.__basesState.clearBases()

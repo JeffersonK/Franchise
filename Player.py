@@ -111,6 +111,9 @@ class Player:
         updatePlayerStatsEvents = ['+1 EXP']
         return updatePlayerStatsEvents
 
+    def incRunsScored(self):
+        self.__batterStats.incRunsScored()
+
     def getPosition(self):
         return self.__position
 

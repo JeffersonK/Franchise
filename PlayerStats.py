@@ -470,6 +470,9 @@ class BatterStats:
     def statSubType(self):
         return self.__statSubType
 
+    def incRunsScored(self):
+        self.__totRuns += 1
+
     def __iadd__(self, other):
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
@@ -643,10 +646,10 @@ class BatterStats:
                 if playObj.isHit():#if its a hit
                     self.__totHitsWithRunnersInScoringPos += 1
                     self.__totRBIsWithRunnersInScoringPos += playObj.runsScoredOnPlay()
-                elif playObj.isOut() and \
-                        playObj.runsScoredOnPlay() < playObject.runnersInScoringPos():
+                #elif playObj.isOut() and \
+                elif playObj.runsScoredOnPlay() < runnersInScoringPos:
                     self.__totRunnersLeftInScoringPos += \
-                        playObject.runnersInScoringPos() - playObj.runsScoredOnPlay()
+                        runnersInScoringPos - playObj.runsScoredOnPlay()
 
             #inc total hits
             if playObj.isHit():
@@ -672,7 +675,11 @@ class BatterStats:
             self.__totRBIs += playObj.runsScoredOnPlay()
             if playObj.isGrandSlam():
                 self.__totGrandSlams += 1
-
+        
+        elif runnersInScoringPos > 0:
+            #playObj == None
+            self.__totRunnersLeftInScoringPos += runnersInScoringPos
+            self.__totAtBatsWithRunnersInScoringPos += 1
         
         if pitchCall == gsPITCHCALL_WALK:
             self.__totWalks += 1
