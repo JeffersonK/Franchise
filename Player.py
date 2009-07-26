@@ -93,6 +93,10 @@ class Player:
     def getPlayerAbilities(self):
         return self.__playerAbilities
 
+
+    def getBatterStats(self):
+        return self.__batterStats
+
     #
     #
     #

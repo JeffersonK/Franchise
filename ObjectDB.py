@@ -1,6 +1,7 @@
 import Globals
 import cPickle
 import os
+import glob
 
 gsPLAYERDBLOC = "players"
 gsPLAYERFILEEXT = "plr"
@@ -137,6 +138,30 @@ class ObjectDB:
             #insert it into the cache
             self.__dbcache[ObjectGUID] = ObjectObj
             return ObjectObj
+
+    #
+    #
+    #
+    def getAllObjectGUIDs(self, dbLoc, objFileExt):
+        #list all .xxx files in xxx/
+        guidList = []
+        for infile in glob.iglob(os.path.join(dbLoc, "*.%s" % objFileExt)):
+            guidList += [int(infile[len(dbLoc)+1:-(len(objFileExt)+1)])]
+
+        return guidList
+    #
+    #
+    #for Player Objs args are ('players/', 'plr')
+    def iteritems(self, dbLoc, objFileExt):
+        objList = []
+        guidList = self.getAllObjectGUIDs(dbLoc, objFileExt)
+        
+        #open all player file objects and load them into the cache
+        for guid in guidList:
+            obj = self.getObjectHandle(guid)
+            objList += [(guid, obj)]
+
+        return objList
 
     def __str__(self):
         return str(self.__dbcache)

@@ -630,6 +630,29 @@ class BatterStats:
         return self
 
 
+    #
+    #
+    #
+    #Used For Generating League Leaders
+    #
+    def getBattingAvg(self):
+        if self.__totAtBats == 0:
+            return None
+
+        avg = float(self.__totHits)/float(self.__totAtBats)
+        avg = "%.3f" % avg
+        return avg
+        #return float(avg)
+
+    def getSluggingPct(self):
+        return
+
+    def getRBIs(self):
+        return
+
+    def getHRs(self):
+        return
+
     def __str__(self):
         return self.__getstate__()
 
@@ -709,6 +732,7 @@ class BatterStats:
         
         if pitchCall == gsPITCHCALL_WALK:
             self.__totWalks += 1
+            self.__totAtBats -= 1 #doesn't count as at bat
         elif pitchCall == gsPITCHCALL_STRIKEOUT:
             self.__totKd += 1
 
