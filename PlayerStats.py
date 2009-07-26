@@ -90,21 +90,23 @@ class PitcherStats:
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
 
-
-
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
-            self.__saves += other.__saves
-            self.__shutouts += other.__shutouts
-            self.__noHitters += other.__noHitters
-            self.__perfectGames += other.__perfectGames
             self.__starts += other.__starts
+            self.__saves += other.__saves
+            if other.__totEarnedRuns == 0:
+                self.__shutouts += 1#other.__shutouts
+            if other.__totHitsAllowed == 0:
+                self.__noHitters += 1#self.__noHitters += other.__noHitters
+            if other.__totBattersFaced == (gsOUTSPERINNING*gsMAXGAMEINNINGS):
+                self.__perfectGames += other.__perfectGames
+
 
             if other.__wins and other.__losses:
                 print "DEBUG: Inconsistency Wins and Losses both Non-Zero in stats from game!"
             
             if other.__wins > 0:
                 self.__wins += other.__wins
-                self.__currentWinStreak += other.__currentWinStreak
+                self.__currentWinStreak += other.__wins#other.__currentWinStreak
                 if self.__currentWinStreak > self.__longestWinStreak:
                     self.__longestWinStreak = self.__currentWinStreak
                     
@@ -112,7 +114,7 @@ class PitcherStats:
         
             elif other.__losses > 0:
                 self.__losses += other.__losses
-                self.__currentLosingStreak += other.__currentLosingStreak
+                self.__currentLosingStreak += other.__losses#currentLosingStreak
                 if self.__currentLosingStreak > self.__longestLosingStreak:
                     self.__longestLosingStreak = self.__currentLosingStreak
             
@@ -425,6 +427,8 @@ class BatterStats:
 
         self.__atBatResults = []
         self.__gamesPlayed = initValue
+        self.__wins = initValue
+        self.__losses = initValue
         self.__totAtBats = initValue
 
         self.__totHits = initValue #perZone
@@ -482,14 +486,26 @@ class BatterStats:
         self.__totHits += other.__totHits
         
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
+
+            self.__wins += other.__wins
+            self.__losses += other.__losses
+
+            #check for cycles
+            if other.__totHits >= 4 and \
+                    other.__totHRs > 0 and \
+                    other.__tot1Bs > 0 and \
+                    other.__tot2Bs > 0 and \
+                    other.__tot3Bs > 0:
+                other.__totCycles += 1
+                #TODO: make sure we checked for cycles first
+                self.__totCycles += other.__totCycles
+
+
             if other.__totHits > 0:
                 self.__currentHitStreak += 1
 
             if self.__currentHitStreak > self.__longestHitStreak:
                 self.__longestHitStreak = self.__currentHitStreak
-
-            #TODO: make sure we checked for cycles first
-            self.__totCycles += other.__totCycles
 
             #to make this a list of lists add [] then each game is a sub list
             #we probably need to limit how much history we keep here
@@ -525,6 +541,8 @@ class BatterStats:
             "'atBatResults':%s," + \
             "'totAtBats':%d," + \
             "'gamesPlayed':%d," + \
+            "'wins':%d," +\
+            "'losses':%d," +\
             "'totHits':%d," + \
             "'currentHitStreak':%d," + \
             "'longestHitStreak':%d," + \
@@ -549,7 +567,7 @@ class BatterStats:
             "'totRunnersLeftInScoringPos':%d}"
 
         return dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
-                          self.__gamesPlayed, self.__totHits,
+                          self.__gamesPlayed, self.__wins, self.__losses, self.__totHits,
                           self.__currentHitStreak, self.__longestHitStreak,
                           self.__totCycles, self.__totHRs, 
                           self.__longestHR, self.__totGrandSlams, self.__tot1Bs, 
@@ -580,6 +598,8 @@ class BatterStats:
         self.__atBatResults = d['atBatResults']
         self.__totAtBats = d['totAtBats']
         self.__gamesPlayed = d['gamesPlayed']
+        self.__wins = d['wins']
+        self.__losses = d['losses']
         self.__totHits = d['totHits']
         self.__currentHitStreak = d['currentHitStreak']
         self.__longestHitStreak = d['longestHitStreak']
@@ -620,6 +640,12 @@ class BatterStats:
     def setGamesPlayed(self, n):
         self.__gamesPlayed = n
 
+
+    def incWins(self):
+        self.__wins += 1
+
+    def incLosses(self):
+        self.__losses += 1
 
     #
     #

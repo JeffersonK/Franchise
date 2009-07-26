@@ -13,8 +13,8 @@ import ObjectDB
 #initPlayerDB()
 #initFranchiseDB()
 
-LOAD = 0
-GENERATE = 1
+LOAD = 1
+GENERATE = 0
 
 gsPlayerDB = ObjectDB.ObjectDB("players", "plr")
 gsFranchiseDB = ObjectDB.ObjectDB("franchises", "frn")
@@ -31,7 +31,8 @@ if LOAD:
 def generateTeam():
     team = {}
     for pos in Globals.gsPOSITION_POSSTR.values():#gsPlayerPositions:
-        p = Player.Player(globalState.nextPlayerGUID(), pos)
+        p = Player.Player(globalState.nextPlayerGUID())#, pos)
+        p.setPosition(pos)
         gsPlayerDB.addObject(p.guid(), p)
         team[p.guid()] = pos
     return team

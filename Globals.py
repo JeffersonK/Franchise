@@ -1,3 +1,6 @@
+gsPLAYERENERGY_MAXINITIAL = 10
+
+
 #gs = global static
 
 gsBATTING_LINEUP_LENGTH = 9

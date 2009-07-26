@@ -41,3 +41,8 @@ class PlayerGameState:
         else:
             self.__playerGameStats += atBatEvent.getPitcherStats()
 
+    def incWins(self):
+        self.__playerGameStats.incWins()
+
+    def incLosses(self):
+        self.__playerGameStats.incLosses()

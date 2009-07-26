@@ -106,3 +106,10 @@ class TeamGameState:
     def advanceBattingLineup(self):
         self.__nextBatterIndex = (self.__nextBatterIndex + 1) % len(self.__lineup)
         
+    def incWins(self):
+        for (guid, playerGSObj) in self.__playerStates.iteritems():
+            playerGSObj.incWins()
+
+    def incLosses(self):
+        for (guid, playerGSObj) in self.__playerStates.iteritems():
+            playerGSObj.incLosses()

@@ -5,16 +5,13 @@ from PlayerStats import *
 
 class Player:
 
-    def __init__(self, playerGUID, position):
+    def __init__(self, playerGUID):#, type):
 
         #Book Keeping
         self.__playerGUID = playerGUID
 
-        if position.upper() not in Globals.gsPOSITION_POSSTR.values():
-            return None
-        
         #TODO: change this to an integer
-        self.__position = position.upper()
+        #self.__position = position.upper()
         
         self.__franchiseGUID = Globals.gsPLAYERFREEAGENT
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
@@ -25,21 +22,26 @@ class Player:
         self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
 
         #Player Personality/Character
-        self.__firstName = "Moonbeam"
-        self.__lastName = "McFly"
+        self.__firstName = "Player"
+        self.__lastName = "%d" % playerGUID
         self.__experiencePoints = 0
+        self.__energy = gsPLAYERENERGY_MAXINITIAL
+        self.__maxPlayerEnergy = gsPLAYERENERGY_MAXINITIAL
         self.__level = 0
         #self.__age
         #self.__seasons
         return
 
     def __getstate__(self):
-        fmt =  "{'playerGUID':%d,'firstName':'%s','lastName':'%s','experiencePoints':%d,'level':%d," +\
+        fmt =  "{'playerGUID':%d,'firstName':'%s','lastName':'%s'," +\
+            "'maxPlayerEnergy':%d,'energy':%d," +\
+            "'experiencePoints':%d,'level':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
         return fmt % (self.__playerGUID, self.__firstName, self.__lastName, 
-                      self.__experiencePoints,self.__level,
+                      self.__maxPlayerEnergy, self.__energy,
+                      self.__experiencePoints,self.__level, 
                       self.__position, self.__franchiseGUID,
                       self.__playerAbilities.__getstate__(),
                       self.__batterStats.__getstate__(), self.__pitcherStats.__getstate__())
@@ -59,6 +61,8 @@ class Player:
         
         #player
         self.__level = d['level']
+        self.__energy = d['energy']
+        self.__maxPlayerEnergy = d['maxPlayerEnergy']
         self.__firstName = d['firstName']
         self.__lastName = d['lastName']
         self.__experiencePoints = d['experiencePoints']
@@ -111,8 +115,24 @@ class Player:
         updatePlayerStatsEvents = ['+1 EXP']
         return updatePlayerStatsEvents
 
+    def setPosition(self, pos):
+        if pos.upper() not in Globals.gsPOSITION_POSSTR.values():
+            return -1
+
+        self.__position = pos
+        return 0
+
     def incRunsScored(self):
         self.__batterStats.incRunsScored()
+
+    def getEnergy(self):
+        return self.__energy
+
+    def decreaseEnergy(self, numEnergyUnits):
+        self.__energy = max(0, self.__energy-numEnergyUnits)
+
+    def increaseEnergy(self, numEnergyUnits):
+        self.__energy = min(self.__maxPlayerEnergy, self.__energy + numEnergyUnits)
 
     def getPosition(self):
         return self.__position

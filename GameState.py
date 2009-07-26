@@ -228,7 +228,18 @@ class GameState:
     #all be true
     def handleEndGame(self):
         #generate appropriate events
+
         #update pitcher record
+        if self.__HomeTeam.getRunsScored() > self.__AwayTeam.getRunsScored():
+            self.__HomeTeam.incWins()
+            self.__AwayTeam.incLosses()
+        else:
+            self.__HomeTeam.incLosses()
+            self.__AwayTeam.incWins()
+        #homePictcherGUID = self.__HomeTeam.getCurrentPitcherGUID()
+        #homeTeamGS = self.__HomeTeam.getPlayerGameStates
+        #plyr = self.__playerDB.getObjectHandle(homePitcherGUID)
+
         #update team record
         
         #don't copy Games stats into Players Stats
@@ -249,7 +260,7 @@ class GameState:
         self.__fieldGameState.setBatterGUID(self._getNextBatterGUID())
         
         #DEBUG
-        print self
+        #print self
 
     def handleAtBatResult(self, atBatEventObj):
         #if hit:
