@@ -29,11 +29,12 @@ def main():
     #gamesPlayed = []
     wins = []
     winPct = []
-    
+    LngstHRs = []
 
     for (guid, plyr) in l:
         avgs += [(plyr.getName(), plyr.getBatterStats().getBattingAvg())]
         HRs += [(plyr.getName(), plyr.getBatterStats().getHRs())]
+        LngstHRs += [(plyr.getName(), plyr.getBatterStats().getLngstHR())]
         RBIs += [(plyr.getName(), plyr.getBatterStats().getRBIs())]
         slg += [(plyr.getName(), plyr.getBatterStats().getSluggingPct())]
         obp += [(plyr.getName(), plyr.getBatterStats().getOnBasePct())]
@@ -41,10 +42,13 @@ def main():
         runs += [(plyr.getName(), plyr.getBatterStats().getRuns())]
         #gamesPlayed += [(plyr.getName(), plyr.getBatterStats().getGamesPlayed())]
         wins += [(plyr.getName(), plyr.getBatterStats().getWins())]
-        winPct += [(plyr.getName(), plyr.getBatterStats().getWinPct())]
+        winPct += [(plyr.getName(), plyr.getBatterStats().getWinPct(), 
+                    "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
 
+        
     avgs.sort(cmp)
     HRs.sort(cmp)
+    LngstHRs.sort(cmp)
     RBIs.sort(cmp)
     slg.sort(cmp)
     obp.sort(cmp)
@@ -55,6 +59,7 @@ def main():
     
     printll('AVG',avgs)
     printll('HRs', HRs)
+    printll('Longest HRs', LngstHRs)
     printll('RBIs', RBIs)
     printll('SLG', slg)
     printll('OBP', obp)

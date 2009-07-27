@@ -318,7 +318,7 @@ class AtBatResult:
             self.__fieldState.incOuts(1)
             bases = self.__fieldState.getBasesState()
             runnersAdvancedList = bases.simBaseRunners(gsATBATRESULT_STRIKEOUT)
-            #playObj.setResult(gsATBATRESULT_WALK)
+            playObj.setResult(gsATBATRESULT_STRIKEOUT)
             playObj.setRunnersAdvanced(runnersAdvancedList)
             playObj.createPlayEncoding()
             self.__resultCode = str(playObj)   

@@ -678,6 +678,11 @@ class BatterStats:
             return None
         return self.__wins
 
+    def getLosses(self):
+        if self.__gamesPlayed == 0:
+            return None
+        return self.__losses        
+
     def getRBIs(self):
         if not self._hasAtBats():
             return None
@@ -687,6 +692,11 @@ class BatterStats:
         if not self._hasAtBats():
             return None
         return self.__totHRs
+
+    def getLngstHR(self):
+        if not self._hasAtBats():
+            return None
+        return self.__longestHR
 
     def getRuns(self):
         if not self._hasAtBats():
@@ -805,8 +815,9 @@ x = """class PlayerStats:
         return
 """
 
-import json
+
 def main():
+    import json
 
     p1 = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS,2)
     print p1
