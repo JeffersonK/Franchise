@@ -123,7 +123,8 @@ class PitcherStats:
             #save a game's results as a sub-list
             self.__batterResults += [other.__batterResults]
         else:
-            self.__batterResults += other.__batterResults
+            #save each batter
+            self.__batterResults += [other.__batterResults]
 
         self.__totBattersFaced += other.__totBattersFaced
         self.__totKs += other.__totKs
@@ -513,7 +514,7 @@ class BatterStats:
             #as well as testing purposes
             self.__atBatResults += [other.__atBatResults]
         else:
-            self.__atBatResults += other.__atBatResults            
+            self.__atBatResults += [other.__atBatResults]            
 
         self.__totHRs += other.__totHRs
         if other.__longestHR > self.__longestHR:
@@ -696,7 +697,7 @@ class BatterStats:
                     self.__totHitsWithRunnersInScoringPos += 1
                     self.__totRBIsWithRunnersInScoringPos += playObj.runsScoredOnPlay()
                 #elif playObj.isOut() and \
-                elif playObj.runsScoredOnPlay() < runnersInScoringPos:
+                if playObj.runsScoredOnPlay() < runnersInScoringPos:
                     self.__totRunnersLeftInScoringPos += \
                         runnersInScoringPos - playObj.runsScoredOnPlay()
 

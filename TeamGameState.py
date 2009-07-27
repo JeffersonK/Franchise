@@ -101,9 +101,11 @@ class TeamGameState:
         return self.__pitchers[-1][1]
 
     def getNextBatterGUID(self):
+        #print "next batter: %d" % self.__lineup[self.__nextBatterIndex][0]
         return self.__lineup[self.__nextBatterIndex][0] #lineup is tuples (guid, pos)
 
     def advanceBattingLineup(self):
+        #print "advance lineup: %d %d" % (self.__nextBatterIndex, self.__lineup[self.__nextBatterIndex][0])
         self.__nextBatterIndex = (self.__nextBatterIndex + 1) % len(self.__lineup)
         
     def incWins(self):

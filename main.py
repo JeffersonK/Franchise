@@ -54,7 +54,7 @@ if GENERATE:
 #LOAD 1
 if LOAD:
     f1 = gsFranchiseDB.getObjectHandle(0)
-    for playerGUID in range(0,9):#playerList1.keys():
+    for playerGUID in range(0,10):#playerList1.keys():
         handle = gsPlayerDB.getObjectHandle(playerGUID)
         f1.addPlayers({playerGUID:handle.getPosition()})
     
@@ -75,7 +75,7 @@ if GENERATE:
 #LOAD 2
 if LOAD:
     f2 = gsFranchiseDB.getObjectHandle(1)
-    for playerGUID in range(9,18):#playerList2.keys():
+    for playerGUID in range(10,20):#playerList2.keys():
         handle = gsPlayerDB.getObjectHandle(playerGUID)
         f2.addPlayers({playerGUID:handle.getPosition()})
     

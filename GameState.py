@@ -260,7 +260,7 @@ class GameState:
         self.__fieldGameState.setBatterGUID(self._getNextBatterGUID())
         
         #DEBUG
-        #print self
+        print self
 
     def handleAtBatResult(self, atBatEventObj):
         #if hit:
@@ -298,7 +298,7 @@ class GameState:
 
         #DEBUG
         #print atBatEventObj
-        print self
+        #print self
         
         return
 
