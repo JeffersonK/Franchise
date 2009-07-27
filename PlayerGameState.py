@@ -46,3 +46,6 @@ class PlayerGameState:
 
     def incLosses(self):
         self.__playerGameStats.incLosses()
+
+    def incPitcherStarts(self):
+        self.__playerGameStats.incStarts()

@@ -4,6 +4,7 @@
 #
 #
 #################
+import time
 class SimRunner:
 
     def __init__(self, SimObject, isRunning=False):
@@ -11,6 +12,20 @@ class SimRunner:
         #random.seed()
         self.__isRunning = isRunning
         self.__simObject = SimObject
+
+        self.__startTime = None
+        self.__finTime = None
+
+    def startSimTimer(self):
+        self.__startTime = time.time()
+        return
+
+    def stopSimTimer(self):
+        if self.__startTime == None:
+            return -1.0
+
+        self.__finTime = time.time()
+        return self.__finTime - self.__startTime
 
     #######
     #

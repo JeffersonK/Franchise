@@ -70,6 +70,11 @@ class TeamGameState:
         #getEndOfGameAchievements
         return
 
+    def incPitcherStarts(self):
+        pitcherGUID = self.getCurrentPitcherGUID()
+        playerObj = self.__playerStates[pitcherGUID]
+        playerObj.incPitcherStarts()
+
     def incPlayerRunsScored(self, playerGUID):
         if playerGUID not in self.__playerStates:
             print "DEBUG: Inconsistency, no playerGUID:%d in playerStates" % playerGUID

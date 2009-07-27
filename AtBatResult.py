@@ -176,7 +176,8 @@ class AtBatResult:
 
         #TODO: weight the pitchtype and pitchzone according to the pitchers strengths
         r = random.randint(0,len(gsPITCHTYPES)-1)
-        return (gsPITCHTYPES[r], gsPitches[nextPitch])
+        z = random.randint(0,len(gsPITCHZONES)-1)
+        return (gsPITCHTYPES[r], gsPITCHZONES[z])#gsPitches[nextPitch])
 
     #def _getNextSwing(self):
     #    global gsSwings

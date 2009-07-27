@@ -252,6 +252,8 @@ class GameState:
     #startSim()
     def handleStartGame(self):
         #TODO: give the pitchers the start
+        self.__HomeTeam.incPitcherStarts()
+        self.__AwayTeam.incPitcherStarts()
         self.__fieldGameState.reset()
         return ['GAMESTART'] #gameStateEvent('Start Game')
 
@@ -260,7 +262,7 @@ class GameState:
         self.__fieldGameState.setBatterGUID(self._getNextBatterGUID())
         
         #DEBUG
-        print self
+        #print self
 
     def handleAtBatResult(self, atBatEventObj):
         #if hit:

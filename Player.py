@@ -22,24 +22,25 @@ class Player:
         self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
 
         #Player Personality/Character
-        self.__firstName = "Player"
-        self.__lastName = "%d" % playerGUID
+        self.__name = "Player%d" % playerGUID
         self.__experiencePoints = 0
         self.__energy = gsPLAYERENERGY_MAXINITIAL
         self.__maxPlayerEnergy = gsPLAYERENERGY_MAXINITIAL
         self.__level = 0
-        #self.__age
-        #self.__seasons
+        #self.__items = PlayerItems()
+        #self.__achievements = PlayerAchievements()
+
+
         return
 
     def __getstate__(self):
-        fmt =  "{'playerGUID':%d,'firstName':'%s','lastName':'%s'," +\
+        fmt =  "{'playerGUID':%d,'name':'%s'," +\
             "'maxPlayerEnergy':%d,'energy':%d," +\
             "'experiencePoints':%d,'level':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
-        return fmt % (self.__playerGUID, self.__firstName, self.__lastName, 
+        return fmt % (self.__playerGUID, self.__name,
                       self.__maxPlayerEnergy, self.__energy,
                       self.__experiencePoints,self.__level, 
                       self.__position, self.__franchiseGUID,
@@ -63,8 +64,8 @@ class Player:
         self.__level = d['level']
         self.__energy = d['energy']
         self.__maxPlayerEnergy = d['maxPlayerEnergy']
-        self.__firstName = d['firstName']
-        self.__lastName = d['lastName']
+        self.__name = d['name']
+        #self.__lastName = d['lastName']
         self.__experiencePoints = d['experiencePoints']
         
 
@@ -93,6 +94,8 @@ class Player:
     def getPlayerAbilities(self):
         return self.__playerAbilities
 
+    def getName(self):
+        return self.__name
 
     def getBatterStats(self):
         return self.__batterStats

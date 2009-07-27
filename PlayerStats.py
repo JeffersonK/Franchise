@@ -312,7 +312,7 @@ class PitcherStats:
     # should only be called at the start of the game
     # by the PlayerGameState object when the stats object
     # is initialized
-    def incGamesStarted(self):
+    def incStarts(self):
         self.__starts += 1
 
     #END OF GAME FUNCTIONS 
@@ -332,7 +332,7 @@ class PitcherStats:
 
     def getBalls(self):
         return self.__totBallsThrown
-
+    
     #pitchType: fastball, curveball, etc...
     #pitchCall: ball/strike/contact
     #pitchSpeed: velocity
@@ -636,8 +636,11 @@ class BatterStats:
     #
     #Used For Generating League Leaders
     #
+    def _hasAtBats(self):
+        return self.__totAtBats != 0
+
     def getBattingAvg(self):
-        if self.__totAtBats == 0:
+        if not self._hasAtBats():
             return None
 
         avg = float(self.__totHits)/float(self.__totAtBats)
@@ -646,13 +649,56 @@ class BatterStats:
         #return float(avg)
 
     def getSluggingPct(self):
-        return
+        if not self._hasAtBats():
+            return None
+
+        totalBases = float(self.__tot1Bs + 2*self.__tot2Bs + 3*self.__tot3Bs + 4*self.__totHRs)
+        slgpct = totalBases / float(self.__totAtBats)
+        slgpct = "%.3f" % slgpct
+        return slgpct
+
+    def getOnBasePct(self):
+        if not self._hasAtBats():
+            return None
+
+        obp = float(self.__totHits + self.__totWalks + self.__totHBP) / float(self.__totAtBats)
+        obp = "%.3f" % obp
+        return obp
+
+    def getWinPct(self):
+        if self.__gamesPlayed == 0:
+            return None
+
+        winPct = float(self.__wins) / float(self.__wins + self.__losses)
+        winPct = "%.3f" % winPct
+        return winPct
+
+    def getWins(self):
+        if self.__gamesPlayed == 0:
+            return None
+        return self.__wins
 
     def getRBIs(self):
-        return
+        if not self._hasAtBats():
+            return None
+        return self.__totRBIs
 
     def getHRs(self):
-        return
+        if not self._hasAtBats():
+            return None
+        return self.__totHRs
+
+    def getRuns(self):
+        if not self._hasAtBats():
+            return None
+        return self.__totRuns
+
+    def getLngstHitStreak(self):
+        if not self._hasAtBats():
+            return None
+        return self.__longestHitStreak
+
+    ###
 
     def __str__(self):
         return self.__getstate__()

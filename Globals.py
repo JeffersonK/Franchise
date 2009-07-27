@@ -25,9 +25,11 @@ gsSECONDBASE = 0
 gsTHIRDBASE = 0
 
 #x,y from top left as origin going down
-#gsBATTERZONES = [(0,0),(1,0),(2,0),
+#gsSTRIKEZONES = [(0,0),(1,0),(2,0),
 #                 (0,1),(1,1),(2,1),
 #                 (0,2),(1,2),(2,2)]
+
+gsPITCHZONES = range(0,10)#range() is non-inclusive on end
 gsSTRIKEZONE = range(9)
 #gsBALLZONE = 9
 
