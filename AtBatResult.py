@@ -65,15 +65,7 @@ class AtBatResult:
         #we have to copy this because we are going to modify it
         self.__allowedEvents = gsCONTACTMADEEVENTS[:]#gsBATTINGEVENTS[:]
 
-        #initialize pitch counts
-        #self.__fouls = 0
-        #self.__strikeCount = 0
-        #self.__ballCount = 0
-        #self.__totPitches = 0
-
         self.__contactMade = False
-
-
 
         #fill these in later
         self.__playObj = None
@@ -89,16 +81,8 @@ class AtBatResult:
              file.close()
              gsPitches = eval(pitches)
 
-        #global gsSwings
-        #if gsSwings == None:
-        #    file = open("swing.loc", "r")
-        #    swings = file.readline()
-        #    file.close()
-        #    gsSwings = eval(swings)
-
     def __del__(self):
-        #TODO: make sure we aren't causing memory leak
-        
+        #TODO: make sure we aren't causing memory leak        
         #don't delete these next TWO  objects because 
         #they are references from the player object
         self.__pitcherAbil = None 
@@ -174,9 +158,16 @@ class AtBatResult:
         #TODO: weight the number of balls thrown out of the strikezone according to the
         #      pitchers control
 
+        #jeffk 07/28/09 DIRTY HACK: to increase number of balls temporarily
+        b = random.randint(0,2)
+        z = 0
+        if b == 0:
+            z = 9
+        #z = random.randint(0,len(gsPITCHZONES)-1)
+        
         #TODO: weight the pitchtype and pitchzone according to the pitchers strengths
         r = random.randint(0,len(gsPITCHTYPES)-1)
-        z = random.randint(0,len(gsPITCHZONES)-1)
+
         return (gsPITCHTYPES[r], gsPITCHZONES[z])#gsPitches[nextPitch])
 
     #def _getNextSwing(self):
@@ -201,14 +192,16 @@ class AtBatResult:
             (pitchType, pitchZone) = self._getNextPitch()
         else:
             (pitchType, pitchZone) = pitch
-        
-        if pitchZone not in gsSTRIKEZONE:
+   
+
+        #r = random.randint(0,100)
+        if pitchZone not in gsSTRIKEZONE:# and r >=20:
             #the pitch is in the strike zone
 
             #TODO: calculate batter pateince to see if he swings at this pitch
             #if (batter swings) :
             #   => it's a strike
-
+                            
             #TODO: base on pitchers control decide whether or not he hit the batter
             # if gsATBATRESULT_HITBYPITCH
 
@@ -237,6 +230,7 @@ class AtBatResult:
                                                    gsPITCHCALL_WALK, playObj)
 
                 self.__playObj = playObj
+                #print "WALK"
                 return gsPITCHCALL_WALK
 
             else:

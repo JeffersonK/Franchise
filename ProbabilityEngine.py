@@ -30,7 +30,6 @@ gsBC_SAMEBAT_VS_SAMEPIT = 0.50
 gsPITCHMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_PITCHMASTERY_LEVELS)
 gsZONEMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_ZONEMASTERY_LEVELS)
 def PrContactNew(pitcherAbilities, batterAbilities, pitchAttrs):
-#(batterPitchLvl, pitcherPitchLvl, batterZoneLvl, pitcherZoneLvl):
 
     pitchType, pitchZone = pitchAttrs
 
@@ -279,21 +278,12 @@ def generateVaryBatterChi2MaxPitcherMu():
 #generateVaryBatterChi2MaxPitcherMu()
 
 def main():
-    p = PrContactNew(0,0,
-                     50,0)
-    print p
-
-    p = PrContactNew(50,0,
-                     0,0)
-    print p
-    return
-    #generateVaryBattersChiSq()
-
+    import PlayerAbilities
     for i in range(9):
         if not i % 3:
             print ""
         p = 0.0
-        p = PrContact(PlayerAbilities.PlayerAbilities(), 
+        p = PrContactNew(PlayerAbilities.PlayerAbilities(), 
                       PlayerAbilities.PlayerAbilities(), 
                       (gsFASTBALL, i))
         print "%f\t" % p,

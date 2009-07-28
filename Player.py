@@ -13,7 +13,8 @@ class Player:
 
         #TODO: change this to an integer
         #self.__position = position.upper()
-        
+        self.__position = ''
+
         self.__franchiseGUID = Globals.gsPLAYERFREEAGENT
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
         
@@ -32,6 +33,12 @@ class Player:
         self.__money = gsINITIAL_MONEY_ALLOC
         self.__lastTimePaid = getTime()
         self.__unusedStatPoints = gsINITIAL_STATPOINT_ALLOC
+
+        self.__maxChallengePoints = gsPLAYERCHALLENGE_MAXINITIAL#maximumNumber of games that can be played per unit time
+        self.__challengePoints = gsPLAYERCHALLENGE_MAXINITIAL
+        self.__maxPlayerEnergy = gsPLAYERENERGY_MAXINITIAL#determines how much training/jobs can be done/unit time
+        self.__recoveryTime = gsPLAYERRECOVERYTIME_INITIAL#seconds until energy/challenge points are regained
+
         #self.__items = PlayerItems()
         #self.__achievements = PlayerAchievements()
 
@@ -39,13 +46,15 @@ class Player:
         return
 
     def __getstate__(self):
-        fmt =  "{'playerGUID':%d,'name':'%s','energy':%d," +\
+        fmt =  "{'playerGUID':%d,'name':'%s','energy':%d, 'maxChallengePoints':%d," +\
+            "'challengePoints':%d,'maxPlayerEnergy':%d,'recoveryTime':%d," +\
             "'lastPlayerRecharge':%d,'money':%d,'lastTimePaid':%d," +\
             "'experiencePoints':%d,'level':%d,'unusedStatPoints':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
-        return fmt % (self.__playerGUID, self.__name, self.__energy,
+        return fmt % (self.__playerGUID, self.__name, self.__energy, self.__maxChallengePoints,
+                      self.__challengePoints, self.__maxPlayerEnergy, self.__recoveryTime,
                       self.__lastPlayerRecharge, self.__money, self.__lastTimePaid,
                       self.__experiencePoints,self.__level,self.__unusedStatPoints,
                       self.__position, self.__franchiseGUID,
@@ -63,6 +72,7 @@ class Player:
         except:
             print "could not load player object file corrupt."
             return
+
         self.__franchiseGUID = d['franchiseGUID']
 
         self.__playerGUID = d['playerGUID']
@@ -76,7 +86,10 @@ class Player:
         self.__name = d['name']
         self.__experiencePoints = d['experiencePoints']
         
-        
+        self.__maxChallengePoints = d['maxChallengePoints']
+        self.__challengePoints = d['challengePoints']
+        self.__maxPlayerEnergy = d['maxPlayerEnergy']
+        self.__recoveryTime = d['recoveryTime']
         self.__lastPlayerRecharge = d['lastPlayerRecharge']
         self.__money = d['money']
         self.__lastTimePaid = d['lastTimePaid']
@@ -179,8 +192,8 @@ class Player:
     def increaseEnergy(self, numEnergyUnits):
         self.__energy = min(self.__maxPlayerEnergy, self.__energy + numEnergyUnits)
 
-    #def getMaxEnergy(self):
-    #    return self.__maxPlayerEnergy
+    def getMaxEnergy(self):
+        return self.__maxPlayerEnergy
 
     def getPosition(self):
         return self.__position

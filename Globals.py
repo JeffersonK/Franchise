@@ -15,7 +15,7 @@ def safeConvertToInt(val):
     return newVal
 
 def safeConvertToFloat(val):
-    newVal = 0
+    newVal = 0.0
     try:
         newVal = float(val)
     except:

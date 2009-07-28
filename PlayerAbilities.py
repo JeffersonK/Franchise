@@ -1,6 +1,7 @@
 from Globals import *
 from ProbabilityEngine import *
 
+OLD = """
 #Chi => Zone
 #mu => pitch
 
@@ -37,7 +38,10 @@ gsMuBatterMin = 0.0
 gsMuPitcherMin = 0.0# 28%
 
 gsMuBatterMax = gsMuPrimeMax
-gsMuPitcherMax = gsMuPrimeMax
+gsMuPitcherMax = gsMuPrimeMax"""
+
+Chi2b0 = 0.0
+Chi2p0 = 0.0
 
 minPower = 1
 batterPowerZones = [minPower, minPower, minPower,
@@ -58,8 +62,8 @@ pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
 batterPitchMastery = {}
 pitcherPitchMastery = {}
 for pitchType in gsPITCHTYPES:
-    batterPitchMastery[pitchType] = Chi2b0#gsMuBatterMin
-    pitcherPitchMastery[pitchType] = Chi2p0#gsMuPitcherMin
+    batterPitchMastery[pitchType] = Chi2b0
+    pitcherPitchMastery[pitchType] = Chi2p0
 
 gsMAX_PITCHMASTERY_LEVEL = gsNUM_PITCHMASTERY_LEVELS
 gsMIN_PITCHMASTERY_LEVEL = 0
@@ -93,9 +97,6 @@ defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed ou
 #CHARACTER
 defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
                         'prestige':0, #affects how much money the player draws per game and unit time
-                        'recoveryTime':gsPLAYERRECOVERYTIME_INITIAL,#seconds until energy/challenge points are regained
-                        'maxChallengePoints':gsPLAYERCHALLENGE_MAXINITIAL,#maximumNumber of games that can be played per unit time
-                        'maxPlayerEnergy':gsPLAYERENERGY_MAXINITIAL,#determines how much training/jobs can be done/unit time
                         }
 
 
@@ -160,6 +161,7 @@ class PlayerAbilities:
             return -1
         if len(matrix) == 0 or len(matrix) > len(gsPITCHTYPES):
             return -2
+        newMatrix = {}
         for pitchtype,val in matrix.iteritems():
             if pitchtype not in gsPITCHTYPES:
                 return -3
@@ -169,15 +171,17 @@ class PlayerAbilities:
             if ret > gsMAX_PITCHMASTERY_LEVEL or\
                     ret < gsMIN_PITCHMASTERY_LEVEL:
                 return -5
-            
-        self.__pitching['pitchMastery'].update(matrix)
+            newMatrix[pitchtype] = ret
+        self.__pitching['pitchMastery'].update(newMatrix)
         return 0
 
     def setPitchingZoneMasteryMatrix(self, matrix):
+        
         if type(matrix) != type([]):
             return -1
         if len(matrix) != len(gsSTRIKEZONE):
             return -2
+        newMatrix = []
         for pm in matrix:
             ret = safeConvertToFloat(pm)
             if ret == None:
@@ -185,7 +189,8 @@ class PlayerAbilities:
             if ret > gsMAX_ZONEMASTERY_LEVEL or\
                     ret < gsMIN_ZONEMASTERY_LEVEL:
                 return -4
-        self.__pitching['zoneMastery'] = matrix
+            newMatrix += [ret]
+        self.__pitching['zoneMastery'] = newMatrix
         return 0
     
 
@@ -207,6 +212,7 @@ class PlayerAbilities:
             return -1
         if len(matrix) == 0 or len(matrix) > len(gsPITCHTYPES):
             return -2
+        newMatrix = {}
         for pitchtype,val in matrix.iteritems():
             if pitchtype not in gsPITCHTYPES:
                 return -3
@@ -216,8 +222,9 @@ class PlayerAbilities:
             if ret > gsMAX_PITCHMASTERY_LEVEL or\
                     ret < gsMIN_PITCHMASTERY_LEVEL:
                 return -5
+            newMatrix[pitchtype] = ret
             
-        self.__batting['pitchMastery'].update(matrix)
+        self.__batting['pitchMastery'].update(newMatrix)
         return 0
 
 
@@ -229,6 +236,7 @@ class PlayerAbilities:
             return -1
         if len(matrix) != len(gsSTRIKEZONE):
             return -2
+        newMatrix = []
         for pm in matrix:
             ret = safeConvertToFloat(pm)
             if ret == None:
@@ -236,7 +244,8 @@ class PlayerAbilities:
             if ret > gsMAX_ZONEMASTERY_LEVEL or\
                     ret < gsMIN_ZONEMASTERY_LEVEL:
                 return -4
-        self.__batting['zoneMastery'] = matrix
+            newMatrix += [ret]
+        self.__batting['zoneMastery'] = newMatrix
         return 0
 
     def getSpeed(self):
@@ -273,15 +282,6 @@ class PlayerAbilities:
         self.__batting['patience'] = newVal
         return 0
 
-    def getMaxEnergy(self):
-        return self.__character['maxPlayerEnergy']
-
-    def getRecoveryTime(self):
-        return self.__character['recoveryTime']
-
-    def getMaxChallangePoints(self):
-        return self.__character['maxChallengePoints']
-
 def main():
 
     pa = PlayerAbilities()
@@ -297,7 +297,7 @@ def main():
     
     pitchMastery = {}
     for pitchType in gsPITCHTYPES:
-        pitchMastery[pitchType] = '2.1'
+        pitchMastery[pitchType] = '2'
         
     print pa.getBattingPitchMasteryMatrix()
     print pa.setBattingPitchMasteryMatrix(pitchMastery)
