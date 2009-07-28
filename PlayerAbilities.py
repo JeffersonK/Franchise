@@ -258,28 +258,30 @@ class PlayerAbilities:
         return self.__character['leadership']
 
     def setLeadership(self, newVal):
-        if type(newVal) != type(0):
+        val = safeConvertToInt(newVal)
+        if val == None:
             return -1
-        self.__character['leadership'] = newVal
+        self.__character['leadership'] = val
         return 0
 
     def getPrestige(self):
         return self.__character['prestige']
 
     def setPrestige(self, newVal):
-        if type(newVal) != type(0):
+        val = safeConvertToInt(newVal)
+        if val == None:
             return -1
-
-        self.__character['prestige'] = newVal
+        self.__character['prestige'] = val
         return 0
 
     def getPatience(self):
         return self.__batting['patience']
 
     def setPatience(self, newVal):
-        if type(newVal) != type(0):
+        val = safeConvertToInt(newVal)
+        if val == None:
             return -1
-        self.__batting['patience'] = newVal
+        self.__batting['patience'] = val
         return 0
 
 def main():
