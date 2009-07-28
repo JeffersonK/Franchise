@@ -157,6 +157,9 @@ class PlayerAbilities:
     def getPitchingPitchMasteryMatrix(self):
         return self.__pitching['pitchMastery']
 
+    #def _getPitchingPitchMastery(self, pitchtype):
+    #    return self.__pitching['pitchMastery']
+
     def _setPitchingPitchMastery(self, pitchtype, newVal):
         try:
             newVal = float(newVal)
@@ -346,6 +349,12 @@ def main():
     print pa
     pa.setBattingPitchMasteryFastball('2.1')
     print pa
+
+    pa.setPitchingPitchMasteryFastball(1.1)
+    print pa
+    pa.setPitchingPitchMasteryFastball('2.1')
+    print pa
+
 
 if __name__ == "__main__":
     main()

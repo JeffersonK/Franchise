@@ -97,6 +97,9 @@ class Player:
     def getBatterStats(self):
         return self.__batterStats
 
+    def getPitcherStats(self):
+        return self.__pitcherStats
+
     #
     #
     #

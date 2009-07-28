@@ -362,12 +362,7 @@ class PitcherStats:
 
     #def addEarnedRuns(self, n=1):
     #    self.__totEarnedRuns += n
-    def getStrikes(self):
-        return self.__totStrikesThrown
-
-    def getBalls(self):
-        return self.__totBallsThrown
-    
+  
 
 
     #
@@ -452,11 +447,17 @@ class PitcherStats:
     def getTotSpitballsThrown(self):
         return self.__totSpitballsThrown
 
-    def getTotStrikesThrown(self):
+    def getStrikes(self):
         return self.__totStrikesThrown
 
-    def getTotBallsThrown(self):
+    def getBalls(self):
         return self.__totBallsThrown
+    
+    #def getTotStrikesThrown(self):
+    #    return self.__totStrikesThrown
+
+    #def getTotBallsThrown(self):
+    #    return self.__totBallsThrown
 
     def getTotHitsAllowed(self):
         return self.__totHitsAllowed
