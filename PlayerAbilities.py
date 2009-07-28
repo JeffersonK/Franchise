@@ -170,7 +170,7 @@ class PlayerAbilities:
                 newVal > gsMuPitcherMax:
             return -1
 
-        self.__batting['pitchMastery'][pitchtype] = newVal
+        self.__pitching['pitchMastery'][pitchtype] = newVal
         return 0
 
     def getPitchingPitchMasteryFastball(self):
