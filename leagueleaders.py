@@ -1,9 +1,9 @@
 import ObjectDB
 from pprint import *
 
-def leagueleaders():
-    gsPlayerDB = ObjectDB.ObjectDB("players","plr")
-    l = gsPlayerDB.iteritems("players", "plr")
+def leagueleaders(dbLoc, objFileExt):
+    gsPlayerDB = ObjectDB.ObjectDB(dbLoc,objFileExt)
+    l = gsPlayerDB.iteritems(dbLoc, objFileExt)
     avgs = []
     HRs = []
     RBIs = []
@@ -81,7 +81,7 @@ def printll(statName, stats):
 
 def main():
 
-    #print leagueleaders()
+    #print leagueleaders("players","plr")
     #return
 
     gsPlayerDB = ObjectDB.ObjectDB("players","plr")
