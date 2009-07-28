@@ -8,8 +8,10 @@ from Globals import *
 # Chi2
 ######
 gsChi2Normal = 1.0
-gsChi2PrimeMin = 0.018
-gsChi2PrimeMax = 3.862#Chi2Normal - Chi2PrimMin
+gsChi2PrimeMin = 0.01768 #90%
+gsChi2PrimeMax = 3.862 #10% Chi2Normal - Chi2PrimMin
+#0.0324 #50% Chi2Normal - Chi2PrimMin
+
 
 gsChi2BatterMax = gsChi2Normal - gsChi2PrimeMin #0.982
 gsChi2PitcherMax = gsChi2PrimeMax - gsChi2Normal
@@ -17,7 +19,7 @@ gsChi2PitcherMax = gsChi2PrimeMax - gsChi2Normal
 gsChi2BatterMin = 0.0
 gsChi2PitcherMin = 0.0
 
-Chi2b0 = gsChi2BatterMin #+ .25
+Chi2b0 = gsChi2BatterMin#gsChi2BatterMin #+ .25
 Chi2p0 = gsChi2PitcherMin #+ 2.862
 
 gsPITCHERCHI2FIXED = 1.0
@@ -29,10 +31,10 @@ gsBATTERMUFIXED = 0.0
 ######
 
 
-gsMuPrimeMax = 3.65
+gsMuPrimeMax = 3.65# 1%
 
 gsMuBatterMin = 0.0
-gsMuPitcherMin = 0.0#2.5
+gsMuPitcherMin = 0.0# 28%
 
 gsMuBatterMax = gsMuPrimeMax
 gsMuPitcherMax = gsMuPrimeMax
@@ -57,8 +59,8 @@ pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
 batterPitchMastery = {}
 pitcherPitchMastery = {}
 for pitchType in gsPITCHTYPES:
-    batterPitchMastery[pitchType] = gsMuBatterMin
-    pitcherPitchMastery[pitchType] = gsMuPitcherMin
+    batterPitchMastery[pitchType] = Chi2b0#gsMuBatterMin
+    pitcherPitchMastery[pitchType] = Chi2p0#gsMuPitcherMin
 
 #{'curveball':gsMuBatterMin, 
 #                      'fastball':gsMuBatterMin,
@@ -100,8 +102,11 @@ defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed ou
 
 #CHARACTER
 defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
-                        'prestige':0, #affects how much money the player draws per game
+                        'prestige':0, #affects how much money the player draws per game and unit time
                         }
+#energyRecovery - affects how fast energy is regained
+#maxChallengePoints
+#
 
 class PlayerAbilities:
 

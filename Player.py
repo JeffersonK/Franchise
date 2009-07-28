@@ -64,10 +64,18 @@ class Player:
         self.__level = d['level']
         self.__energy = d['energy']
         self.__maxPlayerEnergy = d['maxPlayerEnergy']
+        #self.__challengePoints =
+        #self.__maxChallengePoints = 
         self.__name = d['name']
-        #self.__lastName = d['lastName']
         self.__experiencePoints = d['experiencePoints']
         
+        
+        #self.__lastEnergyRefresh = datetime
+        #self.__money = 0
+        #self.__lastTimePaid = datetime
+        #self.__unusedStatPoints = 0#gsINITIAL_STATPOINT_ALLOC
+        #self.__achievements = {}
+        #self.__items = {}
 
         abilities = d['playerAbilities']
         self.__playerAbilities = PlayerAbilities.PlayerAbilities(abilities['batting'],
@@ -120,6 +128,7 @@ class Player:
             self.__experiencePoints += playerGameState.countXP()
 
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
+
             self.__batterStats += playerGameStats
             #print self
 
