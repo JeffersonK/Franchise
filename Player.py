@@ -112,6 +112,10 @@ class Player:
             #print self
         elif self.__position != gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isBatterStats():
+            
+            #count here because they are end game stats
+            self.__experiencePoints += playerGameState.countXP()
+
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
             self.__batterStats += playerGameStats
             #print self

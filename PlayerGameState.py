@@ -49,3 +49,6 @@ class PlayerGameState:
 
     def incPitcherStarts(self):
         self.__playerGameStats.incStarts()
+        
+    def countXP(self):
+        return self.__playerGameStats.countXP()

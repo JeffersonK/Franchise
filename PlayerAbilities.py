@@ -240,49 +240,49 @@ class PlayerAbilities:
         return self.__batting['pitchMastery'][gsFASTBALL]
     
     def setBattingPitchMasteryFastball(self, newVal):
-        return self._setBattingPitchMastery(self, gsFASTBALL, newVal)
+        return self._setBattingPitchMastery(gsFASTBALL, newVal)
 
     def getBattingPitchMasteryCurveball(self):
         return self.__batting['pitchMastery'][gsCURVEBALL]
 
     def setBattingPitchMasteryCurveball(self, newVal):
-        return self._setBattingPitchMastery(self, gsCURVEBALL, newVal)
+        return self._setBattingPitchMastery(gsCURVEBALL, newVal)
 
     def getBattingPitchMasterySlider(self):
         return self.__batting['pitchMastery'][gsSLIDER]
 
     def setBattingPitchMasterySlider(self, newVal):
-        return self._setBattingPitchMastery(self, gsSLIDER, newVal)
+        return self._setBattingPitchMastery(gsSLIDER, newVal)
 
     def getBattingPitchMasteryChangeup(self):
         return self.__batting['pitchMastery'][gsCHANGEUP]
 
     def setBattingPitchMasteryChangeup(self, newVal):
-        return self._setBattingPitchMastery(self, gsCHANGEUP, newVal)
+        return self._setBattingPitchMastery(gsCHANGEUP, newVal)
 
     def getBattingPitchMasteryKnuckleball(self):
         return self.__batting['pitchMastery'][gsKNUCKLEBALL]
 
     def setBattingPitchMasteryKnuckleball(self, newVal):
-        return self._setBattingPitchMastery(self, gsKNUCKLEBALL, newVal)
+        return self._setBattingPitchMastery(gsKNUCKLEBALL, newVal)
 
     def getBattingPitchMasterySinker(self):
         return self.__batting['pitchMastery'][gsSINKER]
 
     def setBattingPitchMasterySinker(self, newVal):
-        return self._setBattingPitchMastery(self, gsSINKER, newVal)
+        return self._setBattingPitchMastery(gsSINKER, newVal)
 
     def getBattingPitchMasterySpitball(self):
         return self.__batting['pitchMastery'][gsSPITBALL]
 
     def setBattingPitchMasterySpitball(self, newVal):
-        return self._setBattingPitchMastery(self, gsSPITBALL, newVal)
+        return self._setBattingPitchMastery(gsSPITBALL, newVal)
 
     def getBattingPitchMasteryForkball(self):
         return self.__batting['pitchMastery'][gsFORKBALL]
 
     def setBattingPitchMasteryForkball(self, newVal):
-        return self._setBattingPitchMastery(self, gsFORKBALL, newVal)
+        return self._setBattingPitchMastery(gsFORKBALL, newVal)
 
     ##############
 
@@ -299,8 +299,17 @@ class PlayerAbilities:
     def getLeadership(self):
         return self.__character['leadership']
 
+    def setLeadership(self, newVal):
+        self.__character['leadership'] = newVal
+
     def getPrestige(self):
         return self.__character['prestige']
 
+    def setPrestige(self, newVal):
+        self.__character['prestige'] = newVal
+
     def getPatience(self):
         return self.__batting['patience']
+
+    def setPateience(self, newVal):
+        self.__batting['patience'] = newVal

@@ -1,5 +1,6 @@
 import cPickle
 from Globals import *
+from Experience import *
 
 gsSTATTYPE_PITCHER_STATS = 'PITS'
 gsSTATTYPE_BATTER_STATS = 'BATS'
@@ -118,7 +119,10 @@ class PitcherStats:
         self.__tot2BsAllowed = initValue
         self.__tot3BsAllowed = initValue
         return
-        
+     
+    def countXP(self):
+        return 0
+
     def __iadd__(self, other):
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
@@ -133,7 +137,6 @@ class PitcherStats:
             if other.__totBattersFaced == (gsOUTSPERINNING*gsMAXGAMEINNINGS):
                 self.__perfectGames += other.__perfectGames
 
-
             if other.__wins and other.__losses:
                 print "DEBUG: Inconsistency Wins and Losses both Non-Zero in stats from game!"
             
@@ -144,7 +147,7 @@ class PitcherStats:
                     self.__longestWinStreak = self.__currentWinStreak
                     
                 self.__currentLosingStreak = 0
-        
+      
             elif other.__losses > 0:
                 self.__losses += other.__losses
                 self.__currentLosingStreak += other.__losses#currentLosingStreak
@@ -651,6 +654,22 @@ class BatterStats:
     def incRunsScored(self):
         self.__totRuns += 1
 
+    def countXP(self):
+        XP = 0
+        XP += gsXP_BATTER_WIN * self.__wins
+        XP += gsXP_BATTER_ATBAT * self.__totAtBats
+        XP += gsXP_BATTER_GAMEPLAYED * self.__gamesPlayed
+        XP += gsXP_BATTER_SINGLE * self.__tot1Bs
+        XP += gsXP_BATTER_DOUBLE * self.__tot2Bs
+        XP += gsXP_BATTER_TRIPLE * self.__tot3Bs
+        XP += gsXP_BATTER_HOMERUN * self.__totHRs
+        XP += gsXP_BATTER_RBI * self.__totRBIs
+        XP += gsXP_BATTER_RUN * self.__totRuns
+        XP += gsXP_BATTER_WALK * self.__totWalks
+        XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
+        XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
+        return XP
+
     def __iadd__(self, other):
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
@@ -658,9 +677,8 @@ class BatterStats:
         self.__gamesPlayed += other.__gamesPlayed
         self.__totAtBats += other.__totAtBats
         self.__totHits += other.__totHits
-        
+       
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
-
             self.__wins += other.__wins
             self.__losses += other.__losses
 
