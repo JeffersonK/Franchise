@@ -35,7 +35,7 @@ gsSTATSUBTYPE_SINGLEPLAYSTATS = 'PLAY'
 def computeBattingAvg(numAtBats, numHits):
     if numAtBats <= 0:
         return None
-    avg = float(numAtBats) / float(numHits)
+    avg = float(numHits) / float(numAtBats)
     avg = "%.3f" % avg
     return avg
 
