@@ -2,6 +2,7 @@ import Globals
 import cPickle
 import PlayerAbilities
 from PlayerStats import *
+import time
 
 class Player:
 
@@ -25,8 +26,12 @@ class Player:
         self.__name = "Player%d" % playerGUID
         self.__experiencePoints = 0
         self.__energy = gsPLAYERENERGY_MAXINITIAL
-        self.__maxPlayerEnergy = gsPLAYERENERGY_MAXINITIAL
         self.__level = 0
+
+        self.__lastPlayerRecharge = getTime()
+        self.__money = gsINITIAL_MONEY_ALLOC
+        self.__lastTimePaid = getTime()
+        self.__unusedStatPoints = gsINITIAL_STATPOINT_ALLOC
         #self.__items = PlayerItems()
         #self.__achievements = PlayerAchievements()
 
@@ -34,15 +39,15 @@ class Player:
         return
 
     def __getstate__(self):
-        fmt =  "{'playerGUID':%d,'name':'%s'," +\
-            "'maxPlayerEnergy':%d,'energy':%d," +\
-            "'experiencePoints':%d,'level':%d," +\
+        fmt =  "{'playerGUID':%d,'name':'%s','energy':%d," +\
+            "'lastPlayerRecharge':%d,'money':%d,'lastTimePaid':%d," +\
+            "'experiencePoints':%d,'level':%d,'unusedStatPoints':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
-        return fmt % (self.__playerGUID, self.__name,
-                      self.__maxPlayerEnergy, self.__energy,
-                      self.__experiencePoints,self.__level, 
+        return fmt % (self.__playerGUID, self.__name, self.__energy,
+                      self.__lastPlayerRecharge, self.__money, self.__lastTimePaid,
+                      self.__experiencePoints,self.__level,self.__unusedStatPoints,
                       self.__position, self.__franchiseGUID,
                       self.__playerAbilities.__getstate__(),
                       self.__batterStats.__getstate__(), self.__pitcherStats.__getstate__())
@@ -63,17 +68,15 @@ class Player:
         #player
         self.__level = d['level']
         self.__energy = d['energy']
-        self.__maxPlayerEnergy = d['maxPlayerEnergy']
-        #self.__challengePoints =
-        #self.__maxChallengePoints = 
+        self.__challengePoints = 10
         self.__name = d['name']
         self.__experiencePoints = d['experiencePoints']
         
         
-        #self.__lastEnergyRefresh = datetime
-        #self.__money = 0
-        #self.__lastTimePaid = datetime
-        #self.__unusedStatPoints = 0#gsINITIAL_STATPOINT_ALLOC
+        self.__lastPlayerRecharge = d['lastPlayerRecharge']
+        self.__money = d['money']
+        self.__lastTimePaid = d['lastTimePaid']
+        self.__unusedStatPoints = d['unusedStatPoints']
         #self.__achievements = {}
         #self.__items = {}
 
@@ -163,8 +166,8 @@ class Player:
     def increaseEnergy(self, numEnergyUnits):
         self.__energy = min(self.__maxPlayerEnergy, self.__energy + numEnergyUnits)
 
-    def getMaxEnergy(self):
-        return self.__maxPlayerEnergy
+    #def getMaxEnergy(self):
+    #    return self.__maxPlayerEnergy
 
     def getPosition(self):
         return self.__position

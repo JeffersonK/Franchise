@@ -696,6 +696,8 @@ class BatterStats:
 
             if other.__totHits > 0:
                 self.__currentHitStreak += 1
+            else:
+                self.__currentHitStreak = 0
 
             if self.__currentHitStreak > self.__longestHitStreak:
                 self.__longestHitStreak = self.__currentHitStreak

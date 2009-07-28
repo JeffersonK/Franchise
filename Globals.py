@@ -1,7 +1,24 @@
-gsPLAYERENERGY_MAXINITIAL = 10
-
-
 #gs = global static
+import time
+
+#we don't need floats to keep timestamps
+def getTime():
+    return int(time.time())
+
+def safeConvertToInt(val):
+    newVal = 0
+    try:
+        newVal = int(val)
+    except:
+        return None
+
+    return newVal
+
+gsPLAYERENERGY_MAXINITIAL = 10
+gsPLAYERRECOVERYTIME_INITIAL = (5*60) #seconds
+gsPLAYERCHALLENGE_MAXINITIAL = 10
+gsINITIAL_STATPOINT_ALLOC = 10
+gsINITIAL_MONEY_ALLOC = 100000
 
 gsBATTING_LINEUP_LENGTH = 9
 gsPLAYERFREEAGENT = -1
@@ -11,7 +28,10 @@ gsOUTSPERINNING = 3
 gsBASEEMPTY = -1
 
 #Position Codes (INTs)
-gsPITCHER_POSCODE,gsCATCHER_POSCODE,gsFIRSTBASE_POSCODE, gsSECONDBASE_POSCODE, gsTHIRDBASE_POSCODE, gsSHORTSTOP_POSCODE, gsLEFTFIELDER_POSCODE, gsCENTERFIELDER_POSCODE, gsRIGHTFIELDER_POSCODE, gsDESIGNATEDHITTER_POSCODE = range(1,11)
+gsPITCHER_POSCODE,gsCATCHER_POSCODE,gsFIRSTBASE_POSCODE, \
+    gsSECONDBASE_POSCODE, gsTHIRDBASE_POSCODE, gsSHORTSTOP_POSCODE, \
+    gsLEFTFIELDER_POSCODE, gsCENTERFIELDER_POSCODE, gsRIGHTFIELDER_POSCODE, \
+    gsDESIGNATEDHITTER_POSCODE = range(1,11)
 
 #Position Codes (STRs) POSCODE -> POSSTR
 gsPOSITION_POSSTR = {1:'P',2:'C',3:'1B',
@@ -25,9 +45,9 @@ gsSECONDBASE = 0
 gsTHIRDBASE = 0
 
 #x,y from top left as origin going down
-#gsSTRIKEZONES = [(0,0),(1,0),(2,0),
+#gsSTRIKEZONES = [(0,2),(1,2),(2,2),
 #                 (0,1),(1,1),(2,1),
-#                 (0,2),(1,2),(2,2)]
+#                 (0,0),(1,0),(2,0)]
 
 gsPITCHZONES = range(0,10)#range() is non-inclusive on end
 gsSTRIKEZONE = range(9)

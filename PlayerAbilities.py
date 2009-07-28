@@ -1,4 +1,5 @@
 from Globals import *
+import ProbabilityEngine as PrEng
 
 #Chi => Zone
 #mu => pitch
@@ -29,7 +30,6 @@ gsBATTERMUFIXED = 0.0
 #
 # Mu
 ######
-
 
 gsMuPrimeMax = 3.65# 1%
 
@@ -62,19 +62,10 @@ for pitchType in gsPITCHTYPES:
     batterPitchMastery[pitchType] = Chi2b0#gsMuBatterMin
     pitcherPitchMastery[pitchType] = Chi2p0#gsMuPitcherMin
 
-#{'curveball':gsMuBatterMin, 
-#                      'fastball':gsMuBatterMin,
-#                       'slider':gsMuBatterMin,
-#                       'changeup':gsMuBatterMin,
-#                       'knuckleball':gsMuBatterMin}
-
-#pitcherPitchMastery = {'curveball':gsMuPitcherMin, 
-#                       'fastball':gsMuPitcherMin,
-#                       'slider':gsMuPitcherMin,
-#                      'changeup':gsMuPitcherMin,
-#                       'knuckleball':gsMuPitcherMin}
-
-
+gsMAX_PITCHMASTERY_LEVEL = PrEng.gsNUM_PITCHMASTERY_LEVELS
+gsMIN_PITCHMASTERY_LEVEL = 0
+gsMAX_ZONEMASTERY_LEVEL = PrEng.gsNUM_ZONEMASTERY_LEVELS
+gsMIN_ZONEMASTERY_LEVEL = 0
 
 
 #PITCHING
@@ -103,10 +94,11 @@ defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed ou
 #CHARACTER
 defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
                         'prestige':0, #affects how much money the player draws per game and unit time
+                        'recoveryTime':gsPLAYERRECOVERYTIME_INITIAL,#seconds until energy/challenge points are regained
+                        'maxChallengePoints':gsPLAYERCHALLENGE_MAXINITIAL,#maximumNumber of games that can be played per unit time
+                        'maxPlayerEnergy':gsPLAYERENERGY_MAXINITIAL,#determines how much training/jobs can be done/unit time
                         }
-#energyRecovery - affects how fast energy is regained
-#maxChallengePoints
-#
+
 
 class PlayerAbilities:
 
@@ -157,13 +149,58 @@ class PlayerAbilities:
         self.__character = d['character']
         return
 
-
     #PITCHING SPECIFIC
     def getPitchingPitchMasteryMatrix(self):
         return self.__pitching['pitchMastery']
 
-    #def _getPitchingPitchMastery(self, pitchtype):
-    #    return self.__pitching['pitchMastery']
+    def getPitchingZoneMasteryMatrix(self):
+        return self.__pitching['zoneMastery']
+
+    def setPitchingPitchMasteryMatrix(self, matrix):
+        if type(matrix) != type({}):
+            return -1
+        if len(matrix) != len(gsSTRIKEZONE):
+            return -2
+        for type,val in matrix.iteritems():
+            if type not in gsPITCHTYPES:
+                return -3
+            ret = safeConvertToInt(val)
+            if ret == None:
+                return -4
+            if ret > gsMAX_PITCHMASTERY_LEVEL or\
+                    ret < gsMIN_PITCHMASTERY_LEVEL:
+                return -5
+            
+        self.__pitching['pitchMastery'].update(matrix)
+        return 0
+
+    def setPitchingZoneMasteryMatrix(self, matrix):
+        if type(matrix) != type([]):
+            return -1
+        if len(matrix) != len(gsSTRIKEZONE):
+            return -2
+        for pm in matrix:
+            ret = safeConvertToInt(pm)
+            if ret == None:
+                return -3
+            if ret > gsMAX_ZONEMASTERY_LEVEL or\
+                    ret < gsMIN_ZONEMASTERY_LEVEL:
+                return -4
+        self.__pitching['zoneMastery'] = matrix
+        return 0
+    
+
+    def getPitcherStamina(self):
+        return self.__pitching['stamina']
+
+    def getPitcherStrength(self):
+        return self.__pitching['strength']
+
+    def getPitcherControl(self):
+        return self.__pitching['control']
+
+    OLD = """def _getPitchingPitchMastery(self, pitchType):
+        return self.__pitching['pitchMastery'][pitchType]
 
     def _setPitchingPitchMastery(self, pitchtype, newVal):
         try:
@@ -179,137 +216,93 @@ class PlayerAbilities:
         return 0
 
     def getPitchingPitchMasteryFastball(self):
-        return self.__pitching['pitchMastery'][gsFASTBALL]
+        return self._getPitchingPitchMastery(gsFASTBALL)
 
     def setPitchingPitchMasteryFastball(self, newVal):
         return self._setPitchingPitchMastery(gsFASTBALL, newVal)
 
     def getPitchingPitchMasteryCurveball(self):
-        return self.__pitching['pitchMastery'][gsCURVEBALL]
+        return self._getPitchingPitchMastery(gsCURVEBALL)
 
     def setPitchingPitchMasteryCurveball(self, newVal):
         return self._setPitchingPitchMastery(gsCURVEBALL, newVal)
 
     def getPitchingPitchMasterySlider(self):
-        return self.__pitching['pitchMastery'][gsSLIDER]
+        return self._getPitchingPitchMastery(gsSLIDER)
 
     def setPitchingPitchMasterySlider(self, newVal):
         return self._setPitchingPitchMastery(gsSLIDER, newVal)
     
     def getPitchingPitchMasteryChangeup(self):
-        return self.__pitching['pitchMastery'][gsCHANGEUP]
+        return self._getPitchingPitchMastery(gsCHANGEUP)
 
     def setPitchingPitchMasteryChangeup(self, newVal):
         return self._setPitchingPitchMastery(gsCHANGEUP, newVal)
 
     def getPitchingPitchMasteryKnuckleball(self):
-        return self.__pitching['pitchMastery'][gsKNUCKLEBALL]
+        return self._getPitchingPitchMastery(gsKNUCKLEBALL)
 
     def setPitchingPitchMasteryKnuckleball(self, newVal):
         return self._setPitchingPitchMastery(gsKNUCKLEBALL, newVal)
 
     def getPitchingPitchMasterySinker(self):
-        return self.__pitching['pitchMastery'][gsSINKER]
+        return self._getPitchingPitchMastery(gsSINKER)
 
     def setPitchingPitchMasterySinker(self, newVal):
         return self._setPitchingPitchMastery(gsSINKER, newVal)
 
     def getPitchingPitchMasterySpitball(self):
-        return self.__pitching['pitchMastery'][gsSPITBALL]
+        return self._getPitchingPitchMastery(gsSPITBALL)
 
     def setPitchingPitchMasterySpitball(self, newVal):
         return self._setPitchingPitchMastery(gsSPITBALL, newVal)
 
     def getPitchingPitchMasteryForkball(self):
-        return self.__pitching['pitchMastery'][gsFORKBALL]
+        return self._getPitchingPitchMastery(gsFORKBALL)
 
     def setPitchingPitchMasteryForkball(self, newVal):
-        return self._setPitchingPitchMastery(gsFORKBALL, newVal)
-
-    def getPitchingZoneMasteryMatrix(self):
-        return self.__pitching['zoneMastery']
-
-    def getPitcherStamina(self):
-        return self.__pitching['stamina']
-
-    def getPitcherStrength(self):
-        return self.__pitching['strength']
-
-    def getPitcherControl(self):
-        return self.__pitching['control']
-
+        return self._setPitchingPitchMastery(gsFORKBALL, newVal)"""
 
     #BATTING SPECIFIC
     def getBattingPitchMasteryMatrix(self):
         return self.__batting['pitchMastery']
 
-    ######
-    def _setBattingPitchMastery(self, pitchtype, newVal):
-        try:
-            newVal = float(newVal)
-        except:
+    def setBattingPitchMasteryMatrix(self, matrix):
+        if type(matrix) != type({}):
             return -1
-
-        if newVal < gsMuBatterMin or \
-                newVal > gsMuBatterMax:
-            return -1
-
-        self.__batting['pitchMastery'][pitchtype] = newVal
+        if len(matrix) != len(gsSTRIKEZONE):
+            return -2
+        for type,val in matrix.iteritems():
+            if type not in gsPITCHTYPES:
+                return -3
+            ret = safeConvertToInt(val)
+            if ret == None:
+                return -4
+            if ret > gsMAX_PITCHMASTERY_LEVEL or\
+                    ret < gsMIN_PITCHMASTERY_LEVEL:
+                return -5
+            
+        self.__batting['pitchMastery'].update(matrix)
         return 0
-
-    def getBattingPitchMasteryFastball(self):
-        return self.__batting['pitchMastery'][gsFASTBALL]
-    
-    def setBattingPitchMasteryFastball(self, newVal):
-        return self._setBattingPitchMastery(gsFASTBALL, newVal)
-
-    def getBattingPitchMasteryCurveball(self):
-        return self.__batting['pitchMastery'][gsCURVEBALL]
-
-    def setBattingPitchMasteryCurveball(self, newVal):
-        return self._setBattingPitchMastery(gsCURVEBALL, newVal)
-
-    def getBattingPitchMasterySlider(self):
-        return self.__batting['pitchMastery'][gsSLIDER]
-
-    def setBattingPitchMasterySlider(self, newVal):
-        return self._setBattingPitchMastery(gsSLIDER, newVal)
-
-    def getBattingPitchMasteryChangeup(self):
-        return self.__batting['pitchMastery'][gsCHANGEUP]
-
-    def setBattingPitchMasteryChangeup(self, newVal):
-        return self._setBattingPitchMastery(gsCHANGEUP, newVal)
-
-    def getBattingPitchMasteryKnuckleball(self):
-        return self.__batting['pitchMastery'][gsKNUCKLEBALL]
-
-    def setBattingPitchMasteryKnuckleball(self, newVal):
-        return self._setBattingPitchMastery(gsKNUCKLEBALL, newVal)
-
-    def getBattingPitchMasterySinker(self):
-        return self.__batting['pitchMastery'][gsSINKER]
-
-    def setBattingPitchMasterySinker(self, newVal):
-        return self._setBattingPitchMastery(gsSINKER, newVal)
-
-    def getBattingPitchMasterySpitball(self):
-        return self.__batting['pitchMastery'][gsSPITBALL]
-
-    def setBattingPitchMasterySpitball(self, newVal):
-        return self._setBattingPitchMastery(gsSPITBALL, newVal)
-
-    def getBattingPitchMasteryForkball(self):
-        return self.__batting['pitchMastery'][gsFORKBALL]
-
-    def setBattingPitchMasteryForkball(self, newVal):
-        return self._setBattingPitchMastery(gsFORKBALL, newVal)
-
-    ##############
 
 
     def getBattingZoneMasteryMatrix(self):
         return self.__batting['zoneMastery']
+
+    def setBattingZoneMasteryMatrix(self, matrix):
+        if type(matrix) != type([]):
+            return -1
+        if len(matrix) != len(gsSTRIKEZONE):
+            return -2
+        for pm in matrix:
+            ret = safeConvertToInt(pm)
+            if ret == None:
+                return -3
+            if ret > gsMAX_ZONEMASTERY_LEVEL or\
+                    ret < gsMIN_ZONEMASTERY_LEVEL:
+                return -4
+        self.__batting['zoneMastery'] = matrix
+        return 0
 
     def getSpeed(self):
         return self.__running['speed']
@@ -345,6 +338,75 @@ class PlayerAbilities:
         self.__batting['patience'] = newVal
         return 0
 
+
+
+    OLD = """
+    def _getBattingPitchMastery(self, pitchType):
+        return self.__batting['pitchMastery'][pitchType]
+
+    ######
+    def _setBattingPitchMastery(self, pitchtype, newVal):
+        try:
+            newVal = float(newVal)
+        except:
+            return -1
+
+        if newVal < gsMuBatterMin or \
+                newVal > gsMuBatterMax:
+            return -1
+
+        self.__batting['pitchMastery'][pitchtype] = newVal
+        return 0
+
+    def getBattingPitchMasteryFastball(self):
+        return self._getBattingPitchMastery(gsFASTBALL)
+    
+    def setBattingPitchMasteryFastball(self, newVal):
+        return self._setBattingPitchMastery(gsFASTBALL, newVal)
+
+    def getBattingPitchMasteryCurveball(self):
+        return self._getBattingPitchMastery(gsCURVEBALL)
+
+    def setBattingPitchMasteryCurveball(self, newVal):
+        return self._setBattingPitchMastery(gsCURVEBALL, newVal)
+
+    def getBattingPitchMasterySlider(self):
+        return self._getBattingPitchMastery(gsSLIDER)
+
+    def setBattingPitchMasterySlider(self, newVal):
+        return self._setBattingPitchMastery(gsSLIDER, newVal)
+
+    def getBattingPitchMasteryChangeup(self):
+        return self._getBattingPitchMastery(gsCHANGEUP)
+
+    def setBattingPitchMasteryChangeup(self, newVal):
+        return self._setBattingPitchMastery(gsCHANGEUP, newVal)
+
+    def getBattingPitchMasteryKnuckleball(self):
+        return self._getBattingPitchMastery(gsKNUCKLEBALL)
+
+    def setBattingPitchMasteryKnuckleball(self, newVal):
+        return self._setBattingPitchMastery(gsKNUCKLEBALL, newVal)
+
+    def getBattingPitchMasterySinker(self):
+        return self._getBattingPitchMastery(gsSINKER)
+
+    def setBattingPitchMasterySinker(self, newVal):
+        return self._setBattingPitchMastery(gsSINKER, newVal)
+
+    def getBattingPitchMasterySpitball(self):
+        return self._getBattingPitchMastery(gsSPITBALL)
+
+    def setBattingPitchMasterySpitball(self, newVal):
+        return self._setBattingPitchMastery(gsSPITBALL, newVal)
+
+    def getBattingPitchMasteryForkball(self):
+        return self._getBattingPitchMastery(gsFORKBALL)
+
+    def setBattingPitchMasteryForkball(self, newVal):
+        return self._setBattingPitchMastery(gsFORKBALL, newVal)
+
+    ##############"""
 
 def main():
 
