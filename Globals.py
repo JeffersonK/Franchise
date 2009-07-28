@@ -14,6 +14,14 @@ def safeConvertToInt(val):
 
     return newVal
 
+def safeConvertToFloat(val):
+    newVal = 0
+    try:
+        newVal = float(val)
+    except:
+        return None
+
+    return newVal
 gsPLAYERENERGY_MAXINITIAL = 10
 gsPLAYERRECOVERYTIME_INITIAL = (5*60) #seconds
 gsPLAYERCHALLENGE_MAXINITIAL = 10

@@ -1,8 +1,76 @@
 import pystats
 import array
-import PlayerAbilities
+#import PlayerAbilities
 from Globals import *
 
+
+################################################
+#
+# BoundaryConditions
+#
+# PrContact(given pitchType, Best Batter, Worst Pitcher) = 0.90
+# PrContact(given pitchType, Worst Batter, Best Pitcher) = 0.10
+# PrContact(given pitchType, Best Batter, Best Pitcher) = 0.50
+# PrContact(given pitchType, Worst Batter, Worst Pitcher) = 0.50
+#
+# "same conditions for Zone"
+#
+#
+# because these two probabilities are multiplied to get the PrContact
+# it means the worst probability is .10^2 ~1% and the best is .90^2 ~80%
+#
+# We chose to have each pitch have a possible 100 levels of mastery 
+# and each zone to have the same
+###############################################
+gsNUM_PITCHMASTERY_LEVELS = 100.0
+gsNUM_ZONEMASTERY_LEVELS = 100.0
+gsBC_BESTBAT_VS_WORSTPIT = 0.90
+gsBC_WORSTBAT_VS_BESTPIT = 0.10
+gsBC_SAMEBAT_VS_SAMEPIT = 0.50
+gsPITCHMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_PITCHMASTERY_LEVELS)
+gsZONEMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_ZONEMASTERY_LEVELS)
+def PrContactNew(pitcherAbilities, batterAbilities, pitchAttrs):
+#(batterPitchLvl, pitcherPitchLvl, batterZoneLvl, pitcherZoneLvl):
+
+    pitchType, pitchZone = pitchAttrs
+
+    batterZoneMastery = batterAbilities.getBattingZoneMasteryMatrix()
+    pitcherZoneMastery = pitcherAbilities.getPitchingZoneMasteryMatrix()
+
+    batterPitchMastery = batterAbilities.getBattingPitchMasteryMatrix()
+    pitcherPitchMastery = pitcherAbilities.getPitchingPitchMasteryMatrix()
+
+    if pitchType not in pitcherPitchMastery:
+        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+
+    if pitchType not in batterPitchMastery:
+        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+
+    batterPitchLvl = batterPitchMastery[pitchType]
+    pitcherPitchLvl = pitcherPitchMastery[pitchType]
+
+    batterZoneLvl = batterZoneMastery[pitchZone]
+    pitcherZoneLvl = pitcherZoneMastery[pitchZone]
+    
+    if type(batterPitchLvl) != type(float()):
+        print "DEBUG: batterPitchLvl not a float"
+
+    if type(pitcherPitchLvl) != type(float()):
+        print "DEBUG: pitcherPitchLvl not a float"
+
+    if type(batterZoneLvl) != type(float()):
+        print "DEBUG: batterZoneLvl not a float"
+
+    if type(pitcherZoneLvl) != type(float()):
+        print "DEBUG: pitcherZoneLvl not a float"
+
+    prContactPitch = gsBC_SAMEBAT_VS_SAMEPIT  + (batterPitchLvl*gsPITCHMASTERY_LEVEL_STEPSIZE) - (pitcherPitchLvl*gsPITCHMASTERY_LEVEL_STEPSIZE)
+    prContactZone = gsBC_SAMEBAT_VS_SAMEPIT + (batterZoneLvl*gsZONEMASTERY_LEVEL_STEPSIZE) - (pitcherZoneLvl*gsZONEMASTERY_LEVEL_STEPSIZE)
+    #print prContactPitch
+    #print prContactZone
+    return prContactPitch * prContactZone
+
+OLD = """
 #
 #
 #
@@ -30,59 +98,6 @@ def MuPrime(MuBatter, MuPitcher):
 
 #def PrPower(pitcherAbilities, batterAbilities, 
 
-################################################
-#
-# BoundaryConditions
-#
-# PrContact(given pitchType, Best Batter, Worst Pitcher) = 0.90
-# PrContact(given pitchType, Worst Batter, Best Pitcher) = 0.10
-# PrContact(given pitchType, Best Batter, Best Pitcher) = 0.50
-# PrContact(given pitchType, Worst Batter, Worst Pitcher) = 0.50
-#
-# "same conditions for Zone"
-#
-#
-# because these two probabilities are multiplied to get the PrContact
-# it means the worst probability is .10^2 ~1% and the best is .90^2 ~80%
-#
-# We chose to have each pitch have a possible 100 levels of mastery 
-# and each zone to have the same
-###############################################
-gsNUM_PITCHMASTERY_LEVELS = 100.0
-gsNUM_ZONEMASTERY_LEVELS = 100.0
-gsBC_BESTBAT_VS_WORSTPIT = 0.90
-gsBC_WORSTBAT_VS_BESTPIT = 0.10
-gsBC_SAMEBAT_VS_SAMEPIT = 0.50
-gsPITCHMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/gsNUM_PITCHMASTERY_LEVELS
-gsZONEMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/gsNUM_ZONEMASTERY_LEVELS
-def PrContactNew(pitcherAbilities, batterAbilities, pitchAttrs):
-#(batterPitchLvl, pitcherPitchLvl, batterZoneLvl, pitcherZoneLvl):
-
-    pitchType, pitchZone = pitchAttrs
-
-    batterZoneMastery = batterAbilities.getBattingZoneMasteryMatrix()
-    pitcherZoneMastery = pitcherAbilities.getPitchingZoneMasteryMatrix()
-
-    batterPitchMastery = batterAbilities.getBattingPitchMasteryMatrix()
-    pitcherPitchMastery = pitcherAbilities.getPitchingPitchMasteryMatrix()
-
-    if pitchType not in pitcherPitchMastery:
-        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
-
-    if pitchType not in batterPitchMastery:
-        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
-
-    batterPitchLvl = batterPitchMastery[pitchType]
-    pitcherPitchLvl = pitcherPitchMastery[pitchType]
-
-    batterZoneLvl = batterZoneMastery[pitchZone]
-    pitcherZoneLvl = pitcherZoneMastery[pitchZone]
-    
-    prContactPitch = gsBC_SAMEBAT_VS_SAMEPIT  + (batterPitchLvl*gsPITCHMASTERY_LEVEL_STEPSIZE) - (pitcherPitchLvl*gsPITCHMASTERY_LEVEL_STEPSIZE)
-    prContactZone = gsBC_SAMEBAT_VS_SAMEPIT + (batterZoneLvl*gsZONEMASTERY_LEVEL_STEPSIZE) - (pitcherZoneLvl*gsZONEMASTERY_LEVEL_STEPSIZE)
-    #print prContactPitch
-    #print prContactZone
-    return prContactPitch * prContactZone
 #
 # 
 #
@@ -211,7 +226,7 @@ def numIntegrate(n, x0, x1,
         i += 1
 
     return accum
-
+"""
 
 def generateVaryBattersChiSq():
     #Vary bat(chi^2)

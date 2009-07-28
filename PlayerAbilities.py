@@ -1,5 +1,5 @@
 from Globals import *
-import ProbabilityEngine as PrEng
+from ProbabilityEngine import *
 
 #Chi => Zone
 #mu => pitch
@@ -55,16 +55,15 @@ pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
                       Chi2p0, Chi2p0, Chi2p0]
 
 
-
 batterPitchMastery = {}
 pitcherPitchMastery = {}
 for pitchType in gsPITCHTYPES:
     batterPitchMastery[pitchType] = Chi2b0#gsMuBatterMin
     pitcherPitchMastery[pitchType] = Chi2p0#gsMuPitcherMin
 
-gsMAX_PITCHMASTERY_LEVEL = PrEng.gsNUM_PITCHMASTERY_LEVELS
+gsMAX_PITCHMASTERY_LEVEL = gsNUM_PITCHMASTERY_LEVELS
 gsMIN_PITCHMASTERY_LEVEL = 0
-gsMAX_ZONEMASTERY_LEVEL = PrEng.gsNUM_ZONEMASTERY_LEVELS
+gsMAX_ZONEMASTERY_LEVEL = gsNUM_ZONEMASTERY_LEVELS
 gsMIN_ZONEMASTERY_LEVEL = 0
 
 
@@ -159,12 +158,12 @@ class PlayerAbilities:
     def setPitchingPitchMasteryMatrix(self, matrix):
         if type(matrix) != type({}):
             return -1
-        if len(matrix) != len(gsSTRIKEZONE):
+        if len(matrix) == 0 or len(matrix) > len(gsPITCHTYPES):
             return -2
-        for type,val in matrix.iteritems():
-            if type not in gsPITCHTYPES:
+        for pitchtype,val in matrix.iteritems():
+            if pitchtype not in gsPITCHTYPES:
                 return -3
-            ret = safeConvertToInt(val)
+            ret = safeConvertToFloat(val)
             if ret == None:
                 return -4
             if ret > gsMAX_PITCHMASTERY_LEVEL or\
@@ -180,7 +179,7 @@ class PlayerAbilities:
         if len(matrix) != len(gsSTRIKEZONE):
             return -2
         for pm in matrix:
-            ret = safeConvertToInt(pm)
+            ret = safeConvertToFloat(pm)
             if ret == None:
                 return -3
             if ret > gsMAX_ZONEMASTERY_LEVEL or\
@@ -270,12 +269,12 @@ class PlayerAbilities:
     def setBattingPitchMasteryMatrix(self, matrix):
         if type(matrix) != type({}):
             return -1
-        if len(matrix) != len(gsSTRIKEZONE):
+        if len(matrix) == 0 or len(matrix) > len(gsPITCHTYPES):
             return -2
-        for type,val in matrix.iteritems():
-            if type not in gsPITCHTYPES:
+        for pitchtype,val in matrix.iteritems():
+            if pitchtype not in gsPITCHTYPES:
                 return -3
-            ret = safeConvertToInt(val)
+            ret = safeConvertToFloat(val)
             if ret == None:
                 return -4
             if ret > gsMAX_PITCHMASTERY_LEVEL or\
@@ -295,7 +294,7 @@ class PlayerAbilities:
         if len(matrix) != len(gsSTRIKEZONE):
             return -2
         for pm in matrix:
-            ret = safeConvertToInt(pm)
+            ret = safeConvertToFloat(pm)
             if ret == None:
                 return -3
             if ret > gsMAX_ZONEMASTERY_LEVEL or\
@@ -412,16 +411,27 @@ def main():
 
     pa = PlayerAbilities()
     print pa
-    pa.setBattingPitchMasteryFastball(1.1)
-    print pa
-    pa.setBattingPitchMasteryFastball('2.1')
-    print pa
 
-    pa.setPitchingPitchMasteryFastball(1.1)
-    print pa
-    pa.setPitchingPitchMasteryFastball('2.1')
-    print pa
+    print pa.getBattingZoneMasteryMatrix()
+    print pa.setBattingZoneMasteryMatrix(['2.1']*9)
+    print pa.getBattingZoneMasteryMatrix()
 
+    print pa.getPitchingZoneMasteryMatrix()
+    print pa.setPitchingZoneMasteryMatrix(['2.1']*9)
+    print pa.getPitchingZoneMasteryMatrix()
+    
+    pitchMastery = {}
+    for pitchType in gsPITCHTYPES:
+        pitchMastery[pitchType] = '2.1'
+        
+    print pa.getBattingPitchMasteryMatrix()
+    print pa.setBattingPitchMasteryMatrix(pitchMastery)
+    print pa.getBattingPitchMasteryMatrix()
 
+    print pa.getPitchingPitchMasteryMatrix()
+    print pa.setPitchingPitchMasteryMatrix(pitchMastery)
+    print pa.getPitchingPitchMasteryMatrix()
+
+    return
 if __name__ == "__main__":
     main()
