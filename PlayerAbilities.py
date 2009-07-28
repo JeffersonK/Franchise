@@ -302,4 +302,5 @@ class PlayerAbilities:
     def getPrestige(self):
         return self.__character['prestige']
 
-
+    def getPatience(self):
+        return self.__batting['patience']
