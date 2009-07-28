@@ -232,9 +232,14 @@ class PlayerAbilities:
 
     ######
     def _setBattingPitchMastery(self, pitchtype, newVal):
+        try:
+            newVal = float(newVal)
+        except:
+            return -1
+
         if newVal < gsMuBatterMin or \
                 newVal > gsMuBatterMax:
-            return -1.0
+            return -1
 
         self.__batting['pitchMastery'][pitchtype] = newVal
         return 0
@@ -324,6 +329,8 @@ def main():
     pa = PlayerAbilities()
     print pa
     pa.setBattingPitchMasteryFastball(1.1)
+    print pa
+    pa.setBattingPitchMasteryFastball('2.1')
     print pa
 
 if __name__ == "__main__":
