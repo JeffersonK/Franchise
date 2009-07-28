@@ -29,7 +29,40 @@ gsSTATSUBTYPE_SINGLEPLAYSTATS = 'PLAY'
 #            self.__statZones += [(initValue,initValue)
 
 
+#
+# Functions we can reuse to compute stats
+#
+def computeBattingAvg(numAtBats, numHits):
+    if numAtBats <= 0:
+        return None
+    avg = float(numAtBats) / float(numHits)
+    avg = "%.3f" % avg
+    return avg
 
+def computeSluggingPct(singles, doubles, triples, homeruns, atBats):
+    if atBats <= 0:
+        return None
+
+    num = float(singles) + 2*float(doubles) + 3*float(triples) + 4*float(homeruns)
+    slgpct = num / float(atBats)
+    slgpct = "%.3f" % slgpct
+    return slgpct
+
+def computeWinPct(wins, losses):
+    if wins + losses <= 0:
+        return None
+
+    winPct = float(wins) / float(wins + losses)
+    winPct = "%.3f" % winPct
+    return winPct
+
+def computeOnBasePct(hits, walks, hbps, atBats):
+    if atBats <= 0:
+        return None
+
+    obp = float(hits + walks + hbps) / float(atBats)
+    obp = "%.3f" % obp
+    return obp
 ###############################
 #
 #
@@ -326,12 +359,152 @@ class PitcherStats:
 
     #def addEarnedRuns(self, n=1):
     #    self.__totEarnedRuns += n
-
     def getStrikes(self):
         return self.__totStrikesThrown
 
     def getBalls(self):
         return self.__totBallsThrown
+    
+
+
+    #
+    #
+    #
+    #
+    def getStarts(self):
+        return self.__starts
+
+    def getWins(self):
+        return self.__wins
+    
+    def getLosses(self):
+        return self.__losses
+
+    def getBatterResults(self):
+        return self.__batterResults
+
+    def getTotBattersFaced(self):
+        return self.__totBattersFaced
+
+    def getCurrentWinStreak(self):
+        return self.__currentWinStreak
+
+    def getLongestWinStreak(self):
+        return self.__longestWinStreak
+    
+    def getCurrentLosingStreak(self):
+        return self.__currentLosingStreak
+
+    def getLongestLostingStreak(self):
+        return self.__longestLosingStreak
+
+    def getShoutouts(self):
+        return self.__shutouts
+
+    def getNoHitters(self):
+        return self.__noHitters
+
+    def getPerfectGames(self):
+        return self.__perfectGames
+
+    def getTotBattersFaced(self):
+        return self.__totBattersFaced
+    
+    def getTotStrikeouts(self):
+        return self.__totKs
+
+    def getTotWalks(self):
+        return self.__totWalksThrown
+
+    def getTotOuts(self):
+        return self.__totOutsThrown
+
+    def getTotEarnedRuns(self):
+        return self.__totEarnedRuns
+
+    def getTotPitchesThrown(self):
+        return self.__totPitchesThrown
+
+    def getTotFastballsThrown(self):
+        return self.__totFastballsThrown
+
+    def getTotCurveballsThrown(self):
+        return self.__totCurveballsThrown
+
+    def getTotKnuckleballsThrown(self):
+        return self.__totKnuckleballsThrown
+
+    def getTotSlidersThrown(self):
+        return self.__totSlidersThrown
+
+    def getTotChangeupsThrown(self):
+        return self.__totChangeupsThrown
+
+    def getTotSinkersThrown(self):
+        return self.__totSinkersThrown
+
+    def getTotForkballsThrown(self):
+        return self.__totForkballsThrown
+    
+    def getTotSpitballsThrown(self):
+        return self.__totSpitballsThrown
+
+    def getTotStrikesThrown(self):
+        return self.__totStrikesThrown
+
+    def getTotBallsThrown(self):
+        return self.__totBallsThrown
+
+    def getTotHitsAllowed(self):
+        return self.__totHitsAllowed
+
+    def getTotSinglesAllowed(self):
+        return self.__tot1BsAllowed
+
+    def getTotDoublesAllowed(self):
+        return self.__tot2BsAllowed
+
+    def getTotTriplesAllowed(self):
+        return self.__tot3BsAllowed
+
+    def getTotHRsAllowed(self):
+        return self.__totHomeRunsAllowed
+        
+    def getTotGrandSlamsAllowed(self):
+        return self.__totGrandSlamsAllowed
+
+    def getLongestHRAllowed(self):
+        return self.__longestHRAllowed
+    
+    def computeWinPct(self):
+        return computeWinPct(self.getWins(), self.getLosses)
+        #if self.getWins() + self.getLosses() == 0:
+        #    return None
+        #winpct = float(self.getWins()) / float(self.getWins() + self.getLosses())
+        #winpct = "%.3f" % winpct
+        #return winpct
+
+    def computeERA(self):
+        if self.getTotOuts() <= 0:
+            return None
+        era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERINNING)))
+        era = "%.2f" % era
+        return era
+    
+    def computeOpposingBattersAvg(self):
+        return computeBattingAvg(self.getTotBattersFaced(), self.getTotHitsAllowed())
+        
+    def computeBattersSlgPct(self):
+        return computeSluggingPct(self.getTotSinglesAllowed(),
+                                  self.getTotDoublesAllowed(),
+                                  self.getTotTriplesAllowed(),
+                                  self.getTotHRsAllowed(),
+                                  self.getTotBattersFaced())
+    #Algorithm as defined at www.baseball-almanac.cmo/stats2.shtml
+    #def getPitcherScore(self):
+    #    score = 50
+    #    score += self.__totOutsThrown
+    #    score += min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 
     
     #pitchType: fastball, curveball, etc...
     #pitchCall: ball/strike/contact
@@ -640,38 +813,16 @@ class BatterStats:
         return self.__totAtBats != 0
 
     def getBattingAvg(self):
-        if not self._hasAtBats():
-            return None
-
-        avg = float(self.__totHits)/float(self.__totAtBats)
-        avg = "%.3f" % avg
-        return avg
-        #return float(avg)
-
+        return computeBattingAvg(self.__totAtBats, self.__totHits)
+    
     def getSluggingPct(self):
-        if not self._hasAtBats():
-            return None
-
-        totalBases = float(self.__tot1Bs + 2*self.__tot2Bs + 3*self.__tot3Bs + 4*self.__totHRs)
-        slgpct = totalBases / float(self.__totAtBats)
-        slgpct = "%.3f" % slgpct
-        return slgpct
+        return computeSluggingPct(self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs, self.__totAtBats)
 
     def getOnBasePct(self):
-        if not self._hasAtBats():
-            return None
-
-        obp = float(self.__totHits + self.__totWalks + self.__totHBP) / float(self.__totAtBats)
-        obp = "%.3f" % obp
-        return obp
+        return computeOnBasePct(self.__totHits, self.__totWalks, self.__totHBP, self.__totAtBats)
 
     def getWinPct(self):
-        if self.__gamesPlayed == 0:
-            return None
-
-        winPct = float(self.__wins) / float(self.__wins + self.__losses)
-        winPct = "%.3f" % winPct
-        return winPct
+        return computeWinPct(self.__wins, self.__losses)
 
     def getWins(self):
         if self.__gamesPlayed == 0:
