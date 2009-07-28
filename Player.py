@@ -94,9 +94,6 @@ class Player:
     def getPlayerAbilities(self):
         return self.__playerAbilities
 
-    def getName(self):
-        return self.__name
-
     def getBatterStats(self):
         return self.__batterStats
 
@@ -122,15 +119,20 @@ class Player:
         updatePlayerStatsEvents = ['+1 EXP']
         return updatePlayerStatsEvents
 
-    def setPosition(self, pos):
-        if pos.upper() not in Globals.gsPOSITION_POSSTR.values():
-            return -1
-
-        self.__position = pos
-        return 0
-
     def incRunsScored(self):
         self.__batterStats.incRunsScored()
+
+    def getName(self):
+        return self.__name
+
+    def setName(self, name):
+        self.__name = name
+
+    def getExperience(self):
+        return self.__experiencePoints
+
+    def getLevel(self):
+        return self.__level
 
     def getEnergy(self):
         return self.__energy
@@ -141,8 +143,18 @@ class Player:
     def increaseEnergy(self, numEnergyUnits):
         self.__energy = min(self.__maxPlayerEnergy, self.__energy + numEnergyUnits)
 
+    def getMaxEnergy(self):
+        return self.__maxPlayerEnergy
+
     def getPosition(self):
         return self.__position
+
+    def setPosition(self, pos):
+        if pos.upper() not in Globals.gsPOSITION_POSSTR.values():
+            return -1
+
+        self.__position = pos
+        return 0
 
     def guid(self):
         return self.__playerGUID
