@@ -708,6 +708,26 @@ class BatterStats:
             return None
         return self.__longestHitStreak
 
+    def getSingles(self):
+        if not self._hasAtBats():
+            return None
+        return self.__tot1Bs
+
+    def getDoubles(self):
+        if not self._hasAtBats():
+            return None
+        return self.__tot2Bs
+
+    def getTriples(self):
+        if not self._hasAtBats():
+            return None
+        return self.__tot3Bs
+
+    def getWalks(self):
+        if not self._hasAtBats():
+            return None
+        return self.__totWalks
+
     ###
 
     def __str__(self):
