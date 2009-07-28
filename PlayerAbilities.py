@@ -130,6 +130,9 @@ class PlayerAbilities:
         
         return
 
+    def __str__(self):
+        return self.__getstate__()
+
     def __getstate__(self):
         fmt = "{'fielding':%s,'batting':%s,'pitching':%s,'running':%s,'character':%s}"
         return fmt % (str(self.__fielding), 
@@ -311,5 +314,17 @@ class PlayerAbilities:
     def getPatience(self):
         return self.__batting['patience']
 
-    def setPateience(self, newVal):
+    def setPatience(self, newVal):
         self.__batting['patience'] = newVal
+
+
+
+def main():
+
+    pa = PlayerAbilities()
+    print pa
+    pa.setBattingPitchMasteryFastball(1.1)
+    print pa
+
+if __name__ == "__main__":
+    main()
