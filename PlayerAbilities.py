@@ -158,9 +158,14 @@ class PlayerAbilities:
         return self.__pitching['pitchMastery']
 
     def _setPitchingPitchMastery(self, pitchtype, newVal):
+        try:
+            newVal = float(newVal)
+        except:
+            return -1
+        
         if newVal < gsMuPitcherMin or \
                 newVal > gsMuPitcherMax:
-            return -1.0
+            return -1
 
         self.__batting['pitchMastery'][pitchtype] = newVal
         return 0
@@ -308,20 +313,29 @@ class PlayerAbilities:
         return self.__character['leadership']
 
     def setLeadership(self, newVal):
+        if type(newVal) != type(0):
+            return -1
         self.__character['leadership'] = newVal
+        return 0
 
     def getPrestige(self):
         return self.__character['prestige']
 
     def setPrestige(self, newVal):
+        if type(newVal) != type(0):
+            return -1
+
         self.__character['prestige'] = newVal
+        return 0
 
     def getPatience(self):
         return self.__batting['patience']
 
     def setPatience(self, newVal):
+        if type(newVal) != type(0):
+            return -1
         self.__batting['patience'] = newVal
-
+        return 0
 
 
 def main():

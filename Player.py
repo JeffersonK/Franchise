@@ -130,7 +130,11 @@ class Player:
         return self.__name
 
     def setName(self, name):
+        if type(name) != type(''):
+            return -1
+
         self.__name = name
+        return 0
 
     def getExperience(self):
         return self.__experiencePoints
@@ -154,6 +158,9 @@ class Player:
         return self.__position
 
     def setPosition(self, pos):
+        if type(pos) != type(''):
+            return -1
+
         if pos.upper() not in Globals.gsPOSITION_POSSTR.values():
             return -1
 
@@ -164,8 +171,16 @@ class Player:
         return self.__playerGUID
 
     def setPlayerFranchise(self, franchiseGUID):
-        self.__franchiseGUID = franchiseGUID
+        f = -1
+        try:
+            f = int(franchiseGUID)
+        except:
+            return -1
+        if f < 0:
+            return -1
 
+        self.__franchiseGUID = franchiseGUID
+        return 0
     #def generatePlayerEvents(self, state):
     #    return
 
