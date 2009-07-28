@@ -137,21 +137,21 @@ class Franchise:
 
     def __setstate__(self, dictStr):
         
-        print "TODO: check for eval errors!!!"
+        #print "TODO: check for eval errors!!!"
         d = eval(dictStr)
         self.__owner = d['owner']
         self.__teamName = d['teamName']
         self.__franchiseGUID = d['franchiseGUID']
 
         #TODO: check for errors loading this !!!        
-        self.__players = d['players']#eval(d['players'])
-        self.__lineup = d['lineup']#eval(d['lineup'])
-        self.__rotation = d['rotation']#eval(d['rotation'])
+        self.__players = d['players']
+        self.__lineup = d['lineup']
+        self.__rotation = d['rotation']
 
         self.__wins = d['wins']
         self.__losses = d['losses']
-    
-
+        return self
+        
     #def teamName(self):
     #    return self.__teamName
 

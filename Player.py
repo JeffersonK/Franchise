@@ -57,8 +57,12 @@ class Player:
     def __setstate__(self, dictstr):
 
         print "TODO: check for eval errors!!!"
-        d = eval(dictstr)
-
+        d = None
+        try:
+            d = eval(dictstr)
+        except:
+            print "could not load player object file corrupt."
+            return
         self.__franchiseGUID = d['franchiseGUID']
 
         self.__playerGUID = d['playerGUID']
@@ -92,7 +96,7 @@ class Player:
         
         pitcherStatsStr = d['pitcherStats']
         self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS).__setstate__(pitcherStatsStr)
-
+        return self
 
     def __str__(self):
         return self.__getstate__()
@@ -135,8 +139,8 @@ class Player:
             self.__batterStats += playerGameStats
             #print self
 
-        updatePlayerStatsEvents = ['+1 EXP']
-        return updatePlayerStatsEvents
+        #updatePlayerStatsEvents = ['+1 EXP']
+        return #updatePlayerStatsEvents
 
     def incRunsScored(self):
         self.__batterStats.incRunsScored()
@@ -153,6 +157,15 @@ class Player:
 
     def getExperience(self):
         return self.__experiencePoints
+
+    def setExperience(self, XP):
+        val = safeConvertToInt(XP)
+        if val == None:
+            return -1
+        if val < 0:
+            return -2
+        self.__experiencePoints = XP
+        return 0
 
     def getLevel(self):
         return self.__level

@@ -166,7 +166,6 @@ class GlobalState:
         return self.__nextFranchiseGUID - 1
 
     def __getstate__(self):
-        
         state = "{'nextPlayerGUID':%d,'nextFranchiseGUID':%d}" % (self.__nextPlayerGUID, self.__nextFranchiseGUID)
         return state 
 
@@ -175,5 +174,6 @@ class GlobalState:
         d = eval(dictStr)
         self.__nextPlayerGUID = d['nextPlayerGUID']
         self.__nextFranchiseGUID = d['nextFranchiseGUID']
+        return self
 
 #globalState = GlobalState()
