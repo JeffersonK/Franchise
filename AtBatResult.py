@@ -253,9 +253,9 @@ class AtBatResult:
         #it's in the strike zone
         #we always swing this call get the probability that the
         #batter makes contact
-        pr = PrEng.PrContact(pitcherAbil, 
-                             batterAbil,
-                             (pitchType, pitchZone))
+        pr = PrEng.PrContactNew(pitcherAbil, 
+                                batterAbil,
+                                (pitchType, pitchZone))
 
         #using the probability of contact we then
         #do our monte carlo simulation to determine

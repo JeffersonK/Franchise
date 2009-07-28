@@ -43,15 +43,22 @@ def PrContactNew(pitcherAbilities, batterAbilities, pitchAttrs):
     batterPitchMastery = batterAbilities.getBattingPitchMasteryMatrix()#['pitchMastery']
     pitcherPitchMastery = pitcherAbilities.getPitchingPitchMasteryMatrix()#['pitchMastery']
 
-    batterPitchLvl 
-    pitcherPitchLvl
-    batterZoneLvl
-    pitcherZoneLvl
+    if pitchType not in pitcherPitchMastery:
+        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+
+    if pitchType not in batterPitchMastery:
+        print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType
+
+    batterPitchLvl = batterPitchMastery[pitchType]
+    pitcherPitchLvl = pitcherPitchMastery[pitchType]
+
+    batterZoneLvl = batterZoneMastery[pitchZone]
+    pitcherZoneLvl = pitcherZoneMastery[pitchZone]
     
     prContactPitch = .50 + (batterPitchLvl*0.004) - (pitcherPitchLvl*0.004)
     prContactZone = .50 + (batterZoneLvl*0.004) - (pitcherZoneLvl*0.004)
-    print prContactPitch
-    print prContactZone
+    #print prContactPitch
+    #print prContactZone
     return prContactPitch * prContactZone
 #
 # 
@@ -96,18 +103,17 @@ def PrContact(pitcherAbilities, batterAbilities, pitchAttrs):
                                      chi2prime, PlayerAbilities.gsBATTERMUFIXED,
                                      PlayerAbilities.gsPITCHERCHI2FIXED, muPrime)
                                  
-
-    chi2PrimePitch = Chi2Prime(batterPitchMastery[pitchType], pitcherPitchMastery[pitchType])
-    probOfContactPitch = numIntegrate(100, -5, 5,
-                                      chi2PrimePitch, PlayerAbilities.gsBATTERMUFIXED,
-                                      PlayerAbilities.gsPITCHERCHI2FIXED, muPrime)
+    #chi2PrimePitch = Chi2Prime(batterPitchMastery[pitchType], pitcherPitchMastery[pitchType])
+    #probOfContactPitch = numIntegrate(100, -5, 5,
+    #                                  chi2PrimePitch, PlayerAbilities.gsBATTERMUFIXED,
+    #                                  PlayerAbilities.gsPITCHERCHI2FIXED, muPrime)
     
 
                                       
-    print "Pr(ZoneContact):%f\n" % probOfContactZone
-    print "Pr(PitchContact):%f\n" % probOfContactPitch
+    #print "Pr(ZoneContact):%f\n" % probOfContactZone
+    #print "Pr(PitchContact):%f\n" % probOfContactPitch
 
-    return probOfContactZone*probOfContactPitch
+    return probOfContactZone#*probOfContactPitch
 
 
 def pdfXY(xy, mx, my, sx, sy):
