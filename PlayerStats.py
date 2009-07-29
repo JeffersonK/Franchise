@@ -141,7 +141,7 @@ class PitcherStats:
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
             self.__starts += other.__starts
             self.__saves += other.__saves
-
+        
             #Throw Event when a new record is set
             if other.__totKs > self.__mostKsGame:
                 self.__mostKsGame = other.__totKs
@@ -560,6 +560,8 @@ class PitcherStats:
                 self.__totHRsAllowed += 1
                 self.__totStrikesThrown += 1
                 self.__longestHRAllowed = playObj.getHitDistance()
+                if playObj.isGrandSlam():
+                    self.__totGrandSlamsAllowed += 1
             elif playObj.isOut():#Out
                 self.__totOutsThrown += 1
                 if not playObj.isStrikeOut(): 
@@ -570,7 +572,7 @@ class PitcherStats:
             elif playObj.isTriplePlay():#triple play
                 self.__totTPsThrown += 1
                 self.__totStrikesThrown += 1
-                            
+
             #always check to see if a play generated earned runs
             self.__totEarnedRuns += playObj.runsScoredOnPlay()
 
