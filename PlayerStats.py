@@ -844,16 +844,16 @@ class BatterStats:
     def _hasAtBats(self):
         return self.__totAtBats != 0
 
-    def getBattingAvg(self):
+    def computeBattingAvg(self):
         return computeBattingAvg(self.__totAtBats, self.__totHits)
     
-    def getSluggingPct(self):
+    def computeSluggingPct(self):
         return computeSluggingPct(self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs, self.__totAtBats)
 
-    def getOnBasePct(self):
+    def computeOnBasePct(self):
         return computeOnBasePct(self.__totHits, self.__totWalks, self.__totHBP, self.__totAtBats)
 
-    def getWinPct(self):
+    def computeWinPct(self):
         return computeWinPct(self.__wins, self.__losses)
 
     def getGamesPlayed(self):

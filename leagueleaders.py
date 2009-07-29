@@ -20,17 +20,17 @@ def leagueleaders(dbLoc, objFileExt):
     leaderboard = {'batting':{},'record':{}}
 
     for (guid, plyr) in l:
-        avgs += [(plyr.getName(), plyr.getBatterStats().getBattingAvg())]
+        avgs += [(plyr.getName(), plyr.getBatterStats().computeBattingAvg())]
         HRs += [(plyr.getName(), plyr.getBatterStats().getHRs())]
         LngstHRs += [(plyr.getName(), plyr.getBatterStats().getLngstHR())]
         RBIs += [(plyr.getName(), plyr.getBatterStats().getRBIs())]
-        slg += [(plyr.getName(), plyr.getBatterStats().getSluggingPct())]
-        obp += [(plyr.getName(), plyr.getBatterStats().getOnBasePct())]
+        slg += [(plyr.getName(), plyr.getBatterStats().computeSluggingPct())]
+        obp += [(plyr.getName(), plyr.getBatterStats().computeOnBasePct())]
         hitStreak += [(plyr.getName(), plyr.getBatterStats().getLngstHitStreak())]
         runs += [(plyr.getName(), plyr.getBatterStats().getRuns())]
         #gamesPlayed += [(plyr.getName(), plyr.getBatterStats().getGamesPlayed())]
         wins += [(plyr.getName(), plyr.getBatterStats().getWins())]
-        winPct += [(plyr.getName(), plyr.getBatterStats().getWinPct(), 
+        winPct += [(plyr.getName(), plyr.getBatterStats().computeWinPct(), 
                     "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
 
         
@@ -100,17 +100,17 @@ def main():
     LngstHRs = []
 
     for (guid, plyr) in l:
-        avgs += [(plyr.getName(), plyr.getBatterStats().getBattingAvg())]
+        avgs += [(plyr.getName(), plyr.getBatterStats().computeBattingAvg())]
         HRs += [(plyr.getName(), plyr.getBatterStats().getHRs())]
         LngstHRs += [(plyr.getName(), plyr.getBatterStats().getLngstHR())]
         RBIs += [(plyr.getName(), plyr.getBatterStats().getRBIs())]
-        slg += [(plyr.getName(), plyr.getBatterStats().getSluggingPct())]
-        obp += [(plyr.getName(), plyr.getBatterStats().getOnBasePct())]
+        slg += [(plyr.getName(), plyr.getBatterStats().computeSluggingPct())]
+        obp += [(plyr.getName(), plyr.getBatterStats().computeOnBasePct())]
         hitStreak += [(plyr.getName(), plyr.getBatterStats().getLngstHitStreak())]
         runs += [(plyr.getName(), plyr.getBatterStats().getRuns())]
         #gamesPlayed += [(plyr.getName(), plyr.getBatterStats().getGamesPlayed())]
         wins += [(plyr.getName(), plyr.getBatterStats().getWins())]
-        winPct += [(plyr.getName(), plyr.getBatterStats().getWinPct(), 
+        winPct += [(plyr.getName(), plyr.getBatterStats().computeWinPct(), 
                     "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
 
         
