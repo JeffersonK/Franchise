@@ -44,7 +44,7 @@ gsXP_BATTER_HBP = 10
 
 gsXP_BATTER_DOUBLE = 20
 gsXP_BATTER_TRIPLE = 30
-gsXP_BATTER_HOMERUN = 40
+gsXP_BATTER_HOMERUN = 100
 #gsXP_IBB = 1
 
 # +1 for each RBI
@@ -53,10 +53,10 @@ gsXP_BATTER_RBI = 10
 # +1 
 gsXP_BATTER_RUN = 10
 
-gsXP_BATTER_GRANDSLAM = 50
+gsXP_BATTER_GRANDSLAM = 500
 # +5 for a grandslam
 
-gsXP_BATTER_CYCLE = 75
+gsXP_BATTER_CYCLE = 750
 # +5 for a cycle
 
 #Conditional
