@@ -35,7 +35,7 @@ gsXP_BATTER_ATBAT = 1
 gsXP_BATTER_GAMEPLAYED = 3
 
 # +10 for each win
-gsXP_BATTER_WIN = 10
+gsXP_BATTER_WIN = 3
 
 # +1 for each base on a hit/walk
 gsXP_BATTER_SINGLE = 1
