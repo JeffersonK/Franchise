@@ -40,7 +40,7 @@ gsXP_BATTER_WIN = 1
 # +1 for each base on a hit/walk
 gsXP_BATTER_SINGLE = 10
 gsXP_BATTER_WALK = 10
-gsXP_BATTER_HBP = 1
+gsXP_BATTER_HBP = 10
 
 gsXP_BATTER_DOUBLE = 20
 gsXP_BATTER_TRIPLE = 30
