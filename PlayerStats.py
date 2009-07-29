@@ -97,6 +97,7 @@ class PitcherStats:
         self.__perfectGames = initValue
         self.__totBattersFaced = initValue
         self.__totKs = initValue
+        self.__mostKsGame = initValue
         self.__totWalksThrown = initValue
         self.__totOutsThrown = initValue
         self.__totDPsThrown = initValue
@@ -125,6 +126,9 @@ class PitcherStats:
         self.__tot1BsAllowed = initValue
         self.__tot2BsAllowed = initValue
         self.__tot3BsAllowed = initValue
+        
+        #TODO: while we update stats put achievements in here
+        #self.__statUpdateEvents = []
         return
      
     def countXP(self):
@@ -137,6 +141,11 @@ class PitcherStats:
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
             self.__starts += other.__starts
             self.__saves += other.__saves
+
+            #Throw Event when a new record is set
+            if other.__totKs > self.__mostKsGame:
+                self.__mostKsGame = other.__totKs
+                
             if other.__totEarnedRuns == 0:
                 self.__shutouts += 1#other.__shutouts
             if other.__totHitsAllowed == 0:
@@ -224,6 +233,7 @@ class PitcherStats:
             "'perfectGames':%d," +\
             "'totBattersFaced':%d," + \
             "'totKs':%d," + \
+            "'mostKsGame':%d," +\
             "'totWalksThrown':%d," + \
             "'totOutsThrown':%d," + \
             "'totDPsThrown':%d," + \
@@ -257,7 +267,7 @@ class PitcherStats:
                           self.__losses, self.__currentLosingStreak, 
                           self.__longestLosingStreak, self.__saves, 
                           self.__shutouts, self.__noHitters, self.__perfectGames,
-                          self.__totBattersFaced, self.__totKs, self.__totWalksThrown, 
+                          self.__totBattersFaced, self.__totKs, self.__mostKsGame, self.__totWalksThrown, 
                           self.__totOutsThrown, self.__totDPsThrown, self.__totTPsThrown, 
                           self.__totEarnedRuns, self.__totPitchesThrown, 
                           self.__fastestPitchThrown, self.__totFastballsThrown,
@@ -300,6 +310,7 @@ class PitcherStats:
         self.__perfectGames = d['perfectGames']
         self.__totBattersFaced = d['totBattersFaced']
         self.__totKs = d['totKs']
+        self.__mostKsGame = d['mostKsGame']
         self.__totWalksThrown = d['totWalksThrown']
         self.__totOutsThrown = d['totOutsThrown']
         self.__totDPsThrown = d['totDPsThrown']
@@ -417,6 +428,9 @@ class PitcherStats:
     
     def getTotStrikeouts(self):
         return self.__totKs
+
+    def getMostStrikeoutsGame(self):
+        return self.__mostKsGame
 
     def getTotWalks(self):
         return self.__totWalksThrown
