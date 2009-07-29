@@ -887,7 +887,7 @@ class BatterStats:
         return self.__totRBIsWithRunnersInScoringPos
 
     def getTotRunnersLeftInScoringPos(self):
-        return self.__totRunnersLeftInscoringPos
+        return self.__totRunnersLeftInScoringPos
 
     def getHRs(self):
         if not self._hasAtBats():
