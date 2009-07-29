@@ -378,6 +378,9 @@ class PitcherStats:
     def getLosses(self):
         return self.__losses
 
+    #def getSaves(self):
+    #    return self.__saves
+
     def getBatterResults(self):
         return self.__batterResults
 
@@ -393,10 +396,10 @@ class PitcherStats:
     def getCurrentLosingStreak(self):
         return self.__currentLosingStreak
 
-    def getLongestLostingStreak(self):
+    def getLongestLosingStreak(self):
         return self.__longestLosingStreak
 
-    def getShoutouts(self):
+    def getShutouts(self):
         return self.__shutouts
 
     def getNoHitters(self):
@@ -404,9 +407,6 @@ class PitcherStats:
 
     def getPerfectGames(self):
         return self.__perfectGames
-
-    def getTotBattersFaced(self):
-        return self.__totBattersFaced
     
     def getTotStrikeouts(self):
         return self.__totKs
@@ -416,6 +416,12 @@ class PitcherStats:
 
     def getTotOuts(self):
         return self.__totOutsThrown
+
+    #def getTotDPs(self):
+    #    return self.__totDPsThrown
+
+    #def getTotTPs(self):
+    #    return self.__totTPsThrown
 
     def getTotEarnedRuns(self):
         return self.__totEarnedRuns
@@ -453,12 +459,6 @@ class PitcherStats:
     def getBalls(self):
         return self.__totBallsThrown
     
-    #def getTotStrikesThrown(self):
-    #    return self.__totStrikesThrown
-
-    #def getTotBallsThrown(self):
-    #    return self.__totBallsThrown
-
     def getTotHitsAllowed(self):
         return self.__totHitsAllowed
 
@@ -494,6 +494,7 @@ class PitcherStats:
         era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERINNING)))
         era = "%.2f" % era
         return era
+        #return formatFloatStr(
     
     def computeOpposingBattersAvg(self):
         return computeBattingAvg(self.getTotBattersFaced(), self.getTotHitsAllowed())
@@ -504,6 +505,14 @@ class PitcherStats:
                                   self.getTotTriplesAllowed(),
                                   self.getTotHRsAllowed(),
                                   self.getTotBattersFaced())
+
+    def computeStrikeBallRatio(self):
+        if self.__totBallsThrown == 0:
+            return 'INF'
+        num = float(self.__totStrikesThrown)/float(self.__totBallsThrown)
+        return formatFloatStr(num, 2)
+
+
     #Algorithm as defined at www.baseball-almanac.cmo/stats2.shtml
     #def getPitcherScore(self):
     #    score = 50
@@ -845,6 +854,12 @@ class BatterStats:
     def getWinPct(self):
         return computeWinPct(self.__wins, self.__losses)
 
+    def getGamesPlayed(self):
+        return self.__gamesPlayed
+
+    def getTotAtBats(self):
+        return self.__totAtBats
+
     def getWins(self):
         if self.__gamesPlayed == 0:
             return None
@@ -860,6 +875,18 @@ class BatterStats:
             return None
         return self.__totRBIs
 
+    def getAtBatsWithRunnersInScoringPos(self):
+        return self.__totAtBatsWithRunnersInScoringPos
+
+    def getTotHitsWithRunnersInScoringPos(self):
+        return self.__totHitsWithRunnersInScoringPos
+
+    def getTotRBIsWithRunnersInScoringPos(self):
+        return self.__totRBIsWithRunnersInScoringPos
+
+    def getTotRunnersLeftInScoringPos(self):
+        return self.__totRunnersLeftInscoringPos
+
     def getHRs(self):
         if not self._hasAtBats():
             return None
@@ -870,10 +897,19 @@ class BatterStats:
             return None
         return self.__longestHR
 
+    def getGrandSlams(self):
+        return self.__totGrandSlams
+
+    def getCycles(self):
+        return self.__totCycles
+
     def getRuns(self):
         if not self._hasAtBats():
             return None
         return self.__totRuns
+
+    def getCurrentHittingStreak(self):
+        return self.__currentHittingStreak
 
     def getLngstHitStreak(self):
         if not self._hasAtBats():

@@ -250,9 +250,23 @@ class PlayerAbilities:
 
     def getSpeed(self):
         return self.__running['speed']
+    
+    def setSpeed(self, newVal):
+        val = safeConvertToInt(newVal)
+        if val == None:
+            return -1
+        self.__running['speed'] = val
+        return 0
 
     def getDefense(self):
         return self.__fielding['defense']
+
+    def setDefense(self, newVal):
+        val = safeConvertToInt(newVal)
+        if val == None:
+            return -1
+        self.__fielding['defense'] = val
+        return 0
 
     def getLeadership(self):
         return self.__character['leadership']

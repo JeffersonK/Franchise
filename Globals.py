@@ -22,6 +22,12 @@ def safeConvertToFloat(val):
         return None
 
     return newVal
+
+
+def formatFloatStr(num, places):
+    fmt = "\%.%df" % places
+    return fmt % num
+
 gsPLAYERENERGY_MAXINITIAL = 10
 gsPLAYERRECOVERYTIME_INITIAL = (5*60) #seconds
 gsPLAYERCHALLENGE_MAXINITIAL = 10
