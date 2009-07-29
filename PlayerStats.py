@@ -493,7 +493,7 @@ class PitcherStats:
     def computeERA(self):
         if self.getTotOuts() <= 0:
             return None
-        era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERINNING)))
+        era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERGAME)))
         #era = "%.2f" % era
         #return era
         return formatFloatStr(era, 2)
