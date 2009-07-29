@@ -49,7 +49,7 @@ def computeSluggingPct(singles, doubles, triples, homeruns, atBats):
     slgpct = num / float(atBats)
     #slgpct = "%.3f" % slgpct
     #return slgpct
-    print slgpct
+    #print slgpct
     return formatFloatStr(slgpct, 3)
 
 
