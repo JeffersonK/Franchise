@@ -40,8 +40,8 @@ gsMuPitcherMin = 0.0# 28%
 gsMuBatterMax = gsMuPrimeMax
 gsMuPitcherMax = gsMuPrimeMax"""
 
-Chi2b0 = 0.0
-Chi2p0 = 100.0
+Chi2b0 = 3.0
+Chi2p0 = 0.0
 
 minPower = 1
 batterPowerZones = [minPower, minPower, minPower,

@@ -512,8 +512,8 @@ class PitcherStats:
         #return era
         return formatFloatStr(era, 2)
     
-    def computeOpposingBattersAvg(self):
-        return computeBattingAvg(self.getTotBattersFaced(), self.getTotHitsAllowed())
+    def computeOpposingOBP(self):#TODO: add HBP later
+        return computeOnBasePct(self.getTotBattersFaced(), self.getTotHitsAllowed()+self.getTotWalks())
         
     def computeBattersSlgPct(self):
         return computeSluggingPct(self.getTotSinglesAllowed(),
@@ -546,22 +546,30 @@ class PitcherStats:
             if playObj.isSingle():#Single
                 self.__totHitsAllowed += 1
                 self.__tot1BsAllowed += 1
+                self.__totStrikesThrown += 1
             elif playObj.isDouble():#Double
                 self.__totHitsAllowed += 1
                 self.__tot2BsAllowed += 1
+                self.__totStrikesThrown += 1
             elif playObj.isTriple():#Triple
                 self.__totHitsAllowed += 1
                 self.__tot3BsAllowed += 1
+                self.__totStrikesThrown += 1
             elif playObj.isHomeRun():#Homer
                 self.__totHitsAllowed += 1
                 self.__totHRsAllowed += 1
+                self.__totStrikesThrown += 1
                 self.__longestHRAllowed = playObj.getHitDistance()
             elif playObj.isOut():#Out
                 self.__totOutsThrown += 1
+                if not playObj.isStrikeOut(): 
+                    self.__totStrikesThrown += 1
             elif playObj.isDoublePlay():#double play
                 self.__totDPsThrown += 1
+                self.__totStrikesThrown += 1
             elif playObj.isTriplePlay():#triple play
                 self.__totTPsThrown += 1
+                self.__totStrikesThrown += 1
                             
             #always check to see if a play generated earned runs
             self.__totEarnedRuns += playObj.runsScoredOnPlay()
