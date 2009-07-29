@@ -37,8 +37,9 @@ def computeBattingAvg(numAtBats, numHits):
     if numAtBats <= 0:
         return None
     avg = float(numHits) / float(numAtBats)
-    avg = "%.3f" % avg
-    return avg
+    #avg = "%.3f" % avg
+    #return avg
+    return formatFloatStr(avg, 3)
 
 def computeSluggingPct(singles, doubles, triples, homeruns, atBats):
     if atBats <= 0:
@@ -46,24 +47,29 @@ def computeSluggingPct(singles, doubles, triples, homeruns, atBats):
 
     num = float(singles) + 2*float(doubles) + 3*float(triples) + 4*float(homeruns)
     slgpct = num / float(atBats)
-    slgpct = "%.3f" % slgpct
-    return slgpct
+    #slgpct = "%.3f" % slgpct
+    #return slgpct
+    return formatFloatStr(slgpct, 3)
+
 
 def computeWinPct(wins, losses):
     if wins + losses <= 0:
         return None
 
     winPct = float(wins) / float(wins + losses)
-    winPct = "%.3f" % winPct
-    return winPct
+    #winPct = "%.3f" % winPct
+    #return winPct
+    return formatFloatStr(winPct, 3)
 
 def computeOnBasePct(hits, walks, hbps, atBats):
     if atBats <= 0:
         return None
 
     obp = float(hits + walks + hbps) / float(atBats)
-    obp = "%.3f" % obp
-    return obp
+    #obp = "%.3f" % obp
+    #return obp
+    return formatFloatStr(obp, 3)
+
 ###############################
 #
 #
@@ -472,7 +478,7 @@ class PitcherStats:
         return self.__tot3BsAllowed
 
     def getTotHRsAllowed(self):
-        return self.__totHomeRunsAllowed
+        return self.__totHRsAllowed
         
     def getTotGrandSlamsAllowed(self):
         return self.__totGrandSlamsAllowed
@@ -482,19 +488,14 @@ class PitcherStats:
     
     def computeWinPct(self):
         return computeWinPct(self.getWins(), self.getLosses)
-        #if self.getWins() + self.getLosses() == 0:
-        #    return None
-        #winpct = float(self.getWins()) / float(self.getWins() + self.getLosses())
-        #winpct = "%.3f" % winpct
-        #return winpct
 
     def computeERA(self):
         if self.getTotOuts() <= 0:
             return None
         era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERINNING)))
-        era = "%.2f" % era
-        return era
-        #return formatFloatStr(
+        #era = "%.2f" % era
+        #return era
+        return formatFloatStr(era, 2)
     
     def computeOpposingBattersAvg(self):
         return computeBattingAvg(self.getTotBattersFaced(), self.getTotHitsAllowed())
