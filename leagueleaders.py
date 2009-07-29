@@ -1,7 +1,8 @@
 import ObjectDB
+import os
 from pprint import *
 
-def leagueleaders(dbLoc, objFileExt):
+def leagueleaders(dbLoc, objFileExt, outfile=None):
     gsPlayerDB = ObjectDB.ObjectDB(dbLoc,objFileExt)
     l = gsPlayerDB.iteritems(dbLoc, objFileExt)
     avgs = []
@@ -16,10 +17,11 @@ def leagueleaders(dbLoc, objFileExt):
     wins = []
     winPct = []
     LngstHRs = []
-
-    leaderboard = {'batting':{},'record':{}}
+    XP = []
+    leaderboard = {'batting':{},'record':{},'character':{}}
 
     for (guid, plyr) in l:
+        XP += [(plyr.getName(), plyr.getExperience())]
         avgs += [(plyr.getName(), plyr.getBatterStats().computeBattingAvg())]
         HRs += [(plyr.getName(), plyr.getBatterStats().getHRs())]
         LngstHRs += [(plyr.getName(), plyr.getBatterStats().getLngstHR())]
@@ -34,6 +36,9 @@ def leagueleaders(dbLoc, objFileExt):
                     "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
 
         
+    XP.sort(cmp)
+    leaderboard['character']['XP'] = XP
+
     avgs.sort(cmp)
     leaderboard['batting']['AVG'] = avgs
 
@@ -64,6 +69,13 @@ def leagueleaders(dbLoc, objFileExt):
     winPct.sort(cmp)
     leaderboard['record']['WINPCT'] = winPct
 
+    if outfile != None:
+        file = open(os.path.join(dbLoc,outfile), 'w+')
+        if file == None:
+            print "Could Not open file %s." % outfile
+        file.write(str(leaderboard))
+        file.close()
+
     return leaderboard
 
     
@@ -81,62 +93,8 @@ def printll(statName, stats):
 
 def main():
 
-    #print leagueleaders("players","plr")
-    #return
-
-    gsPlayerDB = ObjectDB.ObjectDB("players","plr")
-    l = gsPlayerDB.iteritems("players", "plr")
-    avgs = []
-    HRs = []
-    RBIs = []
-    slg = []
-    obp = []
-    hitStreak = []
-    runs = []
-    
-    #gamesPlayed = []
-    wins = []
-    winPct = []
-    LngstHRs = []
-
-    for (guid, plyr) in l:
-        avgs += [(plyr.getName(), plyr.getBatterStats().computeBattingAvg())]
-        HRs += [(plyr.getName(), plyr.getBatterStats().getHRs())]
-        LngstHRs += [(plyr.getName(), plyr.getBatterStats().getLngstHR())]
-        RBIs += [(plyr.getName(), plyr.getBatterStats().getRBIs())]
-        slg += [(plyr.getName(), plyr.getBatterStats().computeSluggingPct())]
-        obp += [(plyr.getName(), plyr.getBatterStats().computeOnBasePct())]
-        hitStreak += [(plyr.getName(), plyr.getBatterStats().getLngstHitStreak())]
-        runs += [(plyr.getName(), plyr.getBatterStats().getRuns())]
-        #gamesPlayed += [(plyr.getName(), plyr.getBatterStats().getGamesPlayed())]
-        wins += [(plyr.getName(), plyr.getBatterStats().getWins())]
-        winPct += [(plyr.getName(), plyr.getBatterStats().computeWinPct(), 
-                    "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
-
-        
-    #print plyr.getPitcherStats().computeBattingAvg
-    avgs.sort(cmp)
-    HRs.sort(cmp)
-    LngstHRs.sort(cmp)
-    RBIs.sort(cmp)
-    slg.sort(cmp)
-    obp.sort(cmp)
-    hitStreak.sort(cmp)
-    runs.sort(cmp)
-    wins.sort(cmp)
-    winPct.sort(cmp)
-    
-    printll('AVG',avgs)
-    printll('HRs', HRs)
-    printll('Longest HRs', LngstHRs)
-    printll('RBIs', RBIs)
-    printll('SLG', slg)
-    printll('OBP', obp)
-    printll('Lngst Hit Streak', hitStreak)
-    printll('Runs', runs)
-    printll('Wins', wins)
-    printll('Winning Pct', winPct)
-
+    ll = leagueleaders("players","plr", "leagueleaders.txt")
+    pprint(ll)
     return
 
 if __name__ == "__main__":

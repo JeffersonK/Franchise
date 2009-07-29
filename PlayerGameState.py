@@ -52,3 +52,10 @@ class PlayerGameState:
         
     def countXP(self):
         return self.__playerGameStats.countXP()
+
+    def getPitcherScore(self):
+        if self.__position != gsPOSITION_POSSTR[gsPITCHER_POSCODE]:
+            return -1
+
+        return self.__playerGameStats.getPitcherScore()
+        

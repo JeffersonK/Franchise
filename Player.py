@@ -25,7 +25,7 @@ class Player:
 
         #Player Personality/Character
         self.__name = "Player%d" % playerGUID
-        self.__experiencePoints = 0
+        self.__XP = 0
         self.__energy = gsPLAYERENERGY_MAXINITIAL
         self.__level = 0
 
@@ -49,14 +49,14 @@ class Player:
         fmt =  "{'playerGUID':%d,'name':'%s','energy':%d, 'maxChallengePoints':%d," +\
             "'challengePoints':%d,'maxPlayerEnergy':%d,'recoveryTime':%d," +\
             "'lastPlayerRecharge':%d,'money':%d,'lastTimePaid':%d," +\
-            "'experiencePoints':%d,'level':%d,'unusedStatPoints':%d," +\
+            "'XP':%d,'level':%d,'unusedStatPoints':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
         return fmt % (self.__playerGUID, self.__name, self.__energy, self.__maxChallengePoints,
                       self.__challengePoints, self.__maxPlayerEnergy, self.__recoveryTime,
                       self.__lastPlayerRecharge, self.__money, self.__lastTimePaid,
-                      self.__experiencePoints,self.__level,self.__unusedStatPoints,
+                      self.__XP,self.__level,self.__unusedStatPoints,
                       self.__position, self.__franchiseGUID,
                       self.__playerAbilities.__getstate__(),
                       self.__batterStats.__getstate__(), self.__pitcherStats.__getstate__())
@@ -84,7 +84,7 @@ class Player:
         self.__energy = d['energy']
         self.__challengePoints = 10
         self.__name = d['name']
-        self.__experiencePoints = d['experiencePoints']
+        self.__XP = d['XP']
         
         self.__maxChallengePoints = d['maxChallengePoints']
         self.__challengePoints = d['challengePoints']
@@ -138,14 +138,17 @@ class Player:
         if self.__position == gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isPitcherStats():
 
+            self.__XP += playerGameState.countXP()
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
             self.__pitcherStats += playerGameStats
             #print self
+            print playerGameState.getPitcherScore()
+
         elif self.__position != gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isBatterStats():
             
             #count here because they are end game stats
-            self.__experiencePoints += playerGameState.countXP()
+            self.__XP += playerGameState.countXP()
 
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
 
@@ -169,7 +172,7 @@ class Player:
         return 0
 
     def getExperience(self):
-        return self.__experiencePoints
+        return self.__XP
 
     def setExperience(self, XP):
         val = safeConvertToInt(XP)
@@ -177,7 +180,7 @@ class Player:
             return -1
         if val < 0:
             return -2
-        self.__experiencePoints = XP
+        self.__XP = XP
         return 0
 
     def getLevel(self):

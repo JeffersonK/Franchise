@@ -131,9 +131,6 @@ class PitcherStats:
         #self.__statUpdateEvents = []
         return
      
-    def countXP(self):
-        return 0
-
     def __iadd__(self, other):
         if self.statType() != other.statType():
             print "Cannot add stat type %s and %s\n" % (self.statType(), other.statType())
@@ -530,11 +527,31 @@ class PitcherStats:
 
 
     #Algorithm as defined at www.baseball-almanac.cmo/stats2.shtml
-    #def getPitcherScore(self):
-    #    score = 50
-    #    score += self.__totOutsThrown
-    #    score += min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 
-    
+    def getPitcherScore(self):
+        score = gsXP_PITCHER_START
+
+        score += self.__totOutsThrown * gsXP_PITCHER_OUT
+        score += self.__totKs * gsXP_PITCHER_K
+        score += 2*5#each inning completed after fourth * 2 - min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 )
+
+        #the following add negative values
+        score += self.__totHitsAllowed * gsXP_PITCHER_HITALLOWED
+        score += self.__totEarnedRuns * gsXP_PITCHER_EARNEDRUN
+
+        score += self.__totWalksThrown * gsXP_PITCHER_WALKSTHROWN
+        return score
+
+    def countXP(self):
+        return self.getPitcherScore()
+        XP = 0
+        XP += self.__totKs * gsXP_PITCHER_K
+        XP += self.__shutouts * gsXP_PITCHER_SHUTOUT
+        XP += self.__noHitters * gsXP_PITCHER_NOHITTER
+        XP += self.__wins * gsXP_PITCHER_WIN
+        XP += self.__totOutsThrown * gsXP_PITCHER_OUT
+        return XP
+
+
     #pitchType: fastball, curveball, etc...
     #pitchCall: ball/strike/contact
     #pitchSpeed: velocity
