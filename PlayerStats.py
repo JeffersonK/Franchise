@@ -910,8 +910,8 @@ class BatterStats:
             return None
         return self.__totRuns
 
-    def getCurrentHittingStreak(self):
-        return self.__currentHittingStreak
+    def getCurrentHitStreak(self):
+        return self.__currentHitStreak
 
     def getLngstHitStreak(self):
         if not self._hasAtBats():
