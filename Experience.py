@@ -32,31 +32,31 @@
 gsXP_BATTER_ATBAT = 1
 
 # +5 for each game played
-gsXP_BATTER_GAMEPLAYED = 3
+gsXP_BATTER_GAMEPLAYED = 1
 
 # +10 for each win
-gsXP_BATTER_WIN = 3
+gsXP_BATTER_WIN = 1
 
 # +1 for each base on a hit/walk
-gsXP_BATTER_SINGLE = 1
-gsXP_BATTER_WALK = 1
+gsXP_BATTER_SINGLE = 10
+gsXP_BATTER_WALK = 10
 gsXP_BATTER_HBP = 1
 
-gsXP_BATTER_DOUBLE = 2
-gsXP_BATTER_TRIPLE = 3
-gsXP_BATTER_HOMERUN = 4
+gsXP_BATTER_DOUBLE = 20
+gsXP_BATTER_TRIPLE = 30
+gsXP_BATTER_HOMERUN = 40
 #gsXP_IBB = 1
 
 # +1 for each RBI
-gsXP_BATTER_RBI = 1
+gsXP_BATTER_RBI = 10
 
 # +1 
-gsXP_BATTER_RUN = 1
+gsXP_BATTER_RUN = 10
 
-gsXP_BATTER_GRANDSLAM = 5
+gsXP_BATTER_GRANDSLAM = 50
 # +5 for a grandslam
 
-gsXP_BATTER_CYCLE = 5
+gsXP_BATTER_CYCLE = 75
 # +5 for a cycle
 
 #Conditional
