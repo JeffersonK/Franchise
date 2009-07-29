@@ -114,6 +114,7 @@ def main():
                     "%s - %s" % (str(plyr.getBatterStats().getWins()),str(plyr.getBatterStats().getLosses())) )]
 
         
+    #print plyr.getPitcherStats().computeBattingAvg
     avgs.sort(cmp)
     HRs.sort(cmp)
     LngstHRs.sort(cmp)

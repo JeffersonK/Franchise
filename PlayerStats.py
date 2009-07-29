@@ -44,11 +44,12 @@ def computeBattingAvg(numAtBats, numHits):
 def computeSluggingPct(singles, doubles, triples, homeruns, atBats):
     if atBats <= 0:
         return None
-
+    
     num = float(singles) + 2*float(doubles) + 3*float(triples) + 4*float(homeruns)
     slgpct = num / float(atBats)
     #slgpct = "%.3f" % slgpct
     #return slgpct
+    print slgpct
     return formatFloatStr(slgpct, 3)
 
 
@@ -487,7 +488,7 @@ class PitcherStats:
         return self.__longestHRAllowed
     
     def computeWinPct(self):
-        return computeWinPct(self.getWins(), self.getLosses)
+        return computeWinPct(self.getWins(), self.getLosses())
 
     def computeERA(self):
         if self.getTotOuts() <= 0:
