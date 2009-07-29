@@ -62,7 +62,7 @@ def computeWinPct(wins, losses):
     #return winPct
     return formatFloatStr(winPct, 3)
 
-def computeOnBasePct(hits, walks, hbps, atBats):
+def computeOnBasePct2(hits, walks, hbps, atBats):
     if atBats <= 0:
         return None
 
@@ -513,7 +513,7 @@ class PitcherStats:
         return formatFloatStr(era, 2)
     
     def computeOpposingOBP(self):#TODO: add HBP later
-        return computeOnBasePct(self.getTotBattersFaced(), self.getTotHitsAllowed()+self.getTotWalks())
+        return computeOnBasePct2(self.getTotBattersFaced(), self.getTotHitsAllowed()+self.getTotWalks())
         
     def computeBattersSlgPct(self):
         return computeSluggingPct(self.getTotSinglesAllowed(),
@@ -875,7 +875,7 @@ class BatterStats:
         return computeSluggingPct(self.__tot1Bs, self.__tot2Bs, self.__tot3Bs, self.__totHRs, self.__totAtBats)
 
     def computeOnBasePct(self):
-        return computeOnBasePct(self.__totHits, self.__totWalks, self.__totHBP, self.__totAtBats)
+        return computeOnBasePct2(self.__totHits, self.__totWalks, self.__totHBP, self.__totAtBats)
 
     def computeWinPct(self):
         return computeWinPct(self.__wins, self.__losses)
