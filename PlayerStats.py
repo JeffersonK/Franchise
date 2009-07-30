@@ -150,7 +150,7 @@ class PitcherStats:
             pScore = other.getPitcherScore()
             if pScore > self.__bestPitcherScore:
                 self.__bestPitcherScore = pScore
-            elif pScore < self.__worstPitcherScore:
+            if pScore < self.__worstPitcherScore:
                 self.__worstPitcherScore = pScore
 
             if other.__totEarnedRuns == 0:
@@ -180,7 +180,8 @@ class PitcherStats:
                 self.__currentWinStreak = 0
 
             #save a game's results as a sub-list
-            self.__batterResults += [other.__batterResults]
+            #self.__batterResults += [other.__batterResults]
+            self.__batterResults = other.__batterResults
         else:
             #save each batter
             self.__batterResults += [other.__batterResults]
@@ -838,7 +839,7 @@ class BatterStats:
         XP += gsXP_BATTER_WALK * self.__totWalks
         #XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
         #XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
-        return 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitcher
+        return 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitche
 
     def __iadd__(self, other):
         if self.statType() != other.statType():
@@ -875,7 +876,8 @@ class BatterStats:
             #we probably need to limit how much history we keep here
             #but it is good to save until the end of the game for post processing
             #as well as testing purposes
-            self.__atBatResults += [other.__atBatResults]
+            #self.__atBatResults += [other.__atBatResults]
+            self.__atBatResults = other.__atBatResults
         else:
             self.__atBatResults += [other.__atBatResults]            
 
