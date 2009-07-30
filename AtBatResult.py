@@ -18,6 +18,8 @@ class BatBallContactResult:
                  pitcherAbil=None):
         
 
+        self.__batterAbil = batterAbil
+        self.__pitcherBall = pitcherAbil
         #0 is first base line
         #90 is third base line
         # < 0 is foul ball
@@ -29,7 +31,7 @@ class BatBallContactResult:
         #if its a grandball this the power which can eventually determine error rates
         #NOTE: this will become magnitude or velocity of ball off the bat
         #      which together will determine the distance with _phi
-        self.__Radius = random.randint(1,450)
+        self.__Radius = random.randint(1,410+self.__batterAbil.getBattingPowerZones()[0])
 
         #the angle that the ball leaves the bat
         #for now 0 is a ground ball and 1 is in the air
@@ -381,7 +383,7 @@ class AtBatResult:
         #def _generateAtBatResult(self):
         self._findAllowedEvents()
         
-        bbcr = BatBallContactResult()
+        bbcr = BatBallContactResult(self.__batterAbil, self.__pitcherAbil)
         fieldState = self.__fieldState#DefensiveFieldState()#self.__bases, self.__outs)#FieldGeometry, None)
         ((result, fielder, radius), runnersAdvancedList) = fieldState.simDefense(bbcr)#FieldBallContact(bbcr)
         #print bbcr.getHitParams()

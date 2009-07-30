@@ -204,6 +204,26 @@ class PlayerAbilities:
         return self.__pitching['control']
 
     #BATTING SPECIFIC
+    def setBattingPowerZones(self, powerZones):
+        if type(powerZones) != type([]):
+            return -1
+        if len(powerZones) != len(gsSTRIKEZONE):
+            return -2
+        newMatrix = []
+        for pm in powerZones:
+            ret = safeConvertToFloat(pm)
+            if ret == None:
+                return -3
+            if ret > gsMAX_ZONEMASTERY_LEVEL or\
+                    ret < gsMIN_ZONEMASTERY_LEVEL:
+                return -4
+            newMatrix += [ret]
+        self.__batting['powerZones'] = newMatrix
+        return 0 
+
+    def getBattingPowerZones(self):
+        return self.__batting['powerZones']
+
     def getBattingPitchMasteryMatrix(self):
         return self.__batting['pitchMastery']
 

@@ -23,16 +23,16 @@ def MoneyPerGameGivenLvlN(n):
 
 #assuming min XP per game
 #(maxGamesToLevel, maxTotGamesPlayed, maxCashEarned, worstTotTimeEagerPlayer, bestTotTimeEagerPlayer)
-NGAMES_MORE = 10
+NGAMES_MORE = 8
 #assume 4 stats points => MaxChallenge every level
 def L(n):
     #if n == 1:
     #    return (0,0,0,0)
-    if n == 3: #franks rule   
+    if n == 2: #franks rule   
         maxCashEarned = 5*gsPLAYER_INIT_PRESTIGE * gsLEVEL_CASH_PERPRESTIGE_PERGAME
         worstTotTime = (5-gsPLAYERCHALLENGE_MAXINITIAL)*gsPLAYERRECOVERYTIME_INITIAL
         bestTotTime = 0#5-gsPLAYERCHALLENGE_MAXINITIAL+(n*2)
-        return (5, (n-1)*5, maxCashEarned, worstTotTime, 0, [(n-1)*5*gsMIN_XP_PER_GAME])
+        return (5, (n-1)*5, maxCashEarned, worstTotTime, 0, [0, (n-1)*5*gsMIN_XP_PER_GAME])
     OLD = """
     if n == 2: #franks rule   
         maxCashEarned = 5*gsPLAYER_INIT_PRESTIGE * CASH_PERPRESTIGE_PERGAME
