@@ -142,7 +142,7 @@ def run(argv):
             if "GAMEOVER" in gameEvents:#gameEvents[-1].gameOver():
                 break
         dt = sim.stopSimTimer()
-        print "Sim Timer: %.5f" % dt
+        #print "Sim Timer: %.5f" % dt
 
         playerGameStates = tgs1.getPlayerGameStates()
         updatePlayerStatsEvents = []

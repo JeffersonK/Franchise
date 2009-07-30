@@ -244,8 +244,8 @@ class GameState:
         
         #don't copy Games stats into Players Stats
         #person who ran the sim should pass TeamGameState to Franchise object
-        print self.__gameEventLog
-        print "FINAL SCORE: H:%d A:%d" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored())
+        #print self.__gameEventLog
+        #print "FINAL SCORE: H:%d A:%d" % (self.__HomeTeam.getRunsScored(), self.__AwayTeam.getRunsScored())
         #TODO: return 'GAMEOVER' event
         return ['GAMEOVER']
 

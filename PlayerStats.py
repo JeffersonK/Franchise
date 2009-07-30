@@ -838,7 +838,7 @@ class BatterStats:
         XP += gsXP_BATTER_WALK * self.__totWalks
         #XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
         #XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
-        return max(gsMIN_XP_PER_GAME, XP)
+        return 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitcher
 
     def __iadd__(self, other):
         if self.statType() != other.statType():

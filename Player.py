@@ -177,7 +177,7 @@ class Player:
         self.__unusedStatPoints += gsLEVEL_STATPOINTS_PERLVL
         self.__energy = self.__maxPlayerEnergy
         self.__challengePoints = self.__maxChallengePoints
-        print "%s PLAYER LEVEL UP %d => %d" % (self.getName(), self.__level-1, self.__level)
+        #print "%s PLAYER LEVEL UP %d => %d" % (self.getName(), self.__level-1, self.__level)
 
     def _checkLevelUp(self):
         if self.__XP > gsXP_LEVELS[self.__level]:
