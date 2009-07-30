@@ -46,14 +46,14 @@ def generateTeam():#globalState):
         team[p.guid()] = pos
     return team
 
+def run(argv):
 
-def main():
     global globalState
     global NRUNS
     global GENERATETEAMS
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hgn:")
+        opts, args = getopt.getopt(argv[1:], "hgn:")
     except getopt.GetoptError, err:
         print str(err)
         usage()
@@ -186,6 +186,9 @@ def main():
         runcnt += 1
 
     return
+
+def main():
+    run(sys.argv)
 
 if __name__ == "__main__":
     main()

@@ -96,7 +96,7 @@ defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed ou
 
 #CHARACTER
 defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
-                        'prestige':0, #affects how much money the player draws per game and unit time
+                        'prestige':gsPLAYER_INIT_PRESTIGE, #affects how much money the player draws per game and unit time
                         }
 
 

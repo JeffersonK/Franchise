@@ -127,6 +127,10 @@ class PitcherStats:
         self.__tot2BsAllowed = initValue
         self.__tot3BsAllowed = initValue
         
+
+        self.__bestPitcherScore = initValue
+        self.__worstPitcherScore = initValue
+
         #TODO: while we update stats put achievements in here
         #self.__statUpdateEvents = []
         return
@@ -143,6 +147,12 @@ class PitcherStats:
             if other.__totKs > self.__mostKsGame:
                 self.__mostKsGame = other.__totKs
                 
+            pScore = other.getPitcherScore()
+            if pScore > self.__bestPitcherScore:
+                self.__bestPitcherScore = pScore
+            elif pScore < self.__worstPitcherScore:
+                self.__worstPitcherScore = pScore
+
             if other.__totEarnedRuns == 0:
                 self.__shutouts += 1#other.__shutouts
             if other.__totHitsAllowed == 0:
@@ -255,7 +265,9 @@ class PitcherStats:
             "'longestHRAllowed':%d," + \
             "'tot1BsAllowed':%d," + \
             "'tot2BsAllowed':%d," + \
-            "'tot3BsAllowed':%d}"
+            "'tot3BsAllowed':%d," + \
+            "'bestPitcherScore':%d," + \
+            "'worstPitcherScore':%d}"
             
         
         return dictStr % (self.__statType,
@@ -276,7 +288,8 @@ class PitcherStats:
                           self.__totHitsAllowed, self.__totBattersHBP, 
                           self.__totHRsAllowed, self.__totGrandSlamsAllowed, 
                           self.__longestHRAllowed, self.__tot1BsAllowed, 
-                          self.__tot2BsAllowed, self.__tot3BsAllowed)
+                          self.__tot2BsAllowed, self.__tot3BsAllowed,
+                          self.__bestPitcherScore, self.__worstPitcherScore)
 
 
     def safe_setstatevar(self, key, dict, defaultVal):
@@ -336,6 +349,9 @@ class PitcherStats:
         self.__tot1BsAllowed = d['tot1BsAllowed']
         self.__tot2BsAllowed = d['tot2BsAllowed']
         self.__tot3BsAllowed = d['tot3BsAllowed']
+
+        self.__bestPitcherScore = d['bestPitcherScore']
+        self.__worstPitcherScore = d['worstPitcherScore']
         return self
 
 
@@ -384,55 +400,98 @@ class PitcherStats:
     #
     #
     #
+    def _statExists(self):
+        #we only want this check when we are 
+        #looking at stats at the end
+        #of the game or stored in a player
+        if self.__statSubType != 'GAME':
+            return True
+
+        if self.__starts > 0:
+            return True
+        return False
+
     def getStarts(self):
+        if not self._statExists():
+            return None
         return self.__starts
 
     def getWins(self):
+        if not self._statExists():
+            return None
         return self.__wins
     
     def getLosses(self):
+        if not self._statExists():
+            return None
         return self.__losses
 
     #def getSaves(self):
     #    return self.__saves
 
     def getBatterResults(self):
+        if not self._statExists():
+            return None
         return self.__batterResults
 
     def getTotBattersFaced(self):
+        if not self._statExists():
+            return None
         return self.__totBattersFaced
 
     def getCurrentWinStreak(self):
+        if not self._statExists():
+            return None
         return self.__currentWinStreak
 
     def getLongestWinStreak(self):
+        if not self._statExists():
+            return None
         return self.__longestWinStreak
     
     def getCurrentLosingStreak(self):
+        if not self._statExists():
+            return None
         return self.__currentLosingStreak
 
     def getLongestLosingStreak(self):
+        if not self._statExists():
+            return None
         return self.__longestLosingStreak
 
     def getShutouts(self):
+        if not self._statExists():
+            return None
         return self.__shutouts
 
     def getNoHitters(self):
+        if not self._statExists():
+            return None
         return self.__noHitters
 
     def getPerfectGames(self):
+        if not self._statExists():
+            return None
         return self.__perfectGames
     
     def getTotStrikeouts(self):
+        if not self._statExists():
+            return None
         return self.__totKs
 
     def getMostStrikeoutsGame(self):
+        if not self._statExists():
+            return None
         return self.__mostKsGame
 
     def getTotWalks(self):
+        if not self._statExists():
+            return None
         return self.__totWalksThrown
 
     def getTotOuts(self):
+        if not self._statExists():
+            return None
         return self.__totOutsThrown
 
     #def getTotDPs(self):
@@ -442,66 +501,115 @@ class PitcherStats:
     #    return self.__totTPsThrown
 
     def getTotEarnedRuns(self):
+        if not self._statExists():
+            return None
         return self.__totEarnedRuns
 
     def getTotPitchesThrown(self):
+        if not self._statExists():
+            return None
         return self.__totPitchesThrown
 
     def getTotFastballsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totFastballsThrown
 
     def getTotCurveballsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totCurveballsThrown
 
     def getTotKnuckleballsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totKnuckleballsThrown
 
     def getTotSlidersThrown(self):
+        if not self._statExists():
+            return None
         return self.__totSlidersThrown
 
     def getTotChangeupsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totChangeupsThrown
 
     def getTotSinkersThrown(self):
+        if not self._statExists():
+            return None
         return self.__totSinkersThrown
 
     def getTotForkballsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totForkballsThrown
     
     def getTotSpitballsThrown(self):
+        if not self._statExists():
+            return None
         return self.__totSpitballsThrown
 
     def getStrikes(self):
+        if not self._statExists():
+            return None
         return self.__totStrikesThrown
 
     def getBalls(self):
+        if not self._statExists():
+            return None
         return self.__totBallsThrown
     
     def getTotHitsAllowed(self):
+        if not self._statExists():
+            return None
         return self.__totHitsAllowed
 
     def getTotSinglesAllowed(self):
+        if not self._statExists():
+            return None
         return self.__tot1BsAllowed
 
     def getTotDoublesAllowed(self):
+        if not self._statExists():
+            return None
         return self.__tot2BsAllowed
 
     def getTotTriplesAllowed(self):
+        if not self._statExists():
+            return None
         return self.__tot3BsAllowed
 
     def getTotHRsAllowed(self):
+        if not self._statExists():
+            return None
         return self.__totHRsAllowed
         
     def getTotGrandSlamsAllowed(self):
+        if not self._statExists():
+            return None
         return self.__totGrandSlamsAllowed
 
     def getLongestHRAllowed(self):
+        if not self._statExists():
+            return None
         return self.__longestHRAllowed
     
+    def getBestPitcherScore(self):
+        return self.__bestPitcherScore
+        
+    def getWorstPitcherScore(self):
+        return self.__worstPitcherScore
+
     def computeWinPct(self):
+        if not self._statExists():
+            return None
         return computeWinPct(self.getWins(), self.getLosses())
 
     def computeERA(self):
+        if not self._statExists():
+            return None
+
         if self.getTotOuts() <= 0:
             return None
         era = (float(self.getTotEarnedRuns()) / (float(self.getTotOuts())/float(gsOUTSPERGAME)))
@@ -510,9 +618,13 @@ class PitcherStats:
         return formatFloatStr(era, 2)
     
     def computeOpposingOBP(self):#TODO: add HBP later
+        if not self._statExists():
+            return None
         return computeOnBasePct2(self.getTotBattersFaced(), self.getTotHitsAllowed()+self.getTotWalks())
         
     def computeBattersSlgPct(self):
+        if not self._statExists():
+            return None
         return computeSluggingPct(self.getTotSinglesAllowed(),
                                   self.getTotDoublesAllowed(),
                                   self.getTotTriplesAllowed(),
@@ -520,6 +632,8 @@ class PitcherStats:
                                   self.getTotBattersFaced())
 
     def computeStrikeBallRatio(self):
+        if not self._statExists():
+            return None
         if self.__totBallsThrown == 0:
             return 'INF'
         num = float(self.__totStrikesThrown)/float(self.__totBallsThrown)
@@ -527,7 +641,10 @@ class PitcherStats:
 
 
     #Algorithm as defined at www.baseball-almanac.cmo/stats2.shtml
+    #Should only be called on stats aggregated for a single game
     def getPitcherScore(self):
+        if not self._statExists():
+            return None
         score = gsXP_PITCHER_START
 
         score += self.__totOutsThrown * gsXP_PITCHER_OUT
@@ -536,21 +653,21 @@ class PitcherStats:
 
         #the following add negative values
         score += self.__totHitsAllowed * gsXP_PITCHER_HITALLOWED
-        score += self.__totEarnedRuns * gsXP_PITCHER_EARNEDRUN
+        score += self.__totEarnedRuns  * gsXP_PITCHER_EARNEDRUN
 
         score += self.__totWalksThrown * gsXP_PITCHER_WALKSTHROWN
         return score
 
     def countXP(self):
-        return self.getPitcherScore()
-        XP = 0
+        return max(gsMIN_XP_PER_GAME, self.getPitcherScore())
+
+        old = """XP = 0
         XP += self.__totKs * gsXP_PITCHER_K
         XP += self.__shutouts * gsXP_PITCHER_SHUTOUT
         XP += self.__noHitters * gsXP_PITCHER_NOHITTER
         XP += self.__wins * gsXP_PITCHER_WIN
         XP += self.__totOutsThrown * gsXP_PITCHER_OUT
-        return XP
-
+        return XP"""
 
     #pitchType: fastball, curveball, etc...
     #pitchCall: ball/strike/contact
@@ -719,9 +836,9 @@ class BatterStats:
         XP += gsXP_BATTER_RBI * self.__totRBIs
         XP += gsXP_BATTER_RUN * self.__totRuns
         XP += gsXP_BATTER_WALK * self.__totWalks
-        XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
-        XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
-        return XP
+        #XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
+        #XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
+        return max(gsMIN_XP_PER_GAME, XP)
 
     def __iadd__(self, other):
         if self.statType() != other.statType():

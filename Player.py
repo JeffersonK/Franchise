@@ -3,6 +3,7 @@ import cPickle
 import PlayerAbilities
 from PlayerStats import *
 import time
+from Levels import *
 
 class Player:
 
@@ -27,7 +28,7 @@ class Player:
         self.__name = "Player%d" % playerGUID
         self.__XP = 0
         self.__energy = gsPLAYERENERGY_MAXINITIAL
-        self.__level = 0
+        self.__level = 1
 
         self.__lastPlayerRecharge = getTime()
         self.__money = gsINITIAL_MONEY_ALLOC
@@ -142,17 +143,17 @@ class Player:
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
             self.__pitcherStats += playerGameStats
             #print self
-            print playerGameState.getPitcherScore()
+            self._checkLevelUp()
+            #print playerGameState.getPitcherScore()
 
         elif self.__position != gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isBatterStats():
             
             #count here because they are end game stats
             self.__XP += playerGameState.countXP()
-
             #TODO: look in the playerGamStats and compare to the existing stats for achievements
-
             self.__batterStats += playerGameStats
+            self._checkLevelUp()
             #print self
 
         #updatePlayerStatsEvents = ['+1 EXP']
@@ -171,6 +172,17 @@ class Player:
         self.__name = name
         return 0
 
+    def _handleLevelUp(self):
+        self.__level += 1
+        self.__unusedStatPoints += gsLEVEL_STATPOINTS_PERLVL
+        self.__energy = self.__maxPlayerEnergy
+        self.__challengePoints = self.__maxChallengePoints
+        print "%s PLAYER LEVEL UP %d => %d" % (self.getName(), self.__level-1, self.__level)
+
+    def _checkLevelUp(self):
+        if self.__XP > gsXP_LEVELS[self.__level]:
+            self._handleLevelUp()
+
     def getExperience(self):
         return self.__XP
 
@@ -185,6 +197,12 @@ class Player:
 
     def getLevel(self):
         return self.__level
+
+    def getChallengePoints(self):
+        return self.__challengePoints
+
+    def getMaxChallengePoints(self):
+        return self.__maxChallengePoints
 
     def getEnergy(self):
         return self.__energy

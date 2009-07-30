@@ -22,6 +22,8 @@
 #
 ############################
 
+gsMIN_XP_PER_GAME = 10
+gsMAX_XP_PER_GAME = 250
 #BATTING EXPEREINCE
 
 #Simple XP - XP per stat
@@ -45,7 +47,7 @@ gsXP_BATTER_RBI = 10
 gsXP_BATTER_RUN = 3
 
 #BATTER EXP BONUSES
-gsXP_BATTER_GRANDSLAM = 50 #this is added on top of HR
+#gsXP_BATTER_GRANDSLAM = 50 #this is added on top of HR
 gsXP_BATTER_CYCLE = 50
 # +1 for increasing longest hitstreak past 10 games
 
