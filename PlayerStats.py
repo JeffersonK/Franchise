@@ -129,7 +129,7 @@ class PitcherStats:
         
 
         self.__bestPitcherScore = initValue
-        self.__worstPitcherScore = initValue
+        self.__worstPitcherScore = 100000000#needs to be super big
 
         #TODO: while we update stats put achievements in here
         #self.__statUpdateEvents = []
@@ -649,7 +649,7 @@ class PitcherStats:
 
         score += self.__totOutsThrown * gsXP_PITCHER_OUT
         score += self.__totKs * gsXP_PITCHER_K
-        score += 2*5#each inning completed after fourth * 2 - min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 )
+        #score += 2*5#each inning completed after fourth * 2 - min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 )
 
         #the following add negative values
         score += self.__totHitsAllowed * gsXP_PITCHER_HITALLOWED
