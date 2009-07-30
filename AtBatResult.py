@@ -5,11 +5,8 @@ from FieldGameState import *
 from PlayerStats import *
 from Play import *
 
-nextPitch = 0
-gsPitches = None
-#nextSwing = 0
-#gsSwings = None
-
+#nextPitch = 0
+#gsPitches = None
 
 class BatBallContactResult:
     
@@ -24,14 +21,18 @@ class BatBallContactResult:
         #90 is third base line
         # < 0 is foul ball
         #> 90 is foul ball
-        self.__Theta = random.randint(-10,100)
+        self.__Theta = random.randint(gsTHETA_LEFTFIELD_FOULPOLE-gsTHETA_FOUL_RANGE,
+                                      gsTHETA_RIGHTFIELD_FOULPOLE+gsTHETA_FOUL_RANGE)
 
         #R is Radius or distance of hit, if its in the Air
         #this is where it will land
-        #if its a grandball this the power which can eventually determine error rates
+        #if its a grandball this the power 
+        #which can eventually determine error rates
         #NOTE: this will become magnitude or velocity of ball off the bat
         #      which together will determine the distance with _phi
-        self.__Radius = random.randint(1,gsRADIUS_OUTFIELD_WALL+20+self.__batterAbil.getBattingPowerZones()[0])
+        #      we could also define the radius to be the distance 
+        #      the ball would be hit if phi = 45 degrees (i.e. the optimal angle)
+        self.__Radius = random.randint(1, gsPLAYER_POWER_MAX_RADIUS_INIT+self.__batterAbil.getBattingPowerZones()[0])
 
         #the angle that the ball leaves the bat
         #for now 0 is a ground ball and 1 is in the air
@@ -76,12 +77,13 @@ class AtBatResult:
         #self.__runnersScored = [] #[playerGUID,]
         self.__resultCode = gsNULL_ATBATRESULT_CODE
 
-        global gsPitches
-        if gsPitches == None:
-             file = open("pitch.loc", "r")
-             pitches = file.readline()
-             file.close()
-             gsPitches = eval(pitches)
+        #TO USE NON RANDOM PITCH DATA
+        #global gsPitches
+        #if gsPitches == None:
+        #     file = open("pitch.loc", "r")
+        #     pitches = file.readline()
+        #     file.close()
+        #     gsPitches = eval(pitches)
 
     def __del__(self):
         #TODO: make sure we aren't causing memory leak        
@@ -123,21 +125,6 @@ class AtBatResult:
             "'runnersOut':%s," +\
             "'resultCode':%s}"
 
-        #DEBUG
-        #print type(self.__pitcherGUID)
-        #print type(self.__batterGUID)
-        #print type(self.__fieldState)
-        #print type(self.__allowedEvents)
-        #print type(self.__fouls)
-        #print type(self.__strikeCount)
-        #print type(self.__ballCount)
-        #print type(self.__totPitches)
-        #print type(self.__contactMade)
-        #print type(self.__atBatEventLog)
-        #print type(self.__runnersOut)
-        #print type(self.__runnersScored)
-        #print type(self.__resultCode)
-
         return s % (self.__pitcherGUID,
                     self.__pitcherStats,
                     self.__batterGUID,
@@ -153,9 +140,9 @@ class AtBatResult:
         self.__atBatEventLog += [eventStr]
 
     def _getNextPitch(self):
-        global gsPitches
-        global nextPitch
-        nextPitch += 1
+        #global gsPitches
+        #global nextPitch
+        #nextPitch += 1
         
         #TODO: weight the number of balls thrown out of the strikezone according to the
         #      pitchers control

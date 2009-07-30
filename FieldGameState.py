@@ -1,9 +1,9 @@
 from Globals import *
 
-
 gsTHETA_LEFTFIELD_FOULPOLE = 0
 gsTHETA_RIGHTFIELD_FOULPOLE = 90
 gsRADIUS_OUTFIELD_WALL = 410
+gsTHETA_FOUL_RANGE = 10
 
 #Simple Defensive Model for infielder ranges 
 gsTHETA_THIRDBASERANGE = range(0,10)
@@ -16,11 +16,11 @@ gsOUTFIELDSHALLOW = 240
 gsOUTFIELDERMAXRADIUS = 345
 gsOUTFIELDDOUBLE = gsRADIUS_OUTFIELD_WALL#410#385
 #gsOUTFIELDTRIPLE = 400
-class FieldGeometry:
 
-    def __init__(self):
-        self.__radiusInfieldEdge = gsMAXINFIELDRADIUS
-        self.__radiusOutfieldWall = [(gsTHETA_LEFTFIELD_FOULPOLE, gsTHETA_RIGHTFIELD_FOULPOLE, gsRADIUS_OUTFIELD_WALL)]
+#class FieldGeometry:
+#    def __init__(self):
+#        self.__radiusInfieldEdge = gsMAXINFIELDRADIUS
+#        self.__radiusOutfieldWall = [(gsTHETA_LEFTFIELD_FOULPOLE, gsTHETA_RIGHTFIELD_FOULPOLE, gsRADIUS_OUTFIELD_WALL)]
 
 
 

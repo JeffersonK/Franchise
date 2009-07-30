@@ -597,9 +597,13 @@ class PitcherStats:
         return self.__longestHRAllowed
     
     def getBestPitcherScore(self):
+        if not self._statExists():
+            return None
         return self.__bestPitcherScore
         
     def getWorstPitcherScore(self):
+        if not self._statExists():
+            return None
         return self.__worstPitcherScore
 
     def computeWinPct(self):
@@ -659,9 +663,12 @@ class PitcherStats:
         score += self.__totWalksThrown * gsXP_PITCHER_WALKSTHROWN
         return score
 
-    def countXP(self):
-        return max(gsMIN_XP_PER_GAME, self.getPitcherScore())
+    def getHighXPScore(self):
+        return self.__highXPScore
 
+    def countXP(self):
+        XP = max(gsMIN_XP_PER_GAME, self.getPitcherScore())
+        return XP
         old = """XP = 0
         XP += self.__totKs * gsXP_PITCHER_K
         XP += self.__shutouts * gsXP_PITCHER_SHUTOUT
@@ -806,6 +813,10 @@ class BatterStats:
         self.__totHitsWithRunnersInScoringPos = initValue
         self.__totRBIsWithRunnersInScoringPos = initValue
         self.__totRunnersLeftInScoringPos = initValue
+
+        self.__highXPScore = 0 #used only in the persistent player stats
+        self.__highXPScoreAtBatResult = None
+        self.__XPScore = 0 #used to store current XP after countXP is called
         return
 
 
@@ -839,7 +850,9 @@ class BatterStats:
         XP += gsXP_BATTER_WALK * self.__totWalks
         #XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
         #XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
-        return 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitche
+        XP = 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitche
+        self.__XPScore = XP
+        return XP
 
     def __iadd__(self, other):
         if self.statType() != other.statType():
@@ -850,8 +863,18 @@ class BatterStats:
         self.__totHits += other.__totHits
        
         if other.statSubType() == gsSTATSUBTYPE_ENDGAMESTATS:
+            #make sure this has been called, it sets the __XPScore
+            #right now we also call this from updatePlayerState
+            #but we do this just in case
+            other.countXP()
+            if other.__XPScore > self.__highXPScore:
+                self.__highXPScore = other.__XPScore
+                self.__highXPScoreAtBatResult = other.__atBatResults
+
             self.__wins += other.__wins
             self.__losses += other.__losses
+            
+            
 
             #check for cycles
             if other.__totHits >= 4 and \
@@ -930,20 +953,25 @@ class BatterStats:
             "'totAtBatsWithRunnersInScoringPos':%d," + \
             "'totHitsWithRunnersInScoringPos':%d," + \
             "'totRBIsWithRunnersInScoringPos':%d," + \
-            "'totRunnersLeftInScoringPos':%d}"
+            "'totRunnersLeftInScoringPos':%d," + \
+            "'highXPScore':%d," +\
+            "'highXPScoreAtBatResult':%s}"
 
-        return dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
-                          self.__gamesPlayed, self.__wins, self.__losses, self.__totHits,
-                          self.__currentHitStreak, self.__longestHitStreak,
-                          self.__totCycles, self.__totHRs, 
-                          self.__longestHR, self.__totGrandSlams, self.__tot1Bs, 
-                          self.__tot2Bs, self.__tot3Bs, self.__totKd, self.__totDPHitInto, 
-                          self.__totTPHitInto, self.__totWalks, self.__totHBP, 
-                          self.__totIBB, self.__totRuns, self.__totRBIs, 
-                          self.__totAtBatsWithRunnersInScoringPos, 
-                          self.__totHitsWithRunnersInScoringPos, 
-                          self.__totRBIsWithRunnersInScoringPos, 
-                          self.__totRunnersLeftInScoringPos)
+        x = dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
+                       self.__gamesPlayed, self.__wins, self.__losses, self.__totHits,
+                       self.__currentHitStreak, self.__longestHitStreak,
+                       self.__totCycles, self.__totHRs, 
+                       self.__longestHR, self.__totGrandSlams, self.__tot1Bs, 
+                       self.__tot2Bs, self.__tot3Bs, self.__totKd, self.__totDPHitInto, 
+                       self.__totTPHitInto, self.__totWalks, self.__totHBP, 
+                       self.__totIBB, self.__totRuns, self.__totRBIs, 
+                       self.__totAtBatsWithRunnersInScoringPos, 
+                       self.__totHitsWithRunnersInScoringPos, 
+                       self.__totRBIsWithRunnersInScoringPos, 
+                       self.__totRunnersLeftInScoringPos,
+                       self.__highXPScore,
+                       self.__highXPScoreAtBatResult)
+        return x
 
     def safe_setstatevar(self, key, dict, defaultVal):
         val = None
@@ -993,6 +1021,8 @@ class BatterStats:
         self.__totHitsWithRunnersInScoringPos = d['totHitsWithRunnersInScoringPos']
         self.__totRBIsWithRunnersInScoringPos = d['totRBIsWithRunnersInScoringPos']
         self.__totRunnersLeftInScoringPos = d['totRunnersLeftInScoringPos']
+        self.__highXPScore = d['highXPScore']
+        self.__highXPScoreAtBatResult = d['highXPScoreAtBatResult']
         return self
 
 
@@ -1100,6 +1130,14 @@ class BatterStats:
         if not self._hasAtBats():
             return None
         return self.__totWalks
+
+    def getHighXPScore(self):
+        if not self._hasAtBats():
+            return None
+        return self.__highXPScore
+
+    #def getBestGame(self):
+    #    return (self.__highXPScore, self.__highXPScoreAtBatResult)
 
     ###
 

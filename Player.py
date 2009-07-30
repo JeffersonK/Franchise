@@ -54,15 +54,16 @@ class Player:
             "'position':'%s','franchiseGUID':%d," +\
             "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
 
-        return fmt % (self.__playerGUID, self.__name, self.__energy, self.__maxChallengePoints,
-                      self.__challengePoints, self.__maxPlayerEnergy, self.__recoveryTime,
-                      self.__lastPlayerRecharge, self.__money, self.__lastTimePaid,
-                      self.__XP,self.__level,self.__unusedStatPoints,
+        return fmt % (self.__playerGUID, self.__name, self.__energy, 
+                      self.__maxChallengePoints, self.__challengePoints, 
+                      self.__maxPlayerEnergy, self.__recoveryTime,
+                      self.__lastPlayerRecharge, self.__money, 
+                      self.__lastTimePaid, self.__XP, self.__level, 
+                      self.__unusedStatPoints,
                       self.__position, self.__franchiseGUID,
                       self.__playerAbilities.__getstate__(),
-                      self.__batterStats.__getstate__(), self.__pitcherStats.__getstate__())
-
-
+                      self.__batterStats.__getstate__(), 
+                      self.__pitcherStats.__getstate__())
 
     def __setstate__(self, dictstr):
 
