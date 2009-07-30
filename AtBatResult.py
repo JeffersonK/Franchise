@@ -31,7 +31,7 @@ class BatBallContactResult:
         #if its a grandball this the power which can eventually determine error rates
         #NOTE: this will become magnitude or velocity of ball off the bat
         #      which together will determine the distance with _phi
-        self.__Radius = random.randint(1,gsRADIUS_OUTFIELD_WALL+5+self.__batterAbil.getBattingPowerZones()[0])
+        self.__Radius = random.randint(1,gsRADIUS_OUTFIELD_WALL+20+self.__batterAbil.getBattingPowerZones()[0])
 
         #the angle that the ball leaves the bat
         #for now 0 is a ground ball and 1 is in the air
