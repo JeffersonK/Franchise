@@ -198,6 +198,12 @@ class Player:
         self.__XP = XP
         return 0
 
+    def getMoney(self):
+        return self.__money
+
+    def getUnusedStatPoints(self):
+        return self.__unusedStatPoints
+    
     def getLevel(self):
         return self.__level
 
