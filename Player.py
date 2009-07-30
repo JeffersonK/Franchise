@@ -183,6 +183,9 @@ class Player:
         if self.__XP > gsXP_LEVELS[self.__level]:
             self._handleLevelUp()
 
+    def getNextLevelExperience(self):
+        return gsXP_LEVELS[self.__level]
+
     def getExperience(self):
         return self.__XP
 
