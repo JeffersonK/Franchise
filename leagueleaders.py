@@ -34,6 +34,7 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
     pWinPct = []
     #bestPitcherScore = []
     #worstPitcherScore = []
+    Loot = []
 
     leaderboard = {'batting':{},'record':{},'character':{},'pitching':{}}
 
@@ -87,6 +88,11 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
 
         #addLeader(wostPitcherScores, plyr.getName(), plyr.getPitcherStats().getWorstPitcherScore())
         addLeader(Level, plyr.getName(), plyr.getLevel())
+
+        addLeader(Loot, plyr.getName(), plyr.getMoney())
+
+    Loot.sort(cmp)
+    leaderboard['character']['MONEY'] = Loot
 
     ERA.sort(cmp)
     leaderboard['pitching']['ERA'] = ERA

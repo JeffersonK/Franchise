@@ -135,6 +135,7 @@ class Player:
     def updatePlayerStats(self, playerGameState):
 
         playerGameStats = playerGameState.getPlayerGameStateStats()
+        moneyInc = self.__playerAbilities.getPrestige()*Globals.gsLEVEL_CASH_PERPRESTIGE_PERGAME
 
         if self.__position == gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isPitcherStats():
@@ -146,6 +147,13 @@ class Player:
             self._checkLevelUp()
             #print playerGameState.getPitcherScore()
 
+            #increment money
+            if playerGameStats.getWins() > 0:
+               
+                self.__money += moneyInc
+            else:
+                self.__money += int(0.5*moneyInc)
+
         elif self.__position != gsPOSITION_POSSTR[gsPITCHER_POSCODE] and \
                 playerGameStats.isBatterStats():
             
@@ -155,6 +163,13 @@ class Player:
             self.__batterStats += playerGameStats
             self._checkLevelUp()
             #print self
+
+            #increment money
+            if playerGameStats.getWins() > 0:
+               
+                self.__money += moneyInc
+            else:
+                self.__money += int(0.5*moneyInc)
 
         #updatePlayerStatsEvents = ['+1 EXP']
         return #updatePlayerStatsEvents
