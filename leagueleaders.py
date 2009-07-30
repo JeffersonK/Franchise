@@ -65,19 +65,19 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
         addLeader(pWorstXPScores, plyr.getName(), plyr.getPitcherStats().getWorstPitcherScore())
 
     bXPScores.sort(cmp)
-    leaderboard['batting']['BATTER XP SCORES'] = bXPScores
+    leaderboard['batting']['BATTER_XP_SCORES'] = bXPScores
     pBestXPScores.sort(cmp)
-    leaderboard['pitching']['PITCHER HIGH SCORES'] = pBestXPScores
+    leaderboard['pitching']['PITCHER_HIGH_SCORES'] = pBestXPScores
     pWorstXPScores.sort(cmp)
-    leaderboard['pitching']['PITCHER WORST SCORES'] = pWorstXPScores
+    leaderboard['pitching']['PITCHER_WORST_SCORES'] = pWorstXPScores
     Loot.sort(cmp)
     leaderboard['character']['MONEY'] = Loot
     ERA.sort(cmp)
     leaderboard['pitching']['ERA'] = ERA
     WalksThrown.sort(cmp)
-    leaderboard['pitching']['WALKS THROWN'] = WalksThrown
+    leaderboard['pitching']['WALKS_THROWN'] = WalksThrown
     pWinPct.sort(cmp)
-    leaderboard['pitching']['PITCHER WINPCT'] = pWinPct
+    leaderboard['pitching']['PITCHER_WINPCT'] = pWinPct
     Ks.sort(cmp)
     leaderboard['pitching']['STRIKEOUTS'] = Ks
     XP.sort(cmp)
@@ -103,7 +103,7 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
     bwins.sort(cmp)
     leaderboard['record']['WINS'] = bwins
     bwinPct.sort(cmp)
-    leaderboard['record']['BATTER WINPCT'] = bwinPct
+    leaderboard['record']['BATTER_WINPCT'] = bwinPct
     if outfile != None:
         file = open(os.path.join(dbLoc,outfile), 'w+')
         if file == None:

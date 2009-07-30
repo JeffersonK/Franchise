@@ -4,6 +4,18 @@ import array
 from Globals import *
 
 
+
+################################################
+#
+# BoundaryConditions
+# PrSwingAtBall(Worst Patience) = 0.20
+# PrBall(Best Patience) = 0.03
+#
+###############################################
+gsBATTERSKILLS_MAXPATIENCE = 100.0#0.20
+gsBATTERSKILLS_MINPATIENCE = 0.0#0.03
+
+
 ################################################
 #
 # BoundaryConditions
