@@ -663,9 +663,6 @@ class PitcherStats:
         score += self.__totWalksThrown * gsXP_PITCHER_WALKSTHROWN
         return score
 
-    def getHighXPScore(self):
-        return self.__highXPScore
-
     def countXP(self):
         XP = max(gsMIN_XP_PER_GAME, self.getPitcherScore())
         return XP
@@ -850,7 +847,7 @@ class BatterStats:
         XP += gsXP_BATTER_WALK * self.__totWalks
         #XP += gsXP_BATTER_GRANDSLAM * self.__totGrandSlams
         #XP += gsXP_BATTER_GRANDSLAM * self.__totCycles
-        XP = 2*max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitche
+        XP = max(gsMIN_XP_PER_GAME, XP) #multiply by two to balance with pitche
         self.__XPScore = XP
         return XP
 
@@ -1136,8 +1133,10 @@ class BatterStats:
             return None
         return self.__highXPScore
 
-    #def getBestGame(self):
-    #    return (self.__highXPScore, self.__highXPScoreAtBatResult)
+    def getBestGame(self):
+        if not self._hasAtBats():
+            return None
+        return (self.__highXPScore, self.__highXPScoreAtBatResult)
 
     ###
 

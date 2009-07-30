@@ -5,9 +5,13 @@ from FieldGameState import *
 from PlayerStats import *
 from Play import *
 
-#nextPitch = 0
-#gsPitches = None
+#####
+USE_NONRANDOM_PITCHES = 0
+nextPitch = 0
+gsPitches = None
 
+DEBUG_PITCHZONES = 0
+#####
 class BatBallContactResult:
     
     def __init__(self,
@@ -78,13 +82,14 @@ class AtBatResult:
         self.__resultCode = gsNULL_ATBATRESULT_CODE
 
         #TO USE NON RANDOM PITCH DATA
-        #global gsPitches
-        #if gsPitches == None:
-        #     file = open("pitch.loc", "r")
-        #     pitches = file.readline()
-        #     file.close()
-        #     gsPitches = eval(pitches)
-
+        if USE_NONRANDOM_PITCHES:
+            global gsPitches
+            if gsPitches == None:
+                file = open("pitch.loc", "r")
+                pitches = file.readline()
+                file.close()
+                gsPitches = eval(pitches)
+                
     def __del__(self):
         #TODO: make sure we aren't causing memory leak        
         #don't delete these next TWO  objects because 
@@ -140,24 +145,40 @@ class AtBatResult:
         self.__atBatEventLog += [eventStr]
 
     def _getNextPitch(self):
-        #global gsPitches
-        #global nextPitch
-        #nextPitch += 1
         
-        #TODO: weight the number of balls thrown out of the strikezone according to the
-        #      pitchers control
+        #CAN USE TO DECRESE ENTRPOY IN THE SYSTEM
+        if USE_NONRANDOM_PITCHES:
+            global gsPitches
+            global nextPitch
+            nextPitch += 1
+        
 
         #jeffk 07/28/09 DIRTY HACK: to increase number of balls temporarily
-        b = random.randint(0,2)
-        z = 0
-        if b == 0:
-            z = 9
-        #z = random.randint(0,len(gsPITCHZONES)-1)
-        
+        #b = random.randint(0,2)
+        z = -1
+        #if b == 0:
+        #    z = 9
+
+        #weight the number of balls thrown out of the 
+        #strikezone according to the pitchers control        
+        prBall = PrEng.PrBall(self.__pitcherAbil.getPitcherControl(), 0)
+        b = random.randint(0,99)
+        z = -1
+        if float(b) < 100*prBall:
+            z = gsBALLZONE
+        else:
+            #its a strike so randomly select the strike zone 0-8
+            z = random.randint(0,len(gsPITCHZONES)-2)
+
+        if DEBUG_PITCHZONES:
+            print "Pitch - PrBall(%f,0)=%f\t%d %d" % (self.__pitcherAbil.getPitcherControl(),
+                                                      prBall, b, z)
+
         #TODO: weight the pitchtype and pitchzone according to the pitchers strengths
+        # decided not to do this because it would favor the pitchers too much
         r = random.randint(0,len(gsPITCHTYPES)-1)
 
-        return (gsPITCHTYPES[r], gsPITCHZONES[z])#gsPitches[nextPitch])
+        return (gsPITCHTYPES[r], gsPITCHZONES[z])
 
     #def _getNextSwing(self):
     #    global gsSwings

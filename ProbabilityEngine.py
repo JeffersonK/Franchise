@@ -7,6 +7,28 @@ from Globals import *
 ################################################
 #
 # BoundaryConditions
+# PrBall(Worst Control) = 0.50
+# PrBall(Best Control) = 0.25
+#
+###############################################
+gsPITCHERSKILLS_MAXCONTROL = 100.0
+gsPITCHERSKILLS_MINCONTROL = 0.0
+gsPITCHERSKILLS_NUMCONTROL_LEVELS = gsPITCHERSKILLS_MAXCONTROL - gsPITCHERSKILLS_MINCONTROL
+gsBC_PROB_WORSTPITCHER_BALL = 0.50
+gsBC_PROB_BESTPITCHER_BALL = 0.25
+gsPROBDELTA_BESTWORSTPITCHER_BALL = gsBC_PROB_WORSTPITCHER_BALL - gsBC_PROB_BESTPITCHER_BALL
+gsPITCHERSKILLS_CONTROLINC_DELTA = (gsPROBDELTA_BESTWORSTPITCHER_BALL/gsPITCHERSKILLS_NUMCONTROL_LEVELS)
+def PrBall(pitcherControl, batterPatience):
+
+    #probability of ball gets lower with increased pitcher control
+    pr =  (gsBC_PROB_WORSTPITCHER_BALL - \
+               pitcherControl*gsPITCHERSKILLS_CONTROLINC_DELTA)
+
+    return pr
+
+################################################
+#
+# BoundaryConditions
 #
 # PrContact(given pitchType, Best Batter, Worst Pitcher) = 0.90
 # PrContact(given pitchType, Worst Batter, Best Pitcher) = 0.10

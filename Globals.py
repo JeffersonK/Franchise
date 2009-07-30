@@ -72,8 +72,9 @@ gsTHIRDBASE = 0
 #                 (0,0),(1,0),(2,0)]
 
 gsPITCHZONES = range(0,10)#range() is non-inclusive on end
+#TODO: Add Zones for HBP and WILDPITCH
 gsSTRIKEZONE = range(9)
-#gsBALLZONE = 9
+gsBALLZONE = 9
 
 gsPITCHCALL_STRIKE = 'STRK'
 gsPITCHCALL_BALL = 'BALL'
