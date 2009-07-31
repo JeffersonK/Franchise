@@ -2,7 +2,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-#from mlbfranchise.players.forms import PlayerForm
 import os
 import ObjectDB
 import sys
@@ -102,7 +101,7 @@ def edit_player(request, player_id):
 			'player': p,
 			'error_message': "Error in Form.  Please Try again",
         		})
-				#return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id)))
+				#return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id)))
 		
 		else:
 			if (p.getPosition() == "P"):
@@ -144,14 +143,14 @@ def edit_player(request, player_id):
 				#return render_to_response('players/detail.html', {'player': p})
        
                                 #return ('players/detail.html', { 'player': p }, 'error_message': '',})
-				return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args =(player_id,)))
+				return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args =(player_id,)))
 		#else:
 		#	return render_to_response('players/detail.html', {
 		#	'player': p,
 		#	'error_message': "Error in Form.  NOT VALID!!!!Please Try again",
         	#	})
 	else:
-		return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id,)))
+		return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
 
 
 def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
@@ -201,7 +200,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 	
 	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
 
-#	return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id,)))
+#	return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
 
 
 def adjust_pitcher(request,player_id,friend_id,move_action):
