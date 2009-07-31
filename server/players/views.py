@@ -13,7 +13,7 @@ gsPlayerDB = None
 def header():
 	global gsPlayerDB
 	if gsPlayerDB == None:
-		gsPlayerDB = ObjectDB.ObjectDB("/home/frank/src/Franchise/players", "plr")#initPlayerDB()
+		gsPlayerDB = ObjectDB.ObjectDB("/home/frank/src/Franchise/players", "plr")
 
 def index(request):
 	latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
@@ -29,7 +29,7 @@ def player_details(request, player_id):
 	del(gsPlayerDB)
 	gsPlayerDB = None
 	pitcher = [-1]
-	l = [-1,1,2,3,4,5,6,7,8]
+	l = [-1,0,1,2,3,4,5,6,7]
 	
 	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
 
@@ -158,7 +158,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 	global gsPlayerDB
 	header()
 	p = gsPlayerDB.getObjectHandle(player_id)
-	l = [-1,0,1,2,3,4,5,6,7,8]
+	l = [-1,0,1,2,3,4,5,6,7]
 	pitcher = [0]
 	f = gsPlayerDB.getAllObjectGUIDs("/home/frank/src/Franchise/players", "plr")
 
