@@ -1,10 +1,6 @@
-import Globals
 import cPickle
 import os
 import glob
-
-gsPLAYERDBLOC = "players"
-gsPLAYERFILEEXT = "plr"
 
 class ObjectDB:
 
@@ -152,7 +148,12 @@ class ObjectDB:
     #
     #
     #for Player Objs args are ('players/', 'plr')
-    def iteritems(self, dbLoc, objFileExt):
+    def iteritems(self, dbLoc=None, objFileExt=None):
+        if dbLoc == None:
+            dbLoc = self.__objectdbLoc
+        if objFileExt == None:
+            objFileExt = self.__objectdbFileExt
+
         objList = []
         guidList = self.getAllObjectGUIDs(dbLoc, objFileExt)
         
@@ -177,7 +178,13 @@ class ObjectDB:
     #        return 0
     #    return -1
 
-        
+    def __del__(self):
+        for (guid, plyr) in self.__dbcache.iteritems():
+            del(plyr)
+            #del self.__dbcache[guid]
+
+        del(self.__dbcache)
+        self.__dbcache = None
 
 if __name__ == '__main__':
     main()

@@ -15,6 +15,7 @@ class Player:
         #TODO: change this to an integer
         #self.__position = position.upper()
         self.__position = ''
+        #self.__handedness
 
         self.__franchiseGUID = Globals.gsPLAYERFREEAGENT
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
@@ -43,6 +44,8 @@ class Player:
         #self.__items = PlayerItems()
         #self.__achievements = PlayerAchievements()
 
+        self.__defaultLineup = []
+        self.__defaultRotation = []
 
         return
 
@@ -52,7 +55,8 @@ class Player:
             "'lastPlayerRecharge':%d,'money':%d,'lastTimePaid':%d," +\
             "'XP':%d,'level':%d,'unusedStatPoints':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
-            "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s}"
+            "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s," +\
+            "'defaultLineup':%s, 'defaultRotation':%s}"
 
         return fmt % (self.__playerGUID, self.__name, self.__energy, 
                       self.__maxChallengePoints, self.__challengePoints, 
@@ -63,7 +67,8 @@ class Player:
                       self.__position, self.__franchiseGUID,
                       self.__playerAbilities.__getstate__(),
                       self.__batterStats.__getstate__(), 
-                      self.__pitcherStats.__getstate__())
+                      self.__pitcherStats.__getstate__(),
+                      self.__defaultLineup, self.__defaultRotation)
 
     def __setstate__(self, dictstr):
 
@@ -98,6 +103,9 @@ class Player:
         self.__unusedStatPoints = d['unusedStatPoints']
         #self.__achievements = {}
         #self.__items = {}
+
+        self.__defaultLineup = d['defaultLineup']
+        self.__defaultRotation = d['defaultRotation']
 
         abilities = d['playerAbilities']
         self.__playerAbilities = PlayerAbilities.PlayerAbilities(abilities['batting'],

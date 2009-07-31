@@ -29,8 +29,12 @@ def formatFloatStr(num, places):
     #print fmt
     return fmt % num
 
+
+gsPLAYERDBLOC = "players"
+gsPLAYERFILEEXT = "plr"
+
 #the farthest someone with Power = 0 can hit the ball
-gsPLAYER_POWER_MAX_RADIUS_INIT = 430
+gsPLAYER_POWER_MAX_RADIUS_INIT = 425
 
 gsLEVEL_CASH_PERPRESTIGE_PERGAME = 100
 
