@@ -103,6 +103,12 @@ class ObjectDB:
 
         return 0
     
+    def updateObject(self, ObjectGuid, Object):
+        if ObjectGuid in self.__dbcache:
+            del self.__dbcache[ObjectGuid]
+        self.__dbcache.update({ObjectGuid:Object})
+        return 0
+
     #
     #
     #

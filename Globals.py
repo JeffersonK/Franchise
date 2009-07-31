@@ -38,9 +38,6 @@ gsFRANCHISEOBJFILEEXT = "frn"
 gsGLOBALSDBLOC = "globalsdb"
 gsGLOBALSOBJFILEEXT = "gbl"
 
-gsPLAYERDBLOC = "players"
-gsPLAYERFILEEXT = "plr"
-
 #the farthest someone with Power = 0 can hit the ball
 gsPLAYER_POWER_MAX_RADIUS_INIT = 425
 

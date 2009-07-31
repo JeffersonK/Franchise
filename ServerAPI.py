@@ -9,6 +9,7 @@
 import time
 import json
 from ObjectDB import *
+import Player
 import leagueleaders
 
 def _openPlayerDB():
@@ -52,7 +53,7 @@ def ServerAPIGetPlayerState(playerGUID):
 def ServerAPIGetLineupCandidates(playerGUID):
     guidList = []
     plyrDB = _openPlayerDB()
-    for (guid, plyr) in plyrDB.iteritems(players):
+    for (guid, plyr) in plyrDB.iteritems():
         if guid != playerGUID:
             guidList += [(guid, plyr.getName(), plyr.getPosition())]
     _closePlayerDB(plyrDB)
@@ -107,7 +108,16 @@ def ServerAPIPlayGame(playerGUID, challengedPlayerGUID):
 #
 #
 #############
-def ServerAdminAPISetPlayerState(playerGUID, playerState):
+def ServerAdminAPISetPlayerState(playerGUID, JSONplayerState):
+    
+    plyrDB = _openPlayerDB()
+    #jsonPlyr = ServerAPIGetPlayerState(playerGUID)
+    plyrDictStr = json.loads(JSONplayerState)
+    plyrobj = Player.Player(-1).__setstate__(plyrDictStr)
+    plyrDB.updateObject(playerGUID, plyrobj)
+    #print p
+    #print pobj
+    _closePlayerDB(plyrDB)
     return
 
 
@@ -126,6 +136,8 @@ def main():
 
     lc = ServerAPIGetLineupCandidates(0)
     print lc
+
+    ServerAdminAPISetPlayerState(0, plyr0)
 
 if __name__ == "__main__":
     main()
