@@ -82,6 +82,14 @@ def ServerAPIUseStatPoint(playerGUID, abilityName):
 #
 #
 #############
+def ServerAPIGetTrainingJobs(playerGUID):
+    return
+
+#############
+#
+#
+#
+#############
 def ServerAPITrainSkills(playerGUID, trainingGUID):
     return
 
