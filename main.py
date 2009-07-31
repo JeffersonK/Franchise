@@ -22,7 +22,7 @@ GENERATETEAMS = False
 
 gsPlayerDB = ObjectDB.ObjectDB(Globals.gsPLAYERDBLOC, Globals.gsPLAYEROBJFILEEXT)
 gsFranchiseDB = ObjectDB.ObjectDB(Globals.gsFRANCHISEDBLOC, Globals.gsFRANCHISEOBJFILEEXT)
-gsGlobalDB = ObjectDB.ObjectDB(Globals.gsGLOBALSOBJFILEEXT, Globals.gsGLOBALSDBLOC)
+gsGlobalDB = ObjectDB.ObjectDB(Globals.gsGLOBALSDBLOC, Globals.gsGLOBALSOBJFILEEXT)
 
 globalState = None
 
