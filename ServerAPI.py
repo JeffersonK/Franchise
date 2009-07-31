@@ -56,8 +56,10 @@ def ServerAPIGetLineupCandidates(playerGUID):
     for (guid, plyr) in plyrDB.iteritems():
         if guid != playerGUID:
             guidList += [(guid, plyr.getName(), plyr.getPosition())]
+
+    jsonList = json.dumps(guidList)
     _closePlayerDB(plyrDB)
-    return guidList
+    return jsonList
 
 #############
 #
