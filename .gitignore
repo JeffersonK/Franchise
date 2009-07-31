@@ -27,7 +27,6 @@ server/TeamGameState.py
 server/dev_server.py
 server/leagueleaders.py
 server/main.py
-server/manage.py
 server/pics/
 server/pystats.py
 server/testProbabilityEngine.py
