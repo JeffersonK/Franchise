@@ -1,0 +1,105 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<table font-size=9>
+<tr valign=top><td>
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>WINS</b></td></tr>
+{% for obj in leaders.record.WINS %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>Level</b></td></tr>
+{% for obj in leaders.character.LEVEL %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+
+</td><td>
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>AVG</b></td></tr>
+{% for obj in leaders.batting.AVG %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>HRs</b></td></tr>
+{% for obj in leaders.batting.HRs %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>Longest HR</b></td></tr>
+{% for obj in leaders.batting.longestHR %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>RBIs</b></td></tr>
+{% for obj in leaders.batting.RBIs %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>SLG %</b></td></tr>
+{% for obj in leaders.batting.SLG %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>OBP</b></td></tr>
+{% for obj in leaders.batting.OBP %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>Hit Streak</b></td></tr>
+{% for obj in leaders.batting.HITSTRK %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>BestXP</b></td></tr>
+{% for obj in leaders.batting.BATTER_XP_SCORES %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>P Best</b></td></tr>
+{% for obj in leaders.pitching.PITCHER_HIGH_SCORES %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+
+<table>
+<tr><td colspan=2 bgcolor="9F9F9F"><b>P Worst</b></td></tr>
+{% for obj in leaders.pitching.PITCHER_WORST_SCORES %}
+<tr><td>{{obj.0}}</td><td>{{obj.1}}</td></tr>
+{% endfor %}
+</table>
+</td><td>
+
+
+</tr>
+</table>
