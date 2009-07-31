@@ -83,7 +83,7 @@ defaultpitcherAbil = {'zoneMastery':pitcherZoneMastery, #pitchers effectiveness 
 defaultbatterAbil = {'zoneMastery':batterZoneMastery,#how good a batter is at making contact with a pitch in a given location
                      'pitchMastery':batterPitchMastery,#how good a batter is at making contact with a certain kind of pitch
                      'powerZones':batterPowerZones, #effects the zones where hitters have power
-                     'patience':0, #effects how often the batter chances balls/bad pitches
+                     'patience':0.0, #effects how often the batter chances balls/bad pitches
                      }
 
 #FIELDING

@@ -161,7 +161,7 @@ class AtBatResult:
 
         #weight the number of balls thrown out of the 
         #strikezone according to the pitchers control        
-        prBall = PrEng.PrBall(self.__pitcherAbil.getPitcherControl(), 0)
+        prBall = PrEng.PrBall(self.__pitcherAbil.getPitcherControl())
         b = random.randint(0,99)
         z = -1
         if float(b) < 100*prBall:
@@ -171,7 +171,7 @@ class AtBatResult:
             z = random.randint(0,len(gsPITCHZONES)-2)
 
         if DEBUG_PITCHZONES:
-            print "Pitch - PrBall(%f,0)=%f\t%d %d" % (self.__pitcherAbil.getPitcherControl(),
+            print "Pitch - PrBall(%f)=%f\t%d %d" % (self.__pitcherAbil.getPitcherControl(),
                                                       prBall, b, z)
 
         #TODO: weight the pitchtype and pitchzone according to the pitchers strengths
@@ -203,19 +203,25 @@ class AtBatResult:
         else:
             (pitchType, pitchZone) = pitch
    
-
-        #r = random.randint(0,100)
+        swungAtBall = False
+        #r = random.randint(0,100)     
         if pitchZone not in gsSTRIKEZONE:# and r >=20:
             #the pitch is in the strike zone
 
             #TODO: calculate batter pateince to see if he swings at this pitch
             #if (batter swings) :
             #   => it's a strike
-                            
+            prSwingAtBall = PrEng.PrSwingAtBall(self.__batterAbil.getPatience())
+            r = random.randint(0,99)
+            if r < int(100*prSwingAtBall):
+                #he swung
+                swungAtBall = True
+
             #TODO: base on pitchers control decide whether or not he hit the batter
             # if gsATBATRESULT_HITBYPITCH
-
-            if self.__pitcherStats.getBalls() == gsMAXBALLCOUNT-1:
+            if swungAtBall:
+                None
+            elif not swungAtBall and self.__pitcherStats.getBalls() == gsMAXBALLCOUNT-1:
                 #TODO: need to check to see if runs score and generate a Play()
                 playObj = Play(self.__batterGUID, self.__pitcherGUID,
                                pitchType, pitchZone, 0, 
@@ -243,7 +249,7 @@ class AtBatResult:
                 #print "WALK"
                 return gsPITCHCALL_WALK
 
-            else:
+            else:# not swungAtBall:
                 #this addPitchReceived does nothing for now 
                 #because we don't track
                 #individual pitches for batters
@@ -257,55 +263,56 @@ class AtBatResult:
         #it's in the strike zone
         #we always swing this call get the probability that the
         #batter makes contact
-        pr = PrEng.PrContactNew(pitcherAbil, 
-                                batterAbil,
-                                (pitchType, pitchZone))
+        if not swungAtBall:
+            pr = PrEng.PrContactNew(pitcherAbil, 
+                                    batterAbil,
+                                    (pitchType, pitchZone))
 
         #using the probability of contact we then
         #do our monte carlo simulation to determine
         #if the ball is actually hit
-        r = random.randint(0,999)
-        if r <= (pr * 1000):
+            r = random.randint(0,999)
+            if r <= (pr * 1000):
             #fuckin' contact!
-            self.__contactMade = True
-            playObj = Play(self.__batterGUID, self.__pitcherGUID,
-                           pitchType, pitchZone, 0, 
-                           self.__pitcherStats.getBalls(), 
-                           self.__pitcherStats.getStrikes())
-            self.simBallInPlay(playObj)
+                self.__contactMade = True
+                playObj = Play(self.__batterGUID, self.__pitcherGUID,
+                               pitchType, pitchZone, 0, 
+                               self.__pitcherStats.getBalls(), 
+                               self.__pitcherStats.getStrikes())
+                self.simBallInPlay(playObj)
 
-            if playObj.isFoul():#.startswith(gsPITCHCALL_FOUL):
-                self.__contactMade = False
-                self.__pitcherStats.addPitchThrown(pitchType, 
-                                                   pitchZone, 
-                                                   0, 
-                                                   gsPITCHCALL_FOUL)
+                if playObj.isFoul():#.startswith(gsPITCHCALL_FOUL):
+                    self.__contactMade = False
+                    self.__pitcherStats.addPitchThrown(pitchType, 
+                                                       pitchZone, 
+                                                       0, 
+                                                       gsPITCHCALL_FOUL)
 
-                self.__batterStats.addPitchReceived(pitchType, 
-                                                    pitchZone, 
-                                                    0, 
-                                                    gsPITCHCALL_FOUL, 
-                                                    0)
-                self.__resultCode = gsNULL_ATBATRESULT_CODE
+                    self.__batterStats.addPitchReceived(pitchType, 
+                                                        pitchZone, 
+                                                        0, 
+                                                        gsPITCHCALL_FOUL, 
+                                                        0)
+                    self.__resultCode = gsNULL_ATBATRESULT_CODE
+                    
+                    self.__playObj = playObj
+                else:
+                    playObj.createPlayEncoding()
+                    self.__resultCode = str(playObj)
+                    self.__pitcherStats.addPitchThrown(pitchType, 
+                                                       pitchZone, 
+                                                       0, 
+                                                       None, 
+                                                       playObj)                
+                    
+                    self.__batterStats.addPitchReceived(pitchType, 
+                                                        pitchZone, 
+                                                        0, 
+                                                        None,  
+                                                        self.__fieldState.numRunnersInScoringPos(),
+                                                        playObj)                
 
-                self.__playObj = playObj
-            else:
-                playObj.createPlayEncoding()
-                self.__resultCode = str(playObj)
-                self.__pitcherStats.addPitchThrown(pitchType, 
-                                                   pitchZone, 
-                                                   0, 
-                                                   None, 
-                                                   playObj)                
-
-                self.__batterStats.addPitchReceived(pitchType, 
-                                                    pitchZone, 
-                                                    0, 
-                                                    None,  
-                                                    self.__fieldState.numRunnersInScoringPos(),
-                                                    playObj)                
-
-                self.__playObj = playObj
+                    self.__playObj = playObj
 
                 return gsPITCHCALL_CONTACT
 
@@ -344,6 +351,9 @@ class AtBatResult:
             return gsPITCHCALL_STRIKEOUT
         else:
             #its just a strike
+            if swungAtBall:
+                #print "SWUNG AT BALL"
+                None
             self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE)
             self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE, 0)
             return gsPITCHCALL_STRIKE

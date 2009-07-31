@@ -39,6 +39,7 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
     bXPScores = []
     pBestXPScores = []
     pWorstXPScores = []
+    pOverallScore = []
 
     leaderboard = {'batting':{},'record':{},'character':{},'pitching':{}}
 
@@ -63,12 +64,16 @@ def leagueleaders(dbLoc, objFileExt, outfile=None):
         addLeader(bXPScores, plyr.getName(), plyr.getBatterStats().getHighXPScore())
         addLeader(pBestXPScores, plyr.getName(), plyr.getPitcherStats().getBestPitcherScore())
         addLeader(pWorstXPScores, plyr.getName(), plyr.getPitcherStats().getWorstPitcherScore())
+        addLeader(pOverallScore, plyr.getName(), plyr.getPitcherStats().computeAvgPitcherScore())
 
+    pOverallScore.sort(cmp)
+    leaderboard['pitching']['PITCHER_AVG_SCORE'] = pOverallScore
     bXPScores.sort(cmp)
     leaderboard['batting']['BATTER_XP_SCORES'] = bXPScores
     pBestXPScores.sort(cmp)
     leaderboard['pitching']['PITCHER_HIGH_SCORES'] = pBestXPScores
     pWorstXPScores.sort(cmp)
+    pWorstXPScores.reverse()
     leaderboard['pitching']['PITCHER_WORST_SCORES'] = pWorstXPScores
     Loot.sort(cmp)
     leaderboard['character']['MONEY'] = Loot

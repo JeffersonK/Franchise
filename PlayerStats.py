@@ -129,7 +129,7 @@ class PitcherStats:
         
 
         self.__bestPitcherScore = initValue
-        self.__worstPitcherScore = 100000000#needs to be super big
+        self.__worstPitcherScore = 1000000#needs to be super big
 
         #TODO: while we update stats put achievements in here
         #self.__statUpdateEvents = []
@@ -644,23 +644,29 @@ class PitcherStats:
         num = float(self.__totStrikesThrown)/float(self.__totBallsThrown)
         return formatFloatStr(num, 2)
 
-
+    def computeAvgPitcherScore(self):
+        return self.getPitcherScore(True)
+        
     #Algorithm as defined at www.baseball-almanac.cmo/stats2.shtml
     #Should only be called on stats aggregated for a single game
-    def getPitcherScore(self):
+    def getPitcherScore(self, overall=False):
         if not self._statExists():
             return None
         score = gsXP_PITCHER_START
+        if overall:
+            score = self.__starts * gsXP_PITCHER_START
 
         score += self.__totOutsThrown * gsXP_PITCHER_OUT
         score += self.__totKs * gsXP_PITCHER_K
         #score += 2*5#each inning completed after fourth * 2 - min( (self.__totOutsThrown-(gsOUTSPERINNING*4))/3 )
-
         #the following add negative values
         score += self.__totHitsAllowed * gsXP_PITCHER_HITALLOWED
         score += self.__totEarnedRuns  * gsXP_PITCHER_EARNEDRUN
-
         score += self.__totWalksThrown * gsXP_PITCHER_WALKSTHROWN
+        
+        if overall:
+            return formatFloatStr(float(score)/float(self.__starts), 2)
+
         return score
 
     def countXP(self):
@@ -812,7 +818,7 @@ class BatterStats:
         self.__totRunnersLeftInScoringPos = initValue
 
         self.__highXPScore = 0 #used only in the persistent player stats
-        self.__highXPScoreAtBatResult = None
+        self.__highXPScoreAtBatResult = []
         self.__XPScore = 0 #used to store current XP after countXP is called
         return
 
