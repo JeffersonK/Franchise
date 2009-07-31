@@ -1,0 +1,15 @@
+###CONFIG SERVER###
+
+Edit settings.py
+-TEMPLATE_DIRS = Absolute path to djangotemplates folder in repo
+-MEDIA_ROOT = Absolute path to pics folder in repo
+-MEDIA_URL = URL to MEDIA_ROOT i.e. http://serverip/media/
+-Confirm DB Login/Password/
+-DEBUG = True/False
+
+Startup.sh
+-PYTHONPATH = Set Absolute path to parent directory of repo
+-django-admin runserver 
+
+####START SERVER####
+source startup.sh IPADDRESS:PORT = specify IP otherwise localhost:8000 used

@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('mlbfranchise.players.views',
+urlpatterns = patterns('Franchise.players.views',
 	(r'^$', 'index'),
 	(r'^(?P<player_id>\d+)/$', 'player_details'),
 	(r'^(?P<player_id>\d+)/edit/$', 'edit_player'),

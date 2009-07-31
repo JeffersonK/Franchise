@@ -2,7 +2,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-#from mlbfranchise.players.forms import PlayerForm
 import os
 import ObjectDB
 import sys
@@ -13,7 +12,7 @@ gsPlayerDB = None
 def header():
 	global gsPlayerDB
 	if gsPlayerDB == None:
-		gsPlayerDB = ObjectDB.ObjectDB("/home/frank/src/Franchise/players", "plr")
+		gsPlayerDB = ObjectDB.ObjectDB("./playersdb", "plr")
 
 def index(request):
 	latest_poll_list = Poll.objects.all().order_by('-pub_date')[:5]
@@ -24,7 +23,7 @@ def player_details(request, player_id):
 	header()	
 	#p = get_object_or_404(Poll, pk=poll_id)
 	p = gsPlayerDB.getObjectHandle(player_id)
-	f = gsPlayerDB.getAllObjectGUIDs("/home/frank/src/Franchise/players", "plr")
+	f = gsPlayerDB.getAllObjectGUIDs("./playersdb", "plr")
 	#l = gsPlayerDB.getLineup
 	del(gsPlayerDB)
 	gsPlayerDB = None
@@ -102,7 +101,7 @@ def edit_player(request, player_id):
 			'player': p,
 			'error_message': "Error in Form.  Please Try again",
         		})
-				#return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id)))
+				#return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id)))
 		
 		else:
 			if (p.getPosition() == "P"):
@@ -144,14 +143,14 @@ def edit_player(request, player_id):
 				#return render_to_response('players/detail.html', {'player': p})
        
                                 #return ('players/detail.html', { 'player': p }, 'error_message': '',})
-				return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args =(player_id,)))
+				return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args =(player_id,)))
 		#else:
 		#	return render_to_response('players/detail.html', {
 		#	'player': p,
 		#	'error_message': "Error in Form.  NOT VALID!!!!Please Try again",
         	#	})
 	else:
-		return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id,)))
+		return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
 
 
 def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
@@ -160,7 +159,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 	p = gsPlayerDB.getObjectHandle(player_id)
 	l = [-1,0,1,2,3,4,5,6,7]
 	pitcher = [0]
-	f = gsPlayerDB.getAllObjectGUIDs("/home/frank/src/Franchise/players", "plr")
+	f = gsPlayerDB.getAllObjectGUIDs("./playersdb", "plr")
 
 	lineup_id = int(lineup_id)
 	lineup_id_left = int(lineup_id)-1
@@ -201,7 +200,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 	
 	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
 
-#	return HttpResponseRedirect(reverse('mlbfranchise.players.views.player_details', args=(player_id,)))
+#	return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
 
 
 def adjust_pitcher(request,player_id,friend_id,move_action):
@@ -210,7 +209,7 @@ def adjust_pitcher(request,player_id,friend_id,move_action):
 	p = gsPlayerDB.getObjectHandle(player_id)
 	l = [0,1,2,3,4,5,6,7,8]
 	pitcher = [0]
-	f = gsPlayerDB.getAllObjectGUIDs("/home/frank/src/Franchise/players", "plr")
+	f = gsPlayerDB.getAllObjectGUIDs("./playersdb", "plr")
 
 	if(move_action == "remove"):
 		pitcher=[-1]
