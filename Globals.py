@@ -29,6 +29,14 @@ def formatFloatStr(num, places):
     #print fmt
     return fmt % num
 
+gsPLAYERDBLOC = "playersdb"
+gsPLAYEROBJFILEEXT = "plr"
+
+gsFRANCHISEDBLOC = "franchisesdb"
+gsFRANCHISEOBJFILEEXT = "frn"
+
+gsGLOBALSDBLOC = "globalsdb"
+gsGLOBALSOBJFILEEXT = "gbl"
 
 gsPLAYERDBLOC = "players"
 gsPLAYERFILEEXT = "plr"

@@ -17,23 +17,12 @@ def usage(errstr):
 
     sys.exit(1)
 
-
-#DEFAULS
-PLAYERDBLOC = "players"
-PLAYEROBJFILEEXT = "plr"
-
-FRANCHISEDBLOC = "franchises"
-FRANCHISEOBJFILEEXT = "frn"
-
-GLOBALSDBLOC = "globals"
-GLOBALSOBJFILEEXT = "gbl"
-
 NRUNS = 1
 GENERATETEAMS = False
 
-gsPlayerDB = ObjectDB.ObjectDB(PLAYERDBLOC, PLAYEROBJFILEEXT)
-gsFranchiseDB = ObjectDB.ObjectDB(FRANCHISEDBLOC, FRANCHISEOBJFILEEXT)
-gsGlobalDB = ObjectDB.ObjectDB(GLOBALSOBJFILEEXT, GLOBALSDBLOC)
+gsPlayerDB = ObjectDB.ObjectDB(Globals.gsPLAYERDBLOC, Globals.gsPLAYEROBJFILEEXT)
+gsFranchiseDB = ObjectDB.ObjectDB(Globals.gsFRANCHISEDBLOC, Globals.gsFRANCHISEOBJFILEEXT)
+gsGlobalDB = ObjectDB.ObjectDB(Globals.gsGLOBALSOBJFILEEXT, Globals.gsGLOBALSDBLOC)
 
 globalState = None
 
