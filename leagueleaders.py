@@ -133,7 +133,7 @@ def printll(statName, stats):
 
 def main():
 
-    ll = leagueleaders("players","plr", "leagueleaders.txt")
+    ll = leagueleaders("playersdb","plr", "leagueleaders.txt")
     pprint(ll)
     return
 

@@ -13,7 +13,7 @@ import Player
 import leagueleaders
 
 def _openPlayerDB():
-    PlayerDB = ObjectDB("players","plr")
+    PlayerDB = ObjectDB("playersdb","plr")
     return PlayerDB
 
 def _closePlayerDB(playerDB):
@@ -144,10 +144,14 @@ def main():
     plyr0 = ServerAPIGetPlayerState(0)
     print plyr0
 
+    jp = json.loads(plyr0)
+    print type(jp)
+
     lc = ServerAPIGetLineupCandidates(0)
     print lc
 
     ServerAdminAPISetPlayerState(0, plyr0)
+
 
 if __name__ == "__main__":
     main()

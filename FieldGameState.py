@@ -1,4 +1,18 @@
 from Globals import *
+from PointLine import *
+
+LOC_P = (45.0, 60.5)
+LOC_C = (45.0, -5)
+LOC_1B = (85.0, 115)
+LOC_2B = (60.5, 145)
+LOC_3B = (5, 115)
+LOC_SS = (33.0, 145)
+LOC_LF = (22.5, 250)
+LOC_CF = (45.0, 250)
+LOC_RF = (77.5, 250)
+gsDEFAULT_PLAYER_LOCS = [LOC_P, LOC_C, LOC_1B, 
+                         LOC_2B, LOC_3B, LOC_SS, 
+                         LOC_LF, LOC_CF, LOC_RF]
 
 gsTHETA_LEFTFIELD_FOULPOLE = 0
 gsTHETA_RIGHTFIELD_FOULPOLE = 90
@@ -6,13 +20,13 @@ gsRADIUS_OUTFIELD_WALL = 410
 gsTHETA_FOUL_RANGE = 10
 
 #Simple Defensive Model for infielder ranges 
-gsTHETA_THIRDBASERANGE = range(0,10)
-gsTHETA_SSRANGE = range(20,35)
-gsTHETA_SECONDBASERANGE = range(45, 60)
-gsTHETA_FIRSTBASERANGE = range(75, 90)
+gsTHETA_THIRDBASERANGE = range(1,10)
+gsTHETA_SSRANGE = range(25,40)
+gsTHETA_SECONDBASERANGE = range(45, 58)
+gsTHETA_FIRSTBASERANGE = range(78, 90)
 
 gsMAXINFIELDRADIUS = 155
-gsOUTFIELDSHALLOW = 240
+gsOUTFIELDSHALLOW = 250
 gsOUTFIELDERMAXRADIUS = 345
 gsOUTFIELDDOUBLE = gsRADIUS_OUTFIELD_WALL#410#385
 #gsOUTFIELDTRIPLE = 400
@@ -23,6 +37,7 @@ gsOUTFIELDDOUBLE = gsRADIUS_OUTFIELD_WALL#410#385
 #        self.__radiusOutfieldWall = [(gsTHETA_LEFTFIELD_FOULPOLE, gsTHETA_RIGHTFIELD_FOULPOLE, gsRADIUS_OUTFIELD_WALL)]
 
 
+DEBUG_FIELDGAMESTATE = 1
 
 #if we want a more accurate simulation of how runners advance
 #should be dependent on where the ball is hit who is fielding the
@@ -313,6 +328,39 @@ class DefensiveFieldState:
     def getBasesState(self):
         return self.__basesState
 
+    def _testNewAlgorithm(self, theta, phi, radius):
+
+        if DEBUG_FIELDGAMESTATE:
+            print "\n === NEW HIT ==="
+        i = 1
+        playMade = False
+        playerRange = 30.0
+
+        for plyr in gsDEFAULT_PLAYER_LOCS:
+            playMade = False
+            minDist = 500.0
+            if phi == 0:#its on the ground
+                (onLineSeg, minDist) = PointLineIntersect((theta, radius), plyr)
+                if minDist < playerRange:
+                    playMade = True
+                    if DEBUG_FIELDGAMESTATE:
+                        print "--- %s MADE PLAY ---" % gsPOSITION_POSSTR[i]
+
+            elif phi > 0:
+                minDist = distance((theta, radius), plyr)
+                if minDist < playerRange:
+                    playMade = True
+                    if DEBUG_FIELDGAMESTATE:
+                        print "--- %s MADE PLAY ---" % gsPOSITION_POSSTR[i]
+
+            if DEBUG_FIELDGAMESTATE:
+                print "HIT LOC: %d %d %d" % (theta, phi, radius)
+                print "%s(%f) within %f " % (gsPOSITION_POSSTR[i], playerRange,
+                                                 minDist)
+            i += 1
+
+        return
+
     def simDefense(self, batBallContactResultOverride=None):
 
         batBallContactResult = None#self.__batBallContactResult
@@ -321,7 +369,13 @@ class DefensiveFieldState:
             
         (theta, phi, radius) = batBallContactResult.getHitParams()
 
+        
+        #TESTING
+        self._testNewAlgorithm(theta, phi, radius)
+        
+
         if theta < gsTHETA_LEFTFIELD_FOULPOLE or theta > gsTHETA_RIGHTFIELD_FOULPOLE:
+            result = gsPITCHCALL_FOUL
             return ((gsPITCHCALL_FOUL, None, radius), [])
 
         result = ""
@@ -349,11 +403,14 @@ class DefensiveFieldState:
                 result = (gsATBATRESULT_HOMERUN, self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
         else:
             #its a ground ball
-            if theta < min(gsTHETA_THIRDBASERANGE):#up the 3rd base line
+            if radius < gsMAXINFIELDRADIUS:
+                result = (gsATBATRESULT_GROUNDOUT, self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
+                self.__outs += 1
+
+            elif theta < min(gsTHETA_THIRDBASERANGE):#up the 3rd base line
                 result = (gsATBATRESULT_TRIPLE, self.getOutfieldLoc(theta), self.getFieldLocModifier(radius))
 
             elif theta in gsTHETA_THIRDBASERANGE:
-              
                 result = (gsATBATRESULT_GROUNDOUT, self.getInfieldLoc(theta,radius), self.getFieldLocModifier(radius))
                 self.__outs += 1
             
@@ -386,5 +443,6 @@ class DefensiveFieldState:
 
             #needed by advanceRunners()
         runnersScored = self.__basesState.simBaseRunners(result[0])
-            
+        if DEBUG_FIELDGAMESTATE:
+            print result
         return (result, runnersScored)#result
