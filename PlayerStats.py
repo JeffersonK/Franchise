@@ -905,6 +905,12 @@ class BatterStats:
             #self.__atBatResults += [other.__atBatResults]
             self.__atBatResults = other.__atBatResults
         else:
+            #TODO: FIX BUG HERE
+            #if other.__atBatResults == []:
+            #    print self
+            #    while 1:
+            #        None
+            
             self.__atBatResults += [other.__atBatResults]            
 
         self.__totHRs += other.__totHRs
@@ -959,7 +965,9 @@ class BatterStats:
             "'totRunnersLeftInScoringPos':%d," + \
             "'highXPScore':%d," +\
             "'highXPScoreAtBatResult':%s}"
-
+        
+        #print self.__atBatResults
+        #if self.__atBatResults
         x = dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
                        self.__gamesPlayed, self.__wins, self.__losses, self.__totHits,
                        self.__currentHitStreak, self.__longestHitStreak,

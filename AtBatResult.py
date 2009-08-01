@@ -27,7 +27,9 @@ class BatBallContactResult:
         #> 90 is foul ball
         self.__Theta = random.randint(gsTHETA_LEFTFIELD_FOULPOLE-gsTHETA_FOUL_RANGE,
                                       gsTHETA_RIGHTFIELD_FOULPOLE+gsTHETA_FOUL_RANGE)
-
+        
+        #self.__Theta = random.normalvariate(45, 15)
+        
         #R is Radius or distance of hit, if its in the Air
         #this is where it will land
         #if its a grandball this the power 
@@ -36,6 +38,8 @@ class BatBallContactResult:
         #      which together will determine the distance with _phi
         #      we could also define the radius to be the distance 
         #      the ball would be hit if phi = 45 degrees (i.e. the optimal angle)
+        
+        #self.__Radius = random.normalvariate(150, 100+50+self.__batterAbil.getBattingPowerZones()[0])
         self.__Radius = random.randint(1, gsPLAYER_POWER_MAX_RADIUS_INIT+self.__batterAbil.getBattingPowerZones()[0])
 
         #the angle that the ball leaves the bat
@@ -211,7 +215,7 @@ class AtBatResult:
             #TODO: calculate batter pateince to see if he swings at this pitch
             #if (batter swings) :
             #   => it's a strike
-            prSwingAtBall = PrEng.PrSwingAtBall(self.__batterAbil.getPatience())
+            prSwingAtBall = PrEng.PrSwingAtBall(self.__batterAbil.getBatterPatience())
             r = random.randint(0,99)
             if r < int(100*prSwingAtBall):
                 #he swung

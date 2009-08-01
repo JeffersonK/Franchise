@@ -12,6 +12,34 @@ from ObjectDB import *
 import Player
 import leagueleaders
 
+############
+#
+# SERVERAPI CONSTANTS
+#
+############
+
+#Common Abilities:
+PLAYERABILITY_MAXENERGYPOINTS =    'PLYRABIL_MAXENG'
+PLAYERABILITY_MAXCHALLENGEPOINTS = 'PLYRABIL_MAXCHL'
+PLAYERABILITY_DEFENSE =            'PLYRABIL_DEFENSE'
+PLAYERABILITY_PRESTIGE =           'PLYRABIL_PRSTIGE' 
+PLAYERABILITY_LEADERSHIP =         'PLYRABIL_LDRSHIP'
+
+#Batter Abilities:
+PLAYERABILITY_BATTER_POWER =       'PLYRABIL_BATPOWR'
+PLAYERABILITY_BATTER_PATIENCE =    'PLYRABIL_BATPATC'
+
+#Pitcher Abilities:
+PLAYERABILITY_PITCHER_CONTROL =    'PLYRABIL_PITCONT'
+PLAYERABILITY_PITCHER_STAMINA =    'PLYRABIL_PITSTAM'
+
+
+############
+#
+# INTERNAL HELPER FUNCTIONS 
+# DONT CALL THESE
+#
+############
 def _openPlayerDB():
     PlayerDB = ObjectDB("playersdb","plr")
     return PlayerDB
@@ -21,7 +49,7 @@ def _closePlayerDB(playerDB):
     del(playerDB)
     playerDB = None
     return
-    
+
 #############
 #
 #
@@ -38,6 +66,8 @@ def ServerAPIGetLeaderboard(playerGUID):
 def ServerAPIGetPlayerState(playerGUID):
     plyrDB = _openPlayerDB()
     plyr =  plyrDB.getObjectHandle(playerGUID)
+    if plyr == None:
+        return None
     jsonPlyr = json.dumps(plyr.__getstate__())
     _closePlayerDB(plyrDB)
     return jsonPlyr
@@ -53,10 +83,13 @@ def ServerAPIGetPlayerState(playerGUID):
 def ServerAPIGetLineupCandidates(playerGUID):
     guidList = []
     plyrDB = _openPlayerDB()
+    plyrObj =  plyrDB.getObjectHandle(playerGUID)
+    if plyrObj == None:
+        return None
+    
     for (guid, plyr) in plyrDB.iteritems():
         if guid != playerGUID:
             guidList += [(guid, plyr.getName(), plyr.getPosition())]
-
     jsonList = json.dumps(guidList)
     _closePlayerDB(plyrDB)
     return jsonList
@@ -73,11 +106,32 @@ def ServerAPISetDefaultGameState(playerGUID, battingLineup, pitchingRotation):
 
 #############
 #
+# Common Abilities:
+#           PLAYERABILITY_MAXENERGYPOINTS
+#           PLAYERABILITY_MAXCHALLENGEPOINTS
+#           PLAYERABILITY_DEFENSE
+#           PLAYERABILITY_PRESTIGE
+#           PLAYERABILITY_LEADERSHIP
 #
+# Batter Abilities:
+#           PLAYERABILITY_BATTER_POWER
+#           PLAYERABILITY_BATTER_PATIENCE
+#
+# Pitcher Abilities:
+#           PLAYERABILITY_PITCHER_CONTROL
+#           PLAYERABILITY_PITCHER_STAMINA
 #
 #############
 def ServerAPIUseStatPoint(playerGUID, abilityName):
-    return
+    plyrDB = _openPlayerDB()
+    plyr =  plyrDB.getObjectHandle(playerGUID)
+    if plyr == None:
+        return -1 #PLAYER DOESNT EXIST
+    if plyr.incStatPoint(abilityName) < 0:
+        return -2 #UKNOWN ABILITY or NO UNUSED STAT POINTS
+
+    _closePlayerDB(plyrDB)
+    return 0
 
 #############
 #
@@ -151,6 +205,16 @@ def main():
     print lc
 
     ServerAdminAPISetPlayerState(0, plyr0)
+
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXENERGYPOINTS) 
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXCHALLENGEPOINTS)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_DEFENSE)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_PRESTIGE)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_LEADERSHIP)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_POWER)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_PATIENCE)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_CONTROL)
+    print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_STAMINA)
 
 
 if __name__ == "__main__":

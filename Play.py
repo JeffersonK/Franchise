@@ -32,6 +32,7 @@ class Play:
         return
 
     def __str__(self):
+        #print self.__playResultEncoding 
         return self.__playResultEncoding
 
     

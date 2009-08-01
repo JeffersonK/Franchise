@@ -21,13 +21,13 @@ gsTHETA_FOUL_RANGE = 10
 
 #Simple Defensive Model for infielder ranges 
 gsTHETA_THIRDBASERANGE = range(1,10)
-gsTHETA_SSRANGE = range(25,40)
+gsTHETA_SSRANGE = range(25,38)
 gsTHETA_SECONDBASERANGE = range(45, 58)
-gsTHETA_FIRSTBASERANGE = range(78, 90)
+gsTHETA_FIRSTBASERANGE = range(80, 90)
 
 gsMAXINFIELDRADIUS = 155
-gsOUTFIELDSHALLOW = 250
-gsOUTFIELDERMAXRADIUS = 345
+gsOUTFIELDSHALLOW = 280
+gsOUTFIELDERMAXRADIUS = 340
 gsOUTFIELDDOUBLE = gsRADIUS_OUTFIELD_WALL#410#385
 #gsOUTFIELDTRIPLE = 400
 
@@ -37,7 +37,7 @@ gsOUTFIELDDOUBLE = gsRADIUS_OUTFIELD_WALL#410#385
 #        self.__radiusOutfieldWall = [(gsTHETA_LEFTFIELD_FOULPOLE, gsTHETA_RIGHTFIELD_FOULPOLE, gsRADIUS_OUTFIELD_WALL)]
 
 
-DEBUG_FIELDGAMESTATE = 1
+DEBUG_FIELDGAMESTATE = 0
 
 #if we want a more accurate simulation of how runners advance
 #should be dependent on where the ball is hit who is fielding the
@@ -334,7 +334,7 @@ class DefensiveFieldState:
             print "\n === NEW HIT ==="
         i = 1
         playMade = False
-        playerRange = 30.0
+        playerRange = 25.0
 
         for plyr in gsDEFAULT_PLAYER_LOCS:
             playMade = False

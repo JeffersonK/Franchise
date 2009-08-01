@@ -5,6 +5,7 @@ from PlayerStats import *
 import time
 from Levels import *
 
+
 class Player:
 
     def __init__(self, playerGUID):#, type):
@@ -17,7 +18,7 @@ class Player:
         self.__position = ''
         #self.__handedness
 
-        self.__franchiseGUID = Globals.gsPLAYERFREEAGENT
+        self.__franchiseGUID = gsPLAYERFREEAGENT
         #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
         
         self.__playerAbilities = PlayerAbilities.PlayerAbilities()
@@ -228,6 +229,36 @@ class Player:
     def getUnusedStatPoints(self):
         return self.__unusedStatPoints
     
+    def incStatPoint(self, abilityName):
+        if self.__unusedStatPoints == 0:
+            return -1
+
+        if abilityName == PLAYERABILITY_MAXENERGYPOINTS:
+            self.__maxPlayerEnergy += 1
+        elif abilityName == PLAYERABILITY_MAXCHALLENGEPOINTS:
+            self.__maxChallengePoints += 1
+        elif abilityName == PLAYERABILITY_DEFENSE:
+            self.__playerAbilities.incDefense()
+        elif abilityName == PLAYERABILITY_PRESTIGE:
+            self.__playerAbilities.incPrestige()
+        elif abilityName  == PLAYERABILITY_LEADERSHIP:
+            self.__playerAbilities.incLeadership()
+
+        elif abilityName == PLAYERABILITY_BATTER_POWER: 
+            self.__playerAbilities.incBatterPower()
+        elif abilityName == PLAYERABILITY_BATTER_PATIENCE:
+            self.__playerAbilities.incBatterPatience()
+        elif abilityName == PLAYERABILITY_PITCHER_CONTROL:
+            self.__playerAbilities.incPitcherControl()
+        elif abilityName == PLAYERABILITY_PITCHER_STAMINA:
+            self.__playerAbilities.incPitcherStamina()
+        else:
+            "Print Uknown Ability %s" % abilityName
+            return -2
+
+        self.__unusedStatPoints -= 1            
+        return 0
+
     def getLevel(self):
         return self.__level
 

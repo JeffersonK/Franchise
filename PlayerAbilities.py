@@ -196,12 +196,21 @@ class PlayerAbilities:
 
     def getPitcherStamina(self):
         return self.__pitching['stamina']
+    
+    def incPitcherStamina(self):
+        self.__pitching['stamina'] += 1
 
     def getPitcherStrength(self):
         return self.__pitching['strength']
 
+    def incPitcherStrength(self):
+        self.__pitching['stregnth'] += 1
+
     def getPitcherControl(self):
         return self.__pitching['control']
+
+    def incPitcherControl(self):
+        self.__pitching['control'] += 1
 
     #BATTING SPECIFIC
     def setBattingPowerZones(self, powerZones):
@@ -268,55 +277,44 @@ class PlayerAbilities:
         self.__batting['zoneMastery'] = newMatrix
         return 0
 
-    def getSpeed(self):
-        return self.__running['speed']
-    
-    def setSpeed(self, newVal):
-        val = safeConvertToInt(newVal)
-        if val == None:
-            return -1
-        self.__running['speed'] = val
-        return 0
+    #def getSpeed(self):
+    #    return self.__running['speed']
+    #def setSpeed(self, newVal):
+    #    val = safeConvertToInt(newVal)
+    #    if val == None:
+    #        return -1
+    #    self.__running['speed'] = val
+    #    return 0
 
     def getDefense(self):
         return self.__fielding['defense']
 
-    def setDefense(self, newVal):
-        val = safeConvertToInt(newVal)
-        if val == None:
-            return -1
-        self.__fielding['defense'] = val
-        return 0
+    def incDefense(self):
+        self.__fielding['defense'] += 1
 
     def getLeadership(self):
         return self.__character['leadership']
 
-    def setLeadership(self, newVal):
-        val = safeConvertToInt(newVal)
-        if val == None:
-            return -1
-        self.__character['leadership'] = val
-        return 0
+    def incLeadership(self):
+        self.__character['leadership'] += 1
+
 
     def getPrestige(self):
         return self.__character['prestige']
 
-    def setPrestige(self, newVal):
-        val = safeConvertToInt(newVal)
-        if val == None:
-            return -1
-        self.__character['prestige'] = val
-        return 0
+    def incPrestige(self):
+        self.__character['prestige'] += 1
 
-    def getPatience(self):
+    def getBatterPatience(self):
         return self.__batting['patience']
 
-    def setPatience(self, newVal):
-        val = safeConvertToInt(newVal)
-        if val == None:
-            return -1
-        self.__batting['patience'] = val
-        return 0
+    def incBatterPatience(self):
+        self.__batting['patience'] += 1
+
+    def incBatterPower(self):
+        pwr = self.__batting['powerZones'][0]
+        self.__batting['powerZones'] = [pwr+1] * 9
+        #self.__batting['patience'] += 1
 
 def main():
 
