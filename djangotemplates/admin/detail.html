@@ -1,0 +1,198 @@
+{% load template_funcs %}
+ 
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+ 
+ 
+<form action="/players/{{player.guid}}/edit/" method="post">
+ 
+<h1>{{player.getName}} - {{player.getLevel}} {{player.getExperience}}/{{player.getNextLevelExperience}}</h1>
+Position: <input type="text" name="Position" value="{{player.getPosition}}" /><br>
+Cash Money: <input type="text" name="Money" value="{{player.getMoney}}" /><br>
+Unused Stat Points:: <input type="text" name="StatPoints" value="{{player.getUnusedStatPoints}}" /><br>
+Energy: <input type="text" name="Energy" value="{{ player.getEnergy }}" />/<input type="text" name="MaxEnergy" value="{{ player.getMaxEnergy }}" /><br>
+Challenges:<input type="text" name="Challenges" value="{{ player.getChallengePoints }}" />/<input type="text" name="MaxChallenges" value="{{ player.getMaxChallengePoints }}" /><br>
+ 
+ 
+<br>Leadership: <input type="text" name="Leadership" value="{{ player.getPlayerAbilities.getLeadership }}" /><br>
+Prestige: <input type="text" name="Prestige" value="{{ player.getPlayerAbilities.getPrestige }}" /><br><br>
+ 
+ 
+{% ifequal player.getPosition "P" %}
+Worst/Best Pitcher Score: <input type="text" name="WorstScore" value="{{ player.getPitcherStats.getWorstPitcherScore }} " />
+-
+<input type="text" name="BestScore" value="{{ player.getPitcherStats.getBestPitcherScore }}" /><br>
+ 
+Record: <input type="text" name="Wins" value="{{ player.getPitcherStats.getWins }} " />
+-
+<input type="text" name="Losses" value="{{ player.getPitcherStats.getLosses }}" /><br><br>
+ 
+ 
+<b>Pitcher Stats:</b>
+<ul>
+<li>Starts: {{ player.getPitcherStats.getStarts}}</li>
+<li>Batters Faced: {{ player.getPitcherStats.getTotBattersFaced}}</li>
+<li>Current Win Streak: {{ player.getPitcherStats.getCurrentWinStreak}}</li>
+<li>Longest Win Streak: {{ player.getPitcherStats.getLongestWinStreak}}</li>
+<li>Current Losing Streak: {{ player.getPitcherStats.getCurrentLosingStreak}}</li>
+<li>Longest Losing Streak: {{ player.getPitcherStats.getLongestLosingStreak}}</li>
+<li>Shutouts: {{ player.getPitcherStats.getShutouts}}</li>
+<li>No Hitters: {{ player.getPitcherStats.getNoHitters}}</li>
+<li>Perfect Games: {{ player.getPitcherStats.getPerfectGames}}</li>
+<li>SOs: {{ player.getPitcherStats.getTotStrikeouts}}</li>
+<li>Most SO/Game: {{ player.getPitcherStats.getMostStrikeoutsGame}}</li>
+<li>Walks: {{ player.getPitcherStats.getTotWalks}}</li>
+<li>Outs: {{ player.getPitcherStats.getTotOuts}}</li>
+<li>Earned Runs: {{ player.getPitcherStats.getTotEarnedRuns}}</li>
+<li>Total Pitches: {{ player.getPitcherStats.getTotPitchesThrown}}</li>
+<li>Total Strikes: {{ player.getPitcherStats.getStrikes}}</li>
+<li>Total Balls: {{ player.getPitcherStats.getBalls}}</li>
+<li>Total Fastballs: {{ player.getPitcherStats.getTotFastballsThrown}}</li>
+<li>Total Curveballs: {{ player.getPitcherStats.getTotCurveballsThrown}}</li>
+<li>Total Knuckleballs: {{ player.getPitcherStats.getTotKnuckleballsThrown}}</li>
+<li>Total Sliders: {{ player.getPitcherStats.getTotSlidersThrown}}</li>
+<li>Total Changeups: {{ player.getPitcherStats.getTotChangeupsThrown}}</li>
+<li>Total Sinkers: {{ player.getPitcherStats.getTotSinkersThrown}}</li>
+<li>Total Forkballs: {{ player.getPitcherStats.getTotForkballsThrown}}</li>
+<li>Total Spitballs: {{ player.getPitcherStats.getTotSpitballsThrown}}</li>
+<li>Total Hits: {{ player.getPitcherStats.getTotHitsAllowed}}</li>
+<li>Total 1Bs: {{ player.getPitcherStats.getTotSinglesAllowed}}</li>
+<li>Total 2Bs: {{ player.getPitcherStats.getTotDoublesAllowed}}</li>
+<li>Total 3Bs: {{ player.getPitcherStats.getTotTriplesAllowed}}</li>
+<li>Total HRs: {{ player.getPitcherStats.getTotHRsAllowed}}</li>
+<li>Total GrandSlams: {{ player.getPitcherStats.getTotGrandSlamsAllowed}}</li>
+<li>Total LongestHR: {{ player.getPitcherStats.getLongestHRAllowed}}</li>
+<br><br>
+<li>Win Pct: {{ player.getPitcherStats.computeWinPct}}</li>
+<li>ERA: {{ player.getPitcherStats.computeERA}}</li>
+<li>OBP: {{ player.getPitcherStats.computeOpposingOBP}}</li>
+<li>SLG Pct: {{ player.getPitcherStats.computeBattersSlgPct}}</li>
+<li>K/B: {{ player.getPitcherStats.computeStrikeBallRatio}}</li>
+</ul>
+ 
+{% else %}
+Highest XP: <input type="text" name="HighestXP" value="{{ player.getBatterStats.getHighXPScore }}" /><br>
+Record: <input type="text" name="Wins" value="{{ player.getBatterStats.getWins }} " />
+-
+<input type="text" name="Losses" value="{{ player.getBatterStats.getLosses }}" /><br><br>
+ 
+Best Game:<br>
+{% for obj in player.getBatterStats.getBestGame|splitGame %}
+{{obj}}<br>
+{% endfor %}
+<br>
+<b>Batter Stats:</b>
+<ul>
+<li>Batting Avg: {{ player.getBatterStats.computeBattingAvg}}</li>
+<li>Slugging Pct: {{ player.getBatterStats.computeSluggingPct}}</li>
+<li>On Base Pct: {{ player.getBatterStats.computeOnBasePct}}</li>
+<li>Win Pct: {{ player.getBatterStats.computeWinPct}}</li>
+<li>Games Played: {{ player.getBatterStats.getGamesPlayed}}</li>
+<li>Total At Bats: {{ player.getBatterStats.getTotAtBats}}</li>
+<li>RBIs: {{ player.getBatterStats.getRBIs}}</li>
+<li>At Bat w/RISP: {{ player.getBatterStats.getAtBatsWithRunnersInScoringPos}}</li>
+<li>Hits w/RISP: {{ player.getBatterStats.getTotHitsWithRunnersInScoringPos}}</li>
+<li>RBIs w/RISP: {{ player.getBatterStats.getTotRBIsWithRunnersInScoringPos}}</li>
+<li>Stranded RISP: {{ player.getBatterStats.getTotRunnersLeftInScoringPos}}</li>
+<li>HRs: {{ player.getBatterStats.getHRs}}</li>
+<li>Longest HR: {{ player.getBatterStats.getLngstHR}}</li>
+<li>Grand Slams: {{ player.getBatterStats.getGrandSlams}}</li>
+<li>Cycles: {{ player.getBatterStats.getCycles}}</li>
+<li>Runs: {{ player.getBatterStats.getRuns}}</li>
+<li>Current Hit Streak: {{ player.getBatterStats.getCurrentHitStreak}}</li>
+<li>Longest Hit Streak: {{ player.getBatterStats.getLngstHitStreak}}</li>
+<li>1Bs: {{ player.getBatterStats.getSingles}}</li>
+<li>2Bs: {{ player.getBatterStats.getDoubles}}</li>
+<li>3Bs: {{ player.getBatterStats.getTriples}}</li>
+<li>Walks: {{ player.getBatterStats.getWalks}}</li>
+</ul>
+{% endifequal %}
+ 
+{% ifequal player.getPosition "P" %}
+<b>Pitcher Abilities:</b>
+<ul>
+<li>Stamina: <input type="text" name="Stamina" value="{{ player.getPlayerAbilities.getPitcherStamina}}" /></li>
+<li>Strength: <input type="text" name="Strength" value="{{ player.getPlayerAbilities.getPitcherStrength}}" /></li>
+<li>Control: <input type="text" name="Control" value="{{ player.getPlayerAbilities.getPitcherControl}}" /></li>
+<li>Fastball: <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.FST}}" /></li>
+<li>Curveball: <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.CRV}}" /></li>
+<li>Slider: <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SLD}}" /></li>
+<li>Changeup: <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.CHNG}}" /></li>
+<li>Knuckleball: <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.KNCK}}" /></li>
+<li>Sinker: <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SINK}}" /></li>
+<li>Spitball: <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SPIT}}" /></li>
+<li>Forkball: <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.FORK}}" /></li>
+</ul>
+<br>
+<b>Pitcher Zone Mastery</b>
+<table border=1 cellpadding=5>
+<tr><td><input type="text" name="zone0" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.0 }}" /></td><td><input type="text" name="zone1" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.1 }}" /></td><td><input type="text" name="zone2" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.2 }}" /></td></tr>
+<tr><td><input type="text" name="zone3" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.3 }}" /></td><td><input type="text" name="zone4" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.4 }}" /></td><td><input type="text" name="zone5" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.5 }}" /></td></tr>
+<tr><td><input type="text" name="zone6" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.6 }}" /></td><td><input type="text" name="zone7" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.7 }}" /></td><td><input type="text" name="zone8" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.8 }}" /></td></tr>
+</table>
+ 
+{% else %}
+<b>Batter Abilities:</b>
+<ul>
+<li>Power: <input type="text" name="Power" value="{{ player.getPlayerAbilities.getBatterPower}}" /></li>
+<li>Patience: <input type="text" name="Patience" value="{{ player.getPlayerAbilities.getPatience}}" /></li>
+<li>Fastball: <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FST}}" /></li>
+<li>Curveball: <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CRV}}" /></li>
+<li>Slider: <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SLD}}" /></li>
+<li>Changeup: <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CHNG}}" /></li>
+<li>Knuckleball: <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.KNCK}}" /></li>
+<li>Sinker: <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SINK}}" /></li>
+<li>Spitball: <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SPIT}}" /></li>
+<li>Forkball: <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FORK}}" /></li>
+</ul>
+<br>
+<b>Batter Zone Mastery</b>
+<table border=1 cellpadding=5>
+<tr><td><input type="text" name="zone0" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.0 }}" /></td><td><input type="text" name="zone1" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.1 }}" /></td><td><input type="text" name="zone2" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.2 }}" /></td></tr>
+<tr><td><input type="text" name="zone3" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.3 }}" /></td><td><input type="text" name="zone4" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.4 }}" /></td><td><input type="text" name="zone5" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.5 }}" /></td></tr>
+<tr><td><input type="text" name="zone6" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.6 }}" /></td><td><input type="text" name="zone7" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.7 }}" /></td><td><input type="text" name="zone8" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.8 }}" /></td></tr>
+</table>
+ 
+<br>
+<b>Batter Power Zone Mastery</b>
+<table border=1 cellpadding=5>
+<tr><td><input type="text" name="pzone0" value="{{ player.getPlayerAbilities.getBattingPowerZones.0 }}" /></td><td><input type="text" name="pzone1" value="{{ player.getPlayerAbilities.getBattingPowerZones.1 }}" /></td><td><input type="text" name="pzone2" value="{{ player.getPlayerAbilities.getBattingPowerZones.2 }}" /></td></tr>
+<tr><td><input type="text" name="pzone3" value="{{ player.getPlayerAbilities.getBattingPowerZones.3 }}" /></td><td><input type="text" name="pzone4" value="{{ player.getPlayerAbilities.getBattingPowerZones.4 }}" /></td><td><input type="text" name="pzone5" value="{{ player.getPlayerAbilities.getBattingPowerZones.5 }}" /></td></tr>
+<tr><td><input type="text" name="pzone6" value="{{ player.getPlayerAbilities.getBattingPowerZones.6 }}" /></td><td><input type="text" name="pzone7" value="{{ player.getPlayerAbilities.getBattingPowerZones.7 }}" /></td><td><input type="text" name="pzone8" value="{{ player.getPlayerAbilities.getBattingPowerZones.8 }}" /></td></tr>
+</table>
+ 
+ 
+{% endifequal %}
+<br>
+<input type="submit" value="Change Player">
+</form>
+ 
+<b>Friends</b>
+{% for i in friends|count|num_range %}
+<a href="/players/{{player.guid}}/lineup/batter/adjust/99/{{ friends|getArrayElement:i }}/add/">{{friends|getArrayElement:i}}</a>
+{% endfor %}
+ 
+<div id="linup_div">
+<br><br>
+<table>
+<tr><td colspan=3><img src="/site_media/{{pitcher.0}}_silhouette.gif" /></td></tr>
+<tr><td>Pitcher -{{pitcher.0}} </td></tr>
+<tr><td><form action="/players/{{player.guid}}/lineup/pitcher/adjust/0/remove/" method="post"><button>X</button></form></td></tr>
+</table>
+<table>
+<tr>
+{% for i in lineup|count|num_range %}
+<td valign=top>
+<table border=0>
+<tr><td colspan=3>
+<img src="/site_media/{{lineup|getArrayElement:i }}_silhouette.gif" />
+</td></tr>
+<tr colspan=3><td>Batter: {{lineup|getArrayElement:i }}</td></tr>
+<tr>
+<td valign=top><table><tr><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/left/" method="post"><button style="font-size: 10px; width: 40px" type="submit"><--</button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/right/" method="post"><button style="font-size: 10px; width: 40px" >--></button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/remove/" method="post"><button style="font-size: 10px; width: 40px" >X</button></form></td></tr></table></td></tr>
+</table>
+</td>
+{% endfor %}
+</tr>
+</table>
+<br><br>
+</div>

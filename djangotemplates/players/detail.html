@@ -1,127 +1,278 @@
 {% load template_funcs %}
+<script type="text/javascript">
+var player;
+//Common Abilities:
+PLAYERABILITY_MAXENERGYPOINTS =    'PLYRABIL_MAXENG'
+PLAYERABILITY_MAXCHALLENGEPOINTS = 'PLYRABIL_MAXCHL'
+PLAYERABILITY_DEFENSE =            'PLYRABIL_DEFENSE'
+PLAYERABILITY_PRESTIGE =           'PLYRABIL_PRSTIGE' 
+PLAYERABILITY_LEADERSHIP =         'PLYRABIL_LDRSHIP'
 
+//Batter Abilities:
+PLAYERABILITY_BATTER_POWER =       'PLYRABIL_BATPOWR'
+PLAYERABILITY_BATTER_PATIENCE =    'PLYRABIL_BATPATC'
+
+//Pitcher Abilities:
+PLAYERABILITY_PITCHER_CONTROL =    'PLYRABIL_PITCONT'
+PLAYERABILITY_PITCHER_STAMINA =    'PLYRABIL_PITSTAM'
+
+var pitchMastery = [];
+var pitchMasteryPercent = [];
+
+/*****
+*TIMER
+*
+******/
+var _countDowncontainer=0;
+var _currentSeconds=0;
+var _maxCountdown=300; //Player Specific
+
+function ActivateCountDown(strContainerID, initialValue) {
+	_countDowncontainer = document.getElementById(strContainerID);
+	
+	if (!_countDowncontainer) {
+		alert("count down error: container does not exist: "+strContainerID+
+			"\nmake sure html element with this ID exists");
+		return;
+	}
+	
+	SetCountdownText(initialValue);
+	window.setTimeout("CountDownTick()", 1000);
+}
+
+function CountDownTick() {
+	if (_currentSeconds <= 0) {
+		ActivateCountDown("CountDownPanel", _maxCountdown);
+		return;
+	}
+	SetCountdownText(_currentSeconds-1);
+	window.setTimeout("CountDownTick()", 1000);
+}
+
+function SetCountdownText(seconds) {
+	//store:
+	_currentSeconds = seconds;
+	//get minutes:
+	var minutes=parseInt(seconds/60);
+	//shrink:
+	seconds = (seconds%60);
+	//shrink:
+	minutes = (minutes%60);
+	//build text:
+	var strText = minutes + ":" + AddZero(seconds);
+	//apply:
+	_countDowncontainer.innerHTML = strText;
+}
+
+function AddZero(num) {
+	return ((num >= 0)&&(num < 10))?"0"+num:num+"";
+}
+
+/*********
+*AJAX
+*
+*********/
+
+var xmlhttp = null;
+
+function ajaxHeader()
+{
+if (window.XMLHttpRequest)
+  {
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else if (window.ActiveXObject)
+  {
+  // code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+else
+  {
+  alert("Your browser does not support XMLHTTP!");
+  }
+}
+function ajaxOnLoad(player_id)
+{
+	ajaxHeader()
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			player = eval("("+ xmlhttp.responseText +")");
+			//player = xmlhttp.responseText;
+			//document.writeln(typeof(player))
+			//player = eval("("+ playerObject +")");
+			//player = xmlhttp.responseText;
+			fillPage();
+			ActivateCountDown("CountDownPanel", 10);
+		}
+		}
+		xmlhttp.open("GET","/player/"+player_id+"/?ajax",true);
+		xmlhttp.send(null);
+	}
+}
+
+function incStatPoint(player_id, ability)
+{
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			player = eval("("+ xmlhttp.responseText +")");
+			//player = xmlhttp.responseText;
+			//document.writeln(typeof(player))
+			//player = eval("("+ playerObject +")");
+			//player = xmlhttp.responseText;
+			fillPage();
+		}
+		}	
+		xmlhttp.open("GET","/player/"+player_id+"/stats/?ajax&stat_name="+ability+"",true)
+		xmlhttp.send(null);
+	}
+}
+
+
+function fillPage()
+{
+	//document.getElementById('leaders').innerHTML = playerObject.toString();
+
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FST);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CRV);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SLD);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CHNG);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.KNCK);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SINK);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SPIT);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FORK);
+
+	for(var i=0;i<pitchMastery.length;i++)
+		pitchMasteryPercent.push((pitchMastery[i]%1).toFixed(2)*100)
+
+/***********
+*Player Info
+*
+************/
+	document.getElementById('EnergyLabel').innerHTML = player.energy;
+	document.getElementById('MaxEnergyLabel').innerHTML = player.maxPlayerEnergy;
+	document.getElementById('ChallengeLabel').innerHTML = player.challengePoints;
+	document.getElementById('MaxChallengeLabel').innerHTML = player.maxChallengePoints;
+	document.getElementById('ExperienceLabel').innerHTML = player.XP;
+	document.getElementById('MoneyLabel').innerHTML = player.money;
+	document.getElementById('NameLabel').innerHTML = player.name;
+	document.getElementById('WinsLabel').innerHTML = player.pitcherStats.wins;
+	document.getElementById('LossesLabel').innerHTML = player.pitcherStats.losses;
+/*****
+*Stats
+*
+******/
+	document.getElementById('StaminaLabel').innerHTML = player.playerAbilities.pitching.stamina;
+	document.getElementById('StrengthLabel').innerHTML = player.playerAbilities.pitching.strength;
+	document.getElementById('ControlLabel').innerHTML = player.playerAbilities.pitching.control;
+	document.getElementById('LeadershipLabel').innerHTML = player.playerAbilities.character.leadership;
+	document.getElementById('PrestigeLabel').innerHTML = player.playerAbilities.character.prestige;
+/********
+/********
+*Training
+*
+*********/
+	
+	document.getElementById('FastballLabel').innerHTML = pitchMastery[0].toFixed(0);
+	document.getElementById('CurveballLabel').innerHTML = pitchMastery[1].toFixed(0);
+	document.getElementById('SliderLabel').innerHTML = pitchMastery[2].toFixed(0);
+	document.getElementById('ChangeupLabel').innerHTML = pitchMastery[3].toFixed(0);
+	document.getElementById('KnuckleballLabel').innerHTML = pitchMastery[4].toFixed(0);
+	document.getElementById('SinkerLabel').innerHTML = pitchMastery[5].toFixed(0);
+	document.getElementById('SpitballLabel').innerHTML = pitchMastery[6].toFixed(0);
+	document.getElementById('ForkballLabel').innerHTML = pitchMastery[7].toFixed(0);
+
+
+
+	buttons = document.getElementsByClassName('statButton');
+	if(player.unusedStatPoints > 0)
+		for(var i=0;i<buttons.length;i++)
+			buttons[i].style.display = "inline";
+	else
+		for(var i=0;i<buttons.length;i++)
+			buttons[i].style.display = "none";
+
+	document.getElementById('StatPointsLabel').innerHTML = player.unusedStatPoints;
+
+	setImages();
+}
+function setImages()
+{
+pics = document.getElementsByName('ForkballPercentImage');
+//document.writeln(pics.length);
+for(var i=0;i<pics.length;i++)
+	pics[i].src = "http://192.168.1.104/mlb/gen_bar.php?percent="+pitchMasteryPercent[i];
+}
+
+/***************
+*INC STAT POINTS
+*
+****************/
+
+
+
+</script>
+
+
+
+
+
+
+
+
+<body onLoad="ajaxOnLoad({{guid}})">
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
+<input type="button" name="updateLeaders" onClick="ajaxOnLoad({{guid}});" value="Update Leaders"/><br>
+ 
 
-<form action="/players/{{player.guid}}/edit/" method="post">
+<div id="leaders" /></div>
 
-<h1>{{player.getName}} - {{player.getLevel}} {{player.getExperience}}/{{player.getNextLevelExperience}}</h1>
-Position: <input type="text" name="Position" value="{{player.getPosition}}" /><br>
-Cash Money: <input type="text" name="Money" value="{{player.getMoney}}" /><br>
-Unused Stat Points:: <input type="text" name="StatPoints" value="{{player.getUnusedStatPoints}}" /><br>
-Energy: <input type="text" name="Energy" value="{{ player.getEnergy }}" />/<input type="text" name="MaxEnergy" value="{{ player.getMaxEnergy }}" /><br>
-Challenges:<input type="text" name="Challenges" value="{{ player.getChallengePoints }}" />/<input type="text" name="MaxChallenges" value="{{ player.getMaxChallengePoints }}" /><br> 
+<!--Status Table-->
+<table align=right>
+<tr><td>Energy </td><td><label id="EnergyLabel">{{player.energy}}</label>/<label id="MaxEnergyLabel">{{player.maxPlayerEnergy}}</label></td></tr>
+<tr><td>Challenges </td><td><label id="ChallengeLabel">{{player.challengePoints}}</label>/<label id="MaxChallengeLabel">{{player.maxChallengePoints}}</label></td></tr>
+<tr><td>Experience </td><td><label id="ExperienceLabel">{{player.XP}}</label>/<label id="MaxExperienceLabel">{{player.getNextLevelExperience}}</label></td></tr>
+<tr><td>Cash Money </td><td>$<label id="MoneyLabel">{{player.money}}</label></td></tr>
+<tr><td>Stat Points </td><td><label id="StatPointsLabel">{{player.unusedStatPoints}}</label><br></td></tr>
+<tr><td colspan=2><label id=CountDownPanel name="CountDownPanel"></label></td></tr>
+</table>
 
+<!---------------->
 
-<br>Leadership: <input type="text" name="Leadership" value="{{ player.getPlayerAbilities.getLeadership }}" /><br>
-Prestige: <input type="text" name="Prestige" value="{{ player.getPlayerAbilities.getPrestige }}" /><br><br>
-
-
-{% ifequal player.getPosition "P" %}
-Worst/Best Pitcher Score: <input type="text" name="WorstScore" value="{{ player.getPitcherStats.getWorstPitcherScore }} " />
-- 
-<input type="text" name="BestScore" value="{{ player.getPitcherStats.getBestPitcherScore }}" /><br>
-
-Record: <input type="text" name="Wins" value="{{ player.getPitcherStats.getWins }} " />
-- 
-<input type="text" name="Losses" value="{{ player.getPitcherStats.getLosses }}" /><br><br>
-
-
-<b>Pitcher Stats:</b>
-<ul>
-	<li>Starts: {{ player.getPitcherStats.getStarts}}</li>
-	<li>Batters Faced: {{ player.getPitcherStats.getTotBattersFaced}}</li>
-	<li>Current Win Streak: {{ player.getPitcherStats.getCurrentWinStreak}}</li>
-	<li>Longest Win Streak: {{ player.getPitcherStats.getLongestWinStreak}}</li>
-	<li>Current Losing Streak: {{ player.getPitcherStats.getCurrentLosingStreak}}</li>
-	<li>Longest Losing Streak: {{ player.getPitcherStats.getLongestLosingStreak}}</li>
-	<li>Shutouts: {{ player.getPitcherStats.getShutouts}}</li>
-	<li>No Hitters: {{ player.getPitcherStats.getNoHitters}}</li>
-	<li>Perfect Games: {{ player.getPitcherStats.getPerfectGames}}</li>
-	<li>SOs: {{ player.getPitcherStats.getTotStrikeouts}}</li>
-	<li>Most SO/Game: {{ player.getPitcherStats.getMostStrikeoutsGame}}</li>
-	<li>Walks: {{ player.getPitcherStats.getTotWalks}}</li>
-	<li>Outs: {{ player.getPitcherStats.getTotOuts}}</li>
-	<li>Earned Runs: {{ player.getPitcherStats.getTotEarnedRuns}}</li>
-	<li>Total Pitches: {{ player.getPitcherStats.getTotPitchesThrown}}</li>
-	<li>Total Strikes: {{ player.getPitcherStats.getStrikes}}</li>
-	<li>Total Balls: {{ player.getPitcherStats.getBalls}}</li>
-	<li>Total Fastballs: {{ player.getPitcherStats.getTotFastballsThrown}}</li>
-	<li>Total Curveballs: {{ player.getPitcherStats.getTotCurveballsThrown}}</li>
-	<li>Total Knuckleballs: {{ player.getPitcherStats.getTotKnuckleballsThrown}}</li>
-	<li>Total Sliders: {{ player.getPitcherStats.getTotSlidersThrown}}</li>
-	<li>Total Changeups: {{ player.getPitcherStats.getTotChangeupsThrown}}</li>
-	<li>Total Sinkers: {{ player.getPitcherStats.getTotSinkersThrown}}</li>
-	<li>Total Forkballs: {{ player.getPitcherStats.getTotForkballsThrown}}</li>
-	<li>Total Spitballs: {{ player.getPitcherStats.getTotSpitballsThrown}}</li>
-	<li>Total Hits: {{ player.getPitcherStats.getTotHitsAllowed}}</li>
-	<li>Total 1Bs: {{ player.getPitcherStats.getTotSinglesAllowed}}</li>
-	<li>Total 2Bs: {{ player.getPitcherStats.getTotDoublesAllowed}}</li>
-	<li>Total 3Bs: {{ player.getPitcherStats.getTotTriplesAllowed}}</li>
-	<li>Total HRs: {{ player.getPitcherStats.getTotHRsAllowed}}</li>
-	<li>Total GrandSlams: {{ player.getPitcherStats.getTotGrandSlamsAllowed}}</li>
-	<li>Total LongestHR: {{ player.getPitcherStats.getLongestHRAllowed}}</li>
-	<br><br>
-	<li>Win Pct: {{ player.getPitcherStats.computeWinPct}}</li>
-	<li>ERA: {{ player.getPitcherStats.computeERA}}</li>
-	<li>OBP: {{ player.getPitcherStats.computeOpposingOBP}}</li>
-	<li>SLG Pct: {{ player.getPitcherStats.computeBattersSlgPct}}</li>
-	<li>K/B: {{ player.getPitcherStats.computeStrikeBallRatio}}</li>
-</ul>
-
-{% else %}
-Highest XP: <input type="text" name="HighestXP" value="{{ player.getBatterStats.getHighXPScore }}" /><br>
-Record: <input type="text" name="Wins" value="{{ player.getBatterStats.getWins }} " />
-- 
-<input type="text" name="Losses" value="{{ player.getBatterStats.getLosses }}" /><br><br>
-
-Best Game:<br>
-{% for obj in player.getBatterStats.getBestGame|splitGame %}
-{{obj}}<br>
-{% endfor %}
+<h1><label id="NameLabel">{{player.name}}</label> - <label id="PositionLabel">{{position}}</label></h1>
 <br>
-<b>Batter Stats:</b>
-<ul>
-	<li>Batting Avg: {{ player.getBatterStats.computeBattingAvg}}</li>
-	<li>Slugging Pct: {{ player.getBatterStats.computeSluggingPct}}</li>
-	<li>On Base Pct: {{ player.getBatterStats.computeOnBasePct}}</li>
-	<li>Win Pct: {{ player.getBatterStats.computeWinPct}}</li>
-	<li>Games Played: {{ player.getBatterStats.getGamesPlayed}}</li>
-	<li>Total At Bats: {{ player.getBatterStats.getTotAtBats}}</li>
-	<li>RBIs: {{ player.getBatterStats.getRBIs}}</li>
-	<li>At Bat w/RISP: {{ player.getBatterStats.getAtBatsWithRunnersInScoringPos}}</li>
-	<li>Hits w/RISP: {{ player.getBatterStats.getTotHitsWithRunnersInScoringPos}}</li>
-	<li>RBIs w/RISP: {{ player.getBatterStats.getTotRBIsWithRunnersInScoringPos}}</li>
-	<li>Stranded RISP: {{ player.getBatterStats.getTotRunnersLeftInScoringPos}}</li>
-	<li>HRs: {{ player.getBatterStats.getHRs}}</li>
-	<li>Longest HR: {{ player.getBatterStats.getLngstHR}}</li>
-	<li>Grand Slams: {{ player.getBatterStats.getGrandSlams}}</li>
-	<li>Cycles: {{ player.getBatterStats.getCycles}}</li>
-	<li>Runs: {{ player.getBatterStats.getRuns}}</li>
-	<li>Current Hit Streak: {{ player.getBatterStats.getCurrentHitStreak}}</li>
-	<li>Longest Hit Streak: {{ player.getBatterStats.getLngstHitStreak}}</li>
-	<li>1Bs: {{ player.getBatterStats.getSingles}}</li>
-	<li>2Bs: {{ player.getBatterStats.getDoubles}}</li>
-	<li>3Bs: {{ player.getBatterStats.getTriples}}</li>
-	<li>Walks: {{ player.getBatterStats.getWalks}}</li>
-</ul>
-{% endifequal %}
 
-{% ifequal player.getPosition "P" %}
-<b>Pitcher Abilities:</b>
-<ul>
-	<li>Stamina: <input type="text" name="Stamina" value="{{ player.getPlayerAbilities.getPitcherStamina}}" /></li>
-	<li>Strength: <input type="text" name="Strength" value="{{ player.getPlayerAbilities.getPitcherStrength}}" /></li>
-	<li>Control: <input type="text" name="Control" value="{{ player.getPlayerAbilities.getPitcherControl}}" /></li>
-	<li>Fastball: <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.FST}}" /></li>
-	<li>Curveball: <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.CRV}}" /></li>
-	<li>Slider: <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SLD}}" /></li>
-	<li>Changeup: <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.CHNG}}" /></li>
-	<li>Knuckleball: <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.KNCK}}" /></li>
-	<li>Sinker: <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SINK}}" /></li>
-	<li>Spitball: <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.SPIT}}" /></li>
-	<li>Forkball: <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getPitchingPitchMasteryMatrix.FORK}}" /></li>
-</ul>
+{% ifequal position "P" %}
+Record <label id="WinsLabel">{{ player.getPitcherStats.getWins }}</label>
+- 
+<label id="LossesLabel">{{ player.getPitcherStats.getLosses }}</label><br>
+<br>
+<table>
+<tr><td colspan=3><b>Player Abilities</b></td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>Leadership</td><td><label id="LeadershipLabel">{{ player.playerAbilities.character.leadership }}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_LEADERSHIP" onClick="incStatPoint({{guid}}, PLAYERABILITY_LEADERSHIP.toString());" value="+"></td></tr>
+<tr><td>Prestige</td><td><label id="PrestigeLabel">{{ player.playerAbilities.character.prestige }}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PRESTIGE.toString());" value="+"></td></tr>
+<tr><td>Stamina</td><td><label id="StaminaLabel">{{ player.getPlayerAbilities.getPitcherStamina}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_STAMINA.toString());" value="+"></td></tr>
+<tr><td>Strength</td><td><label id="StrengthLabel">{{ player.pitching.strength}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="+"></td></tr>
+<tr><td>Control</td><td><label id="ControlLabel">{{ player.pitching.control}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_CONTROL.toString());" value="+"></td></tr>
+</table>
+<br>
+<table border=0 cellspacing=0>
+<tr><td colspan=3><b>Pitch Mastery</b></td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>Pitch Type</td><td>Level</td><td>Level Mastery</td></tr>
+<tr><td>Fastball</td><td><label id="FastballLabel">{{ player.pitching.pitchMastery}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Curveball</td><td><label id="CurveballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Slider</td><td><label id="SliderLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Changeup</td><td><label id="ChangeupLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Knuckleball</td><td><label id="KnuckleballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Sinker</td><td><label id="SinkerLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Spitball</td><td><label id="SpitballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Forkball</td><td><label id="ForkballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+</table>
 <br>
 <b>Pitcher Zone Mastery</b>
 <table border=1 cellpadding=5>
@@ -131,18 +282,25 @@ Best Game:<br>
 </table>
 
 {% else %}
+Record: <input type="text" name="Wins" value="{{ player.getPitcherStats.getWins }} " />
+- 
+<input type="text" name="Losses" value="{{ player.getPitcherStats.getLosses }}" /><br><br>
+Best Game:<br>
+{% for obj in player.getBatterStats.getBestGame|splitGame %}
+{{obj}}<br>
+{% endfor %}
 <b>Batter Abilities:</b>
 <ul>
-	<li>Power: <input type="text" name="Power" value="{{ player.getPlayerAbilities.getBatterPower}}" /></li>
-	<li>Patience: <input type="text" name="Patience" value="{{ player.getPlayerAbilities.getPatience}}" /></li>
-	<li>Fastball: <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FST}}" /></li>
-	<li>Curveball: <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CRV}}" /></li>
-	<li>Slider: <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SLD}}" /></li>
-	<li>Changeup: <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CHNG}}" /></li>
-	<li>Knuckleball: <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.KNCK}}" /></li>
-	<li>Sinker: <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SINK}}" /></li>
-	<li>Spitball: <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SPIT}}" /></li>
-	<li>Forkball: <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FORK}}" /></li>
+	<li>Power <input type="text" name="Power" value="{{ player.getPlayerAbilities.getBatterPower}}" /></li>
+	<li>Patience <input type="text" name="Patience" value="{{ player.getPlayerAbilities.getPatience}}" /></li>
+	<li>Fastball <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FST}}" /></li>
+	<li>Curveball <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CRV}}" /></li>
+	<li>Slider <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SLD}}" /></li>
+	<li>Changeup <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CHNG}}" /></li>
+	<li>Knuckleball <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.KNCK}}" /></li>
+	<li>Sinker <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SINK}}" /></li>
+	<li>Spitball <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SPIT}}" /></li>
+	<li>Forkball <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FORK}}" /></li>
 </ul>
 <br>
 <b>Batter Zone Mastery</b>
@@ -163,8 +321,6 @@ Best Game:<br>
 
 {% endifequal %}
 <br>
-<input type="submit" value="Change Player">
-</form>
 
 <b>Friends</b>
 {% for i in friends|count|num_range %}
@@ -196,3 +352,5 @@ Best Game:<br>
 	</table>
 	<br><br>
 </div>
+
+</body>

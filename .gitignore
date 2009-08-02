@@ -1,5 +1,6 @@
 *.pyc
 *~
+*.swp
 franchises
 globals
 playersdb
