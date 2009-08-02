@@ -29,7 +29,7 @@ def player_details(request, player_id):
 	pitcher = [-1]
 	l = [-1,0,1,2,3,4,5,6,7]
 	
-	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
+	return render_to_response('admin/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
 
 def edit_player(request, player_id):
 	global gsPlayerDB
@@ -96,7 +96,7 @@ def edit_player(request, player_id):
 		except:
 			print "Unexpected error:", sys.exc_info()[0]
 
-			return render_to_response('players/detail.html', {
+			return render_to_response('admin/detail.html', {
 			'player': p,
 			'error_message': "Error in Form.  Please Try again",
         		})
@@ -126,7 +126,7 @@ def edit_player(request, player_id):
 
 
 			if (result.find('-') > -1):
-				return render_to_response('players/detail.html', {
+				return render_to_response('admin/detail.html', {
 				'player': p,
 				'error_message': result,
         			})
@@ -142,14 +142,14 @@ def edit_player(request, player_id):
 				#return render_to_response('players/detail.html', {'player': p})
        
                                 #return ('players/detail.html', { 'player': p }, 'error_message': '',})
-				return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args =(player_id,)))
+				return HttpResponseRedirect(reverse('Franchise.admin.views.player_details', args =(player_id,)))
 		#else:
 		#	return render_to_response('players/detail.html', {
 		#	'player': p,
 		#	'error_message': "Error in Form.  NOT VALID!!!!Please Try again",
         	#	})
 	else:
-		return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
+		return HttpResponseRedirect(reverse('Franchise.admin.views.player_details', args=(player_id,)))
 
 
 def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
@@ -179,7 +179,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 		if(-1 in l):
 			l[l.index(-1)] = friend_id
 		else:
-			return render_to_response('players/detail.html', {
+			return render_to_response('admin/detail.html', {
 			'player': p,
 			'friends': f,
 			'pitcher': pitcher,
@@ -187,7 +187,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 			'error_message': "Lineup Full.  Remove a Player before you can Add someone to your Lineup",
 			})
 	else:
-		return render_to_response('players/detail.html', {
+		return render_to_response('admin/detail.html', {
 		'player': p,
 		'friends': f,
 		'pitcher': pitcher,
@@ -197,7 +197,7 @@ def adjust_lineup(request,player_id,lineup_id,friend_id,move_action):
 
 	print "Lineup: "+str(l)
 	
-	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
+	return render_to_response('admin/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
 
 #	return HttpResponseRedirect(reverse('Franchise.players.views.player_details', args=(player_id,)))
 
@@ -215,7 +215,7 @@ def adjust_pitcher(request,player_id,friend_id,move_action):
 	elif(move_action == "add"):
 		pitcher=[friend_id]
 	else:
-		return render_to_response('players/detail.html', {
+		return render_to_response('admin/detail.html', {
 		'player': p,
 		'friends': f,
 		'pitcher': pitcher,
@@ -223,4 +223,4 @@ def adjust_pitcher(request,player_id,friend_id,move_action):
 		'error_message': "Bad Move Action",
        		})
 	
-	return render_to_response('players/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})
+	return render_to_response('admin/detail.html', {'player': p, 'friends': f, 'pitcher': pitcher, 'lineup': l})

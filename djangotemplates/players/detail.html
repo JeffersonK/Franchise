@@ -69,14 +69,14 @@ function AddZero(num) {
 }
 
 /*********
-*END TIMER
+*AJAX
 *
-**********/
+*********/
 
+var xmlhttp = null;
 
-function ajaxOnLoad(player_id)
+function ajaxHeader()
 {
-var xmlhttp;
 if (window.XMLHttpRequest)
   {
   // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -91,54 +91,43 @@ else
   {
   alert("Your browser does not support XMLHTTP!");
   }
-xmlhttp.onreadystatechange=function()
-{
-if(xmlhttp.readyState==4)
-  {
-	player = eval("("+ xmlhttp.responseText +")");
-	//player = xmlhttp.responseText;
-	//document.writeln(typeof(player))
-	//player = eval("("+ playerObject +")");
-	//player = xmlhttp.responseText;
-	fillPage();
-	ActivateCountDown("CountDownPanel", 10);
-    }
 }
-xmlhttp.open("GET","/player/"+player_id+"/?ajax",true);
-xmlhttp.send(null);
+function ajaxOnLoad(player_id)
+{
+	ajaxHeader()
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			player = eval("("+ xmlhttp.responseText +")");
+			//player = xmlhttp.responseText;
+			//document.writeln(typeof(player))
+			//player = eval("("+ playerObject +")");
+			//player = xmlhttp.responseText;
+			fillPage();
+			ActivateCountDown("CountDownPanel", 10);
+		}
+		}
+		xmlhttp.open("GET","/player/"+player_id+"/?ajax",true);
+		xmlhttp.send(null);
+	}
 }
 
 function incStatPoint(player_id, ability)
 {
-var xmlhttp;
-if (window.XMLHttpRequest)
-  {
-  // code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
-  }
-else if (window.ActiveXObject)
-  {
-  // code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-else
-  {
-  alert("Your browser does not support XMLHTTP!");
-  }
-xmlhttp.onreadystatechange=function()
-{
-if(xmlhttp.readyState==4)
-  {
-	player = eval("("+ xmlhttp.responseText +")");
-	//player = xmlhttp.responseText;
-	//document.writeln(typeof(player))
-	//player = eval("("+ playerObject +")");
-	//player = xmlhttp.responseText;
-	fillPage();
-    }
-}
-	xmlhttp.open("GET","/player/"+player_id+"/stats/?ajax&stat_name="+ability+"",true)
-	xmlhttp.send(null);
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			player = eval("("+ xmlhttp.responseText +")");
+			//player = xmlhttp.responseText;
+			//document.writeln(typeof(player))
+			//player = eval("("+ playerObject +")");
+			//player = xmlhttp.responseText;
+			fillPage();
+		}
+		}	
+		xmlhttp.open("GET","/player/"+player_id+"/stats/?ajax&stat_name="+ability+"",true)
+		xmlhttp.send(null);
+	}
 }
 
 
