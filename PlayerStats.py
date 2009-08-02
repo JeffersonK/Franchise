@@ -902,15 +902,17 @@ class BatterStats:
             #we probably need to limit how much history we keep here
             #but it is good to save until the end of the game for post processing
             #as well as testing purposes
+            #print "%s + [%s]" % (self.__atBatResults, other.__atBatResults)
+            
             #self.__atBatResults += [other.__atBatResults]
             self.__atBatResults = []#other.__atBatResults
         else:
             #TODO: FIX BUG HERE
             #if other.__atBatResults == []:
+            #    print "%s + [%s]" % (self.__atBatResults, other.__atBatResults)
             #    print self
             #    while 1:
             #        None
-            
             self.__atBatResults += [other.__atBatResults]            
 
         self.__totHRs += other.__totHRs

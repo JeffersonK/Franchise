@@ -21,6 +21,9 @@ gsPROBDELTA_BESTWORST_PATIENCE_SWING = gsBC_PROB_WORSTPATIENCE_SWING - gsBC_PROB
 gsBATTERSKILLS_PATIENCEINC_DELTA = gsPROBDELTA_BESTWORST_PATIENCE_SWING/gsBATTERSKILLS_NUMPATIENCE_LEVELS
 def PrSwingAtBall(batterPatience):
 
+    if batterPatience > gsBATTERSKILLS_MAXPATIENCE:
+        print "DEBUG:  Batter Patience Over Max %f" % batterPatience
+
     pr = gsBC_PROB_WORSTPATIENCE_SWING - \
         batterPatience * gsBATTERSKILLS_PATIENCEINC_DELTA
 
@@ -41,6 +44,9 @@ gsBC_PROB_BESTPITCHER_BALL = 0.25
 gsPROBDELTA_BESTWORSTPITCHER_BALL = gsBC_PROB_WORSTPITCHER_BALL - gsBC_PROB_BESTPITCHER_BALL
 gsPITCHERSKILLS_CONTROLINC_DELTA = (gsPROBDELTA_BESTWORSTPITCHER_BALL/gsPITCHERSKILLS_NUMCONTROL_LEVELS)
 def PrBall(pitcherControl):
+
+    if pitcherControl > gsPITCHERSKILLS_MAXCONTROL:
+        print "DEBUG: Pitcher Control Out of Bounds %f" % pitcherControl
 
     #probability of ball gets lower with increased pitcher control
     pr =  (gsBC_PROB_WORSTPITCHER_BALL - \

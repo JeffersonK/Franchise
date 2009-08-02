@@ -152,16 +152,25 @@ class BasesState:
 
         elif ABRCode == gsATBATRESULT_WALK:
             
-            i = 0
-            while(i < 4):
-                if self.__bases[i] != gsBASEEMPTY:
-                    runnersAdvanced += [(self.__bases[i],i,(i+1)%4)]
+            i = 1
+            runnersAdvanced += [(self.__bases[0], 0, 1)]
+            stopAdvancing = False
+            while(i <= 3):
+                if self.__bases[i] == gsBASEEMPTY:
+                    #stop if a base is empty
+                    stopAdvancing = True                
+                else:
+                    if not stopAdvancing:
+                        runnersAdvanced += [(self.__bases[i],i,(i+1)%4)]
+                    else:
+                        runnersAdvanced += [(self.__bases[i],i,i)]
                 i += 1
                     
             if not self.manOn(1):
+
                 self.__bases[1] = self.__bases[0]
                 self.__bases[0] = gsBASEEMPTY
-                
+
             elif self.manOn(1) and not self.manOn(2):
                 self.__bases[2] = self.__bases[1]
                 self.__bases[1] = self.__bases[0]

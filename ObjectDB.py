@@ -15,13 +15,46 @@ class ObjectDB:
         self.__dbcache = {}
         self.__objectdbLoc = objectdbLoc
         self.__objectdbFileExt = objectdbFileDxt
-
+        self.__guidCounter = 0
+        self.__dbstatefilename = self._getDBStateFilename()            
         #make player directory
         if not os.path.exists(self.__objectdbLoc):
             os.makedirs(self.__objectdbLoc)
 
+        if not os.path.exists(self.__dbstatefilename):
+            file = open(self.__dbstatefilename, "w+")
+            if file == None:
+                print "DEBUG: could not create file '%s'." % self.__dbstatefilename
+                return
+            file.write("%s" % self.__guidCounter)
+            file.close()
+    
         return
 
+    def _getDBStateFilename(self):
+        path = os.path.split(self.__objectdbLoc)
+        dbname = path[-1]
+        dbstatefilename = os.path.join(self.__objectdbLoc, dbname+".db")
+        return dbstatefilename
+
+    def getNextObjectGuid(self):
+        
+        file = open(self.__dbstatefilename, "r+")
+        if file == None:
+            print "DEBUG: could not open file '%s'" % self.__dbstatefilename
+            return
+        nextGuidStr = file.read()
+        try:
+            self.__guidCounter = int(nextGuidStr)
+        except:
+            print "Could not convert '%s' from '%s' to int." % (nextGuidStr, 
+                                                                 self.__dbstatefilename)
+        nextGUID = self.__guidCounter
+        self.__guidCounter += 1
+        file.seek(0)
+        file.write("%s" % self.__guidCounter)
+        file.close()
+        return nextGUID
     #
     #
     #
@@ -94,7 +127,9 @@ class ObjectDB:
     #
     #
     def addObject(self, objectGUID, objectObject):
-        
+        if objectGUID == None:
+            objectGUID = self._getNextObjectGUID
+
         if self._insertIntoCache(objectGUID, objectObject) < 0:
             return -1
 
@@ -185,6 +220,7 @@ class ObjectDB:
     #    return -1
 
     def __del__(self):
+        self.writeAll()
         for (guid, plyr) in self.__dbcache.iteritems():
             del(plyr)
             #del self.__dbcache[guid]

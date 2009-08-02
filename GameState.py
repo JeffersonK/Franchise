@@ -286,6 +286,9 @@ class GameState:
         teamObj.advanceBattingLineup()
         
         #here is where you update playerGameState Stats
+        
+        #print atBatEventObj
+        
         teamObj.updateTeamGameState(atBatEventObj, True)
         
         defTeamObj = self._getDefenseTeamObject()

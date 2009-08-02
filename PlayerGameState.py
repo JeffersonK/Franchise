@@ -36,6 +36,10 @@ class PlayerGameState:
  
     def updatePlayerGameState(self, atBatEvent, isBatter):
         
+        #print
+        #print self
+        #print atBatEvent
+        
         if isBatter:
             self.__playerGameStats += atBatEvent.getBatterStats()
         else:
