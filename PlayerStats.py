@@ -181,7 +181,7 @@ class PitcherStats:
 
             #save a game's results as a sub-list
             #self.__batterResults += [other.__batterResults]
-            self.__batterResults = other.__batterResults
+            self.__batterResults = []#other.__batterResults
         else:
             #save each batter
             self.__batterResults += [other.__batterResults]
@@ -872,7 +872,7 @@ class BatterStats:
             other.countXP()
             if other.__XPScore > self.__highXPScore:
                 self.__highXPScore = other.__XPScore
-                self.__highXPScoreAtBatResult = other.__atBatResults
+                #self.__highXPScoreAtBatResult = other.__atBatResults
 
             self.__wins += other.__wins
             self.__losses += other.__losses
@@ -903,7 +903,7 @@ class BatterStats:
             #but it is good to save until the end of the game for post processing
             #as well as testing purposes
             #self.__atBatResults += [other.__atBatResults]
-            self.__atBatResults = other.__atBatResults
+            self.__atBatResults = []#other.__atBatResults
         else:
             #TODO: FIX BUG HERE
             #if other.__atBatResults == []:
