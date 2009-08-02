@@ -9,6 +9,6 @@ urlpatterns = patterns('',
 #    (r'^devices/', include('Levitas.devices.urls')),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/var/www/django/Franchise/pics'}),
     (r'^leaders/', include('Franchise.leaders.urls')),
-    (r'^players/', include('Franchise.players.urls')),
-    (r'^admin/(.*)', admin.site.root),
+    (r'^player/', include('Franchise.players.urls')),
+    (r'^admin/', include('Franchise.admin.urls')),
 )
