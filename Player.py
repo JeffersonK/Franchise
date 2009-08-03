@@ -47,7 +47,7 @@ class Player:
             "'position':'%s','franchiseGUID':%d," +\
             "'%s':%s,'batterStats':%s,'pitcherStats':%s," +\
             "'defaultLineup':%s, 'defaultRotation':%s," +\
-            "'%s':\"%s\", '%s':\"%s\"}"
+            "'%s':%s, '%s':%s}"
 
         return fmt % (self.__playerGUID, self.__name, self.__energy, 
                       self.__maxChallengePoints, self.__challengePoints, 

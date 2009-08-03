@@ -110,8 +110,9 @@ class PitcherPlayerSkills:
     def __getstate__(self):
         return str(self.__skills)
 
-    def __setstate__(self, dictStr):
-        self.__skills = eval(dictStr) 
+    def __setstate__(self, dict):
+        #self.__skills = eval(dictStr) 
+        self.__skills = dict
         return self
 
     def getPitchingZoneMasteryMatrix(self):
@@ -166,8 +167,8 @@ class BatterPlayerSkills:
         #return state
         return str(self.__skills)
 
-    def __setstate__(self, dictStr):
-        self.__skills = eval(dictStr)
+    def __setstate__(self, dict):
+        self.__skills = dict
         return self
 
     def getBattingZoneMasteryMatrix(self):

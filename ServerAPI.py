@@ -61,6 +61,15 @@ def ServerAPIGetPlayerState(playerGUID):
 
 #############
 #
+# Returns a JSON serialized set of Events
+# or an empty list
+# the events are deleted as they are read
+#############
+def ServerAPIGetPlayerEvents(playerGUID):
+    return []
+
+#############
+#
 # Returns a serialzed JSON List Object
 # of type [(playerGUID, playerName, Position),...]
 #
