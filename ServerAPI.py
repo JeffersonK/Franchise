@@ -221,5 +221,7 @@ def main():
     print ServerAPIGetTrainingJobs(0)
     print ServerAPITrainSkills(0,0)
 
+    print ServerAPIGetTrainingJobs(1)
+
 if __name__ == "__main__":
     main()

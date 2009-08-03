@@ -193,6 +193,28 @@ def main():
                                       
     trainingDB.addObject(trainingObj.guid(), trainingObj)
 
+    trainingObj = PlayerSkillTraining(trainingDB.getNextObjectGuid(),
+                                      100, 3, "Improve Pitcher Fastball",
+                                      PLAYERSKILLTRAINING_PITCHERPITCHTYPE,
+                                      [(PLAYERSKILLID_PITCHER_PITCH_FASTBALL, 1)])
+                                      
+    trainingDB.addObject(trainingObj.guid(), trainingObj)
+
+
+    trainingObj = PlayerSkillTraining(trainingDB.getNextObjectGuid(),
+                                      100, 3, "Improve Pitcher Changeup",
+                                      PLAYERSKILLTRAINING_PITCHERPITCHTYPE,
+                                      [(PLAYERSKILLID_PITCHER_PITCH_CHANGEUP, 1)])
+                                      
+    trainingDB.addObject(trainingObj.guid(), trainingObj)
+
+    trainingObj = PlayerSkillTraining(trainingDB.getNextObjectGuid(),
+                                      100, 3, "Improve Pitcher Slider",
+                                      PLAYERSKILLTRAINING_PITCHERPITCHTYPE,
+                                      [(PLAYERSKILLID_PITCHER_PITCH_SLIDER, 1)])
+                                      
+    trainingDB.addObject(trainingObj.guid(), trainingObj)
+
     trainingDB.writeAll()
     del(trainingDB)
     return

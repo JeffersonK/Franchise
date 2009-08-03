@@ -271,7 +271,12 @@ class Player:
         trainingDB = ObjectDB("trainingdb", "trn")
         trainingJobs = []
         for (guid, trainingJob) in trainingDB.iteritems():
-            trainingJobs += [trainingJob.__getstate__()]
+            if self.__position == gsPOSITION_POSSTR[gsPITCHER_POSCODE]:
+                if trainingJob.getSkillType() in PITCHERSKILLS: 
+                    trainingJobs += [trainingJob.__getstate__()]
+            else:
+                if trainingJob.getSkillType() in BATTERSKILLS:
+                    trainingJobs += [trainingJob.__getstate__()]
 
         del(trainingDB)
         trainingDB = None
