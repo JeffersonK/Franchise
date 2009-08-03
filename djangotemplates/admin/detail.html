@@ -3,7 +3,7 @@
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
  
  
-<form action="/players/{{player.guid}}/edit/" method="post">
+<form action="/admin/player/{{player.guid}}/edit/" method="post">
  
 <h1>{{player.getName}} - {{player.getLevel}} {{player.getExperience}}/{{player.getNextLevelExperience}}</h1>
 Position: <input type="text" name="Position" value="{{player.getPosition}}" /><br>
@@ -168,7 +168,7 @@ Best Game:<br>
  
 <b>Friends</b>
 {% for i in friends|count|num_range %}
-<a href="/players/{{player.guid}}/lineup/batter/adjust/99/{{ friends|getArrayElement:i }}/add/">{{friends|getArrayElement:i}}</a>
+<a href="/admin/player/{{player.guid}}/lineup/batter/adjust/99/{{ friends|getArrayElement:i }}/add/">{{friends|getArrayElement:i}}</a>
 {% endfor %}
  
 <div id="linup_div">
@@ -176,7 +176,7 @@ Best Game:<br>
 <table>
 <tr><td colspan=3><img src="/site_media/{{pitcher.0}}_silhouette.gif" /></td></tr>
 <tr><td>Pitcher -{{pitcher.0}} </td></tr>
-<tr><td><form action="/players/{{player.guid}}/lineup/pitcher/adjust/0/remove/" method="post"><button>X</button></form></td></tr>
+<tr><td><form action="/admin/player/{{player.guid}}/lineup/pitcher/adjust/0/remove/" method="post"><button>X</button></form></td></tr>
 </table>
 <table>
 <tr>
@@ -188,7 +188,7 @@ Best Game:<br>
 </td></tr>
 <tr colspan=3><td>Batter: {{lineup|getArrayElement:i }}</td></tr>
 <tr>
-<td valign=top><table><tr><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/left/" method="post"><button style="font-size: 10px; width: 40px" type="submit"><--</button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/right/" method="post"><button style="font-size: 10px; width: 40px" >--></button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/remove/" method="post"><button style="font-size: 10px; width: 40px" >X</button></form></td></tr></table></td></tr>
+<td valign=top><table><tr><td><form action="/admin/player/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/left/" method="post"><button style="font-size: 10px; width: 40px" type="submit"><--</button></form></td><td><form action="/admin/player/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/right/" method="post"><button style="font-size: 10px; width: 40px" >--></button></form></td><td><form action="/admin/player/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/remove/" method="post"><button style="font-size: 10px; width: 40px" >X</button></form></td></tr></table></td></tr>
 </table>
 </td>
 {% endfor %}

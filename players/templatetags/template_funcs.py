@@ -17,6 +17,8 @@ def num_range(value):
 
 @register.filter
 def get_num(value):
+	if (value == None):
+		return 0
 	return int(value)
 
 @register.filter
@@ -25,6 +27,8 @@ def getArrayElement(value,id):
 
 @register.filter
 def count(value):
+	if (value == None):
+		return 0
 	return len(value)
 
 

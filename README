@@ -1,10 +1,10 @@
 ###CONFIG SERVER###
 
 Edit settings.py
--TEMPLATE_DIRS = Absolute path to djangotemplates folder in repo
--MEDIA_ROOT = Absolute path to pics folder in repo
+-TEMPLATE_DIRS = Absolute path to djangotemplates/ folder in repo
+-MEDIA_ROOT = Absolute path to media/ folder in repo
 -MEDIA_URL = URL to MEDIA_ROOT i.e. http://serverip/media/
--Confirm DB Login/Password/
+-Configure DB Login/Password
 -DEBUG = True/False
 
 Startup.sh

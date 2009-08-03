@@ -1,6 +1,8 @@
 {% load template_funcs %}
 <script type="text/javascript">
-var player;
+
+DYNAMIC_LOCATION= '192.168.1.104'
+
 //Common Abilities:
 PLAYERABILITY_MAXENERGYPOINTS =    'PLYRABIL_MAXENG'
 PLAYERABILITY_MAXCHALLENGEPOINTS = 'PLYRABIL_MAXCHL'
@@ -16,56 +18,68 @@ PLAYERABILITY_BATTER_PATIENCE =    'PLYRABIL_BATPATC'
 PLAYERABILITY_PITCHER_CONTROL =    'PLYRABIL_PITCONT'
 PLAYERABILITY_PITCHER_STAMINA =    'PLYRABIL_PITSTAM'
 
-var pitchMastery = [];
-var pitchMasteryPercent = [];
+
+var player
+var pitchMastery = []
+var pitchMasteryPercent = []
+var pitchers = []
+var lineup = []
+var counter
 
 /*****
 *TIMER
 *
 ******/
-var _countDowncontainer=0;
-var _currentSeconds=0;
-var _maxCountdown=300; //Player Specific
+var _countDowncontainer=0
+var _currentSeconds=0
+var _maxCountdown=300 //Player Specific
+var _ajaxEnergy
 
 function ActivateCountDown(strContainerID, initialValue) {
-	_countDowncontainer = document.getElementById(strContainerID);
+	_countDowncontainer = document.getElementById(strContainerID)
 	
 	if (!_countDowncontainer) {
 		alert("count down error: container does not exist: "+strContainerID+
-			"\nmake sure html element with this ID exists");
-		return;
+			"\nmake sure html element with this ID exists")
+		return
 	}
 	
-	SetCountdownText(initialValue);
-	window.setTimeout("CountDownTick()", 1000);
+	SetCountdownText(initialValue)
+	window.setTimeout("CountDownTick()", 1000)
 }
 
 function CountDownTick() {
 	if (_currentSeconds <= 0) {
-		ActivateCountDown("CountDownPanel", _maxCountdown);
-		return;
+		ActivateCountDown("CountDownPanel", _maxCountdown)
+		_ajaxEnergy = _ajaxEnergy + 1
+		var t_value = document.getElementById('MaxEnergyLabel').innerHTML
+		document.getElementById('EnergyLabel').innerHTML = _ajaxEnergy
+		if (_ajaxEnergy >= t_value)
+			document.getElementById('CountDownPanel').style.visibility = "hidden"
+			return
+		return
 	}
-	SetCountdownText(_currentSeconds-1);
-	window.setTimeout("CountDownTick()", 1000);
+	SetCountdownText(_currentSeconds-1)
+	window.setTimeout("CountDownTick()", 1000)
 }
 
 function SetCountdownText(seconds) {
 	//store:
-	_currentSeconds = seconds;
+	_currentSeconds = seconds
 	//get minutes:
-	var minutes=parseInt(seconds/60);
+	var minutes=parseInt(seconds/60)
 	//shrink:
-	seconds = (seconds%60);
+	seconds = (seconds%60)
 	//shrink:
-	minutes = (minutes%60);
+	minutes = (minutes%60)
 	//build text:
-	var strText = minutes + ":" + AddZero(seconds);
+	var strText = minutes + ":" + AddZero(seconds)
 	//apply:
-	_countDowncontainer.innerHTML = strText;
+	_countDowncontainer.innerHTML = strText
 }
 
 function AddZero(num) {
-	return ((num >= 0)&&(num < 10))?"0"+num:num+"";
+	return ((num >= 0)&&(num < 10))?"0"+num:num+""
 }
 
 /*********
@@ -73,23 +87,23 @@ function AddZero(num) {
 *
 *********/
 
-var xmlhttp = null;
+var xmlhttp = null
 
 function ajaxHeader()
 {
 if (window.XMLHttpRequest)
   {
   // code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
+  xmlhttp=new XMLHttpRequest()
   }
 else if (window.ActiveXObject)
   {
   // code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP")
   }
 else
   {
-  alert("Your browser does not support XMLHTTP!");
+  alert("Your browser does not support XMLHTTP!")
   }
 }
 function ajaxOnLoad(player_id)
@@ -98,51 +112,100 @@ function ajaxOnLoad(player_id)
 	if (xmlhttp != null){
 		xmlhttp.onreadystatechange=function(){
 		if(xmlhttp.readyState==4){
-			player = eval("("+ xmlhttp.responseText +")");
-			//player = xmlhttp.responseText;
-			//document.writeln(typeof(player))
-			//player = eval("("+ playerObject +")");
-			//player = xmlhttp.responseText;
-			fillPage();
-			ActivateCountDown("CountDownPanel", 10);
+			player = eval("("+ xmlhttp.responseText +")")
+			fillPage()
+
+			if (player.energy < player.maxPlayerEnergy){
+				ActivateCountDown("CountDownPanel", 10)
+				document.getElementById('CountDownPanel').style.visibility = "visible"
+			}
 		}
 		}
-		xmlhttp.open("GET","/player/"+player_id+"/?ajax",true);
-		xmlhttp.send(null);
+		xmlhttp.open("GET","/player/"+player_id+"/?ajax",true)
+		xmlhttp.send(null)
 	}
 }
-
+/***************
+*INC STAT POINTS
+*
+****************/
 function incStatPoint(player_id, ability)
 {
 	if (xmlhttp != null){
 		xmlhttp.onreadystatechange=function(){
 		if(xmlhttp.readyState==4){
-			player = eval("("+ xmlhttp.responseText +")");
-			//player = xmlhttp.responseText;
-			//document.writeln(typeof(player))
-			//player = eval("("+ playerObject +")");
-			//player = xmlhttp.responseText;
-			fillPage();
+			player = eval("("+ xmlhttp.responseText +")")
+			fillPage()
+			
+			visible = document.getElementById('CountDownPanel').style.visibility
+			if (player.energy < player.maxPlayerEnergy && visible == "hidden"){
+				document.getElementById('CountDownPanel').style.visibility = "visible"
+				_currentSeconds = 300
+			}
+		}
+		}
+		xmlhttp.open("POST","/player/"+player_id+"/stats/?ajax&stat_name="+ability+"",true)
+		xmlhttp.send(null)
+	}
+}
+/***********
+*GET FRIENDS
+*
+************/
+function getFriends(player_id)
+{
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			friends = eval("("+ xmlhttp.responseText +")")
+			fillFriends(friends)
 		}
 		}	
-		xmlhttp.open("GET","/player/"+player_id+"/stats/?ajax&stat_name="+ability+"",true)
-		xmlhttp.send(null);
+		xmlhttp.open("GET","/player/"+player_id+"/friends/?ajax",true)
+		xmlhttp.send(null)
 	}
 }
 
 
+/*********
+* END AJAX
+*
+**********/
+
+
+function fillFriends()
+{
+	html = "<table>"
+	for(i=0; i< friends.length; i++)
+		{html +="<tr><td>"+friends[i][0]+"</td><td>"+friends[i][1]+"</td><td>"+friends[i][2]+"</td></tr>"}
+	html +="</table>"
+	document.getElementById('FriendLabel').innerHTML = html
+}
+function printLineup()
+{
+	html= '<table border=1>'
+	html+= '<tr><td colspan=3><img src="/site_media/0_silhouette.gif" /></td></tr>'
+	html+= '<tr colspan=3><td>Batter: 0</td></tr><tr>'
+	html+= '<td valign=top><table><tr><td><form action="/players/0/lineup/batter/adjust/0/0/left/" method="post"><button style="font-size: 10px; width: 40px" type="submit"><--</button></form></td><td><form action="/players/0/lineup/batter/adjust/0/0/right/" method="post"><button style="font-size: 10px; width: 40px" >--></button></form></td><td><form action="/players/0/lineup/batter/adjust/0/0/remove/" method="post"><button style="font-size: 10px; width: 40px" >X</button></form></td></tr></table></td>'
+	html+= '</tr></table>'
+	//document.getElementById('LineupLabel').innerHTML = html
+
+}
+function printPitchers()
+{
+	html = '<table><tr><td colspan=3><img src="/site_media/{{pitcher.0}}_silhouette.gif" /></td></tr><tr><td>Pitcher -{{pitcher.0}} </td></tr><tr><td><form action="/players/{{player.guid}}/lineup/pitcher/adjust/0/remove/" method="post"><button>X</button></form></td></tr></table>'
+	//document.getElementById('PitcherLineupLabel').innerHTML = html
+}
 function fillPage()
 {
-	//document.getElementById('leaders').innerHTML = playerObject.toString();
-
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FST);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CRV);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SLD);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CHNG);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.KNCK);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SINK);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SPIT);
-	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FORK);
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FST)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CRV)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SLD)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.CHNG)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.KNCK)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SINK)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.SPIT)
+	pitchMastery.push(player.playerAbilities.pitching.pitchMastery.FORK)
 
 	for(var i=0;i<pitchMastery.length;i++)
 		pitchMasteryPercent.push((pitchMastery[i]%1).toFixed(2)*100)
@@ -151,81 +214,80 @@ function fillPage()
 *Player Info
 *
 ************/
-	document.getElementById('EnergyLabel').innerHTML = player.energy;
-	document.getElementById('MaxEnergyLabel').innerHTML = player.maxPlayerEnergy;
-	document.getElementById('ChallengeLabel').innerHTML = player.challengePoints;
-	document.getElementById('MaxChallengeLabel').innerHTML = player.maxChallengePoints;
-	document.getElementById('ExperienceLabel').innerHTML = player.XP;
-	document.getElementById('MoneyLabel').innerHTML = player.money;
-	document.getElementById('NameLabel').innerHTML = player.name;
-	document.getElementById('WinsLabel').innerHTML = player.pitcherStats.wins;
-	document.getElementById('LossesLabel').innerHTML = player.pitcherStats.losses;
+	document.getElementById('EnergyLabel').innerHTML = player.energy
+	_ajaxEnergy = player.energy
+	document.getElementById('MaxEnergyLabel').innerHTML = player.maxPlayerEnergy
+	document.getElementById('ChallengeLabel').innerHTML = player.challengePoints
+	document.getElementById('MaxChallengeLabel').innerHTML = player.maxChallengePoints
+	document.getElementById('ExperienceLabel').innerHTML = player.XP
+	document.getElementById('MoneyLabel').innerHTML = player.money
+	document.getElementById('NameLabel').innerHTML = player.name
+	document.getElementById('PositionLabel').innerHTML = player.position
+	
+	if (player.position == "P"){
+		document.getElementById('WinsLabel').innerHTML = player.pitcherStats.wins
+		document.getElementById('LossesLabel').innerHTML = player.pitcherStats.losses
+	} else {
+		document.getElementById('WinsLabel').innerHTML = player.batterStats.wins
+		document.getElementById('LossesLabel').innerHTML = player.batterStats.losses
+	}
 /*****
 *Stats
 *
 ******/
-	document.getElementById('StaminaLabel').innerHTML = player.playerAbilities.pitching.stamina;
-	document.getElementById('StrengthLabel').innerHTML = player.playerAbilities.pitching.strength;
-	document.getElementById('ControlLabel').innerHTML = player.playerAbilities.pitching.control;
-	document.getElementById('LeadershipLabel').innerHTML = player.playerAbilities.character.leadership;
-	document.getElementById('PrestigeLabel').innerHTML = player.playerAbilities.character.prestige;
-/********
+	document.getElementById('LeadershipLabel').innerHTML = player.playerAbilities.character.leadership
+	document.getElementById('PrestigeLabel').innerHTML = player.playerAbilities.character.prestige
+	
+	if (player.position == "P"){
+		document.getElementById('StaminaLabel').innerHTML = player.playerAbilities.pitching.stamina
+		document.getElementById('StrengthLabel').innerHTML = player.playerAbilities.pitching.strength
+		document.getElementById('ControlLabel').innerHTML = player.playerAbilities.pitching.control
+	} else {
+		document.getElementById('PowerLabel').innerHTML = player.playerAbilities.batting.power
+		document.getElementById('PatienceLabel').innerHTML = player.playerAbilities.batting.patience
+	}
+
 /********
 *Training
 *
 *********/
-	
-	document.getElementById('FastballLabel').innerHTML = pitchMastery[0].toFixed(0);
-	document.getElementById('CurveballLabel').innerHTML = pitchMastery[1].toFixed(0);
-	document.getElementById('SliderLabel').innerHTML = pitchMastery[2].toFixed(0);
-	document.getElementById('ChangeupLabel').innerHTML = pitchMastery[3].toFixed(0);
-	document.getElementById('KnuckleballLabel').innerHTML = pitchMastery[4].toFixed(0);
-	document.getElementById('SinkerLabel').innerHTML = pitchMastery[5].toFixed(0);
-	document.getElementById('SpitballLabel').innerHTML = pitchMastery[6].toFixed(0);
-	document.getElementById('ForkballLabel').innerHTML = pitchMastery[7].toFixed(0);
+	document.getElementById('FastballLabel').innerHTML = pitchMastery[0].toFixed(0)
+	document.getElementById('CurveballLabel').innerHTML = pitchMastery[1].toFixed(0)
+	document.getElementById('SliderLabel').innerHTML = pitchMastery[2].toFixed(0)
+	document.getElementById('ChangeupLabel').innerHTML = pitchMastery[3].toFixed(0)
+	document.getElementById('KnuckleballLabel').innerHTML = pitchMastery[4].toFixed(0)
+	document.getElementById('SinkerLabel').innerHTML = pitchMastery[5].toFixed(0)
+	document.getElementById('SpitballLabel').innerHTML = pitchMastery[6].toFixed(0)
+	document.getElementById('ForkballLabel').innerHTML = pitchMastery[7].toFixed(0)
 
-
-
-	buttons = document.getElementsByClassName('statButton');
+	buttons = document.getElementsByClassName('statButton')
 	if(player.unusedStatPoints > 0)
 		for(var i=0;i<buttons.length;i++)
-			buttons[i].style.display = "inline";
+			buttons[i].style.display = "inline"
 	else
 		for(var i=0;i<buttons.length;i++)
-			buttons[i].style.display = "none";
+			buttons[i].style.display = "none"
 
-	document.getElementById('StatPointsLabel').innerHTML = player.unusedStatPoints;
+	document.getElementById('StatPointsLabel').innerHTML = player.unusedStatPoints
 
-	setImages();
+	setImages()
+	getFriends(player.playerGUID)
+	printPitchers()
+	printLineup()
 }
 function setImages()
 {
-pics = document.getElementsByName('ForkballPercentImage');
-//document.writeln(pics.length);
+pics = document.getElementsByName('ForkballPercentImage')
+//document.writeln(pics.length)
 for(var i=0;i<pics.length;i++)
-	pics[i].src = "http://192.168.1.104/mlb/gen_bar.php?percent="+pitchMasteryPercent[i];
+	pics[i].src = "http://192.168.1.104/mlb/gen_bar.php?percent="+pitchMasteryPercent[i]
 }
-
-/***************
-*INC STAT POINTS
-*
-****************/
-
-
-
 </script>
-
-
-
-
-
-
-
 
 <body onLoad="ajaxOnLoad({{guid}})">
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<input type="button" name="updateLeaders" onClick="ajaxOnLoad({{guid}});" value="Update Leaders"/><br>
+<input type="button" name="updateLeaders" onClick="ajaxOnLoad({{guid}})" value="Update Leaders"/><br>
  
 
 <div id="leaders" /></div>
@@ -253,104 +315,71 @@ Record <label id="WinsLabel">{{ player.getPitcherStats.getWins }}</label>
 <table>
 <tr><td colspan=3><b>Player Abilities</b></td></tr>
 <tr><td>&nbsp;</td></tr>
-<tr><td>Leadership</td><td><label id="LeadershipLabel">{{ player.playerAbilities.character.leadership }}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_LEADERSHIP" onClick="incStatPoint({{guid}}, PLAYERABILITY_LEADERSHIP.toString());" value="+"></td></tr>
-<tr><td>Prestige</td><td><label id="PrestigeLabel">{{ player.playerAbilities.character.prestige }}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PRESTIGE.toString());" value="+"></td></tr>
-<tr><td>Stamina</td><td><label id="StaminaLabel">{{ player.getPlayerAbilities.getPitcherStamina}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_STAMINA.toString());" value="+"></td></tr>
-<tr><td>Strength</td><td><label id="StrengthLabel">{{ player.pitching.strength}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="+"></td></tr>
-<tr><td>Control</td><td><label id="ControlLabel">{{ player.pitching.control}}</label></td><td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_CONTROL.toString());" value="+"></td></tr>
+	<tr><td>Leadership</td><td><label id="LeadershipLabel">{{ player.playerAbilities.character.leadership }}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_LEADERSHIP" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_LEADERSHIP.toString())" value="+"></td></tr>
+	<tr><td>Prestige</td><td><label id="PrestigeLabel">{{ player.playerAbilities.character.prestige }}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_PRESTIGE.toString())" value="+"></td></tr>
+	<tr><td>Stamina</td><td><label id="StaminaLabel">{{ player.getPlayerAbilities.getPitcherStamina}}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_STAMINA.toString())" value="+"></td></tr>
+	<tr><td>Strength</td><td><label id="StrengthLabel">{{ player.pitching.strength}}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" 
+		onClick="incStatPoint({{guid}}, 'strength')" value="+"></td></tr>
+	<tr><td>Control</td><td><label id="ControlLabel">{{ player.pitching.control}}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="strengthStatPoint" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_PITCHER_CONTROL.toString())" value="+"></td></tr>
 </table>
+<br>
+
+{% else %}
+Record <label id="WinsLabel">{{ player.getPitcherStats.getWins }}</label>-<label id="LossesLabel">{{ player.getPitcherStats.getLosses }}</label><br>
+
+Best Game:<br>
+{% for obj in player.getBatterStats.getBestGame|splitGame %}
+{{obj}}<br>
+{% endfor %}
+
+<br><br>
+<table>
+<tr><td colspan=3><b>Player Abilities</b></td></tr>
+<tr><td>&nbsp;</td></tr>
+	<tr><td>Leadership</td><td><label id="LeadershipLabel">{{ player.playerAbilities.character.leadership }}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_LEADERSHIP" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_LEADERSHIP.toString())" value="+"></td></tr>
+	<tr><td>Prestige</td><td><label id="PrestigeLabel">{{ player.playerAbilities.character.prestige }}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_PRESTIGE" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_PRESTIGE.toString())" value="+"></td></tr>
+	<tr><td>Power</td><td><label id="PowerLabel">{{ player.getPlayerAbilities.getPitcherStamina}}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_BATTER_POWER" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_BATTER_POWER.toString())" value="+"></td></tr>
+	<tr><td>Patience</td><td><label id="PatienceLabel">{{ player.pitching.strength}}</label></td>
+	<td><input class="statButton" id="StatPointButton" type="button" name="PLAYERABILITY_BATTER_PATIENCE" 
+		onClick="incStatPoint({{guid}}, PLAYERABILITY_BATTER_PATIENCE.toString())" value="+"></td></tr>
+</table>
+{% endifequal %}
+
 <br>
 <table border=0 cellspacing=0>
 <tr><td colspan=3><b>Pitch Mastery</b></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>Pitch Type</td><td>Level</td><td>Level Mastery</td></tr>
-<tr><td>Fastball</td><td><label id="FastballLabel">{{ player.pitching.pitchMastery}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Curveball</td><td><label id="CurveballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Slider</td><td><label id="SliderLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Changeup</td><td><label id="ChangeupLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Knuckleball</td><td><label id="KnuckleballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Sinker</td><td><label id="SinkerLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Spitball</td><td><label id="SpitballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
-<tr><td>Forkball</td><td><label id="ForkballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input id="StatPointButton" type="button" name="strengthStatPoint" onClick="incStatPoint({{guid}}, 'strength');" value="Train"></td></tr>
+<tr><td>Fastball</td><td><label id="FastballLabel">{{ player.pitching.pitchMastery}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Curveball</td><td><label id="CurveballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Slider</td><td><label id="SliderLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Changeup</td><td><label id="ChangeupLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Knuckleball</td><td><label id="KnuckleballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Sinker</td><td><label id="SinkerLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Spitball</td><td><label id="SpitballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
+<tr><td>Forkball</td><td><label id="ForkballLabel">{{ player.pitching.strength}}</label></td><td><img align=top id=ForkballPercentImage name=ForkballPercentImage src="http://192.168.1.104/mlb/gen_bar.php?percent=0"><input type="button" value="Train"></td></tr>
 </table>
-<br>
-<b>Pitcher Zone Mastery</b>
-<table border=1 cellpadding=5>
-<tr><td><input type="text" name="zone0" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.0 }}" /></td><td><input type="text" name="zone1" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.1 }}" /></td><td><input type="text" name="zone2" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.2 }}" /></td></tr>
-<tr><td><input type="text" name="zone3" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.3 }}" /></td><td><input type="text" name="zone4" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.4 }}" /></td><td><input type="text" name="zone5" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.5 }}" /></td></tr>
-<tr><td><input type="text" name="zone6" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.6 }}" /></td><td><input type="text" name="zone7" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.7 }}" /></td><td><input type="text" name="zone8" value="{{ player.getPlayerAbilities.getPitchingZoneMasteryMatrix.8 }}" /></td></tr>
-</table>
-
-{% else %}
-Record: <input type="text" name="Wins" value="{{ player.getPitcherStats.getWins }} " />
-- 
-<input type="text" name="Losses" value="{{ player.getPitcherStats.getLosses }}" /><br><br>
-Best Game:<br>
-{% for obj in player.getBatterStats.getBestGame|splitGame %}
-{{obj}}<br>
-{% endfor %}
-<b>Batter Abilities:</b>
-<ul>
-	<li>Power <input type="text" name="Power" value="{{ player.getPlayerAbilities.getBatterPower}}" /></li>
-	<li>Patience <input type="text" name="Patience" value="{{ player.getPlayerAbilities.getPatience}}" /></li>
-	<li>Fastball <input type="text" name="Fastball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FST}}" /></li>
-	<li>Curveball <input type="text" name="Curveball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CRV}}" /></li>
-	<li>Slider <input type="text" name="Slider" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SLD}}" /></li>
-	<li>Changeup <input type="text" name="Changeup" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.CHNG}}" /></li>
-	<li>Knuckleball <input type="text" name="Knuckleball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.KNCK}}" /></li>
-	<li>Sinker <input type="text" name="Sinker" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SINK}}" /></li>
-	<li>Spitball <input type="text" name="Spitball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.SPIT}}" /></li>
-	<li>Forkball <input type="text" name="Forkball" value="{{ player.getPlayerAbilities.getBattingPitchMasteryMatrix.FORK}}" /></li>
-</ul>
-<br>
-<b>Batter Zone Mastery</b>
-<table border=1 cellpadding=5>
-<tr><td><input type="text" name="zone0" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.0 }}" /></td><td><input type="text" name="zone1" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.1 }}" /></td><td><input type="text" name="zone2" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.2 }}" /></td></tr>
-<tr><td><input type="text" name="zone3" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.3 }}" /></td><td><input type="text" name="zone4" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.4 }}" /></td><td><input type="text" name="zone5" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.5 }}" /></td></tr>
-<tr><td><input type="text" name="zone6" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.6 }}" /></td><td><input type="text" name="zone7" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.7 }}" /></td><td><input type="text" name="zone8" value="{{ player.getPlayerAbilities.getBattingZoneMasteryMatrix.8 }}" /></td></tr>
-</table>
-
-<br>
-<b>Batter Power Zone Mastery</b>
-<table border=1 cellpadding=5>
-<tr><td><input type="text" name="pzone0" value="{{ player.getPlayerAbilities.getBattingPowerZones.0 }}" /></td><td><input type="text" name="pzone1" value="{{ player.getPlayerAbilities.getBattingPowerZones.1 }}" /></td><td><input type="text" name="pzone2" value="{{ player.getPlayerAbilities.getBattingPowerZones.2 }}" /></td></tr>
-<tr><td><input type="text" name="pzone3" value="{{ player.getPlayerAbilities.getBattingPowerZones.3 }}" /></td><td><input type="text" name="pzone4" value="{{ player.getPlayerAbilities.getBattingPowerZones.4 }}" /></td><td><input type="text" name="pzone5" value="{{ player.getPlayerAbilities.getBattingPowerZones.5 }}" /></td></tr>
-<tr><td><input type="text" name="pzone6" value="{{ player.getPlayerAbilities.getBattingPowerZones.6 }}" /></td><td><input type="text" name="pzone7" value="{{ player.getPlayerAbilities.getBattingPowerZones.7 }}" /></td><td><input type="text" name="pzone8" value="{{ player.getPlayerAbilities.getBattingPowerZones.8 }}" /></td></tr>
-</table>
-
-
-{% endifequal %}
-<br>
+<br><br>
 
 <b>Friends</b>
-{% for i in friends|count|num_range %}
-<a href="/players/{{player.guid}}/lineup/batter/adjust/99/{{ friends|getArrayElement:i }}/add/">{{friends|getArrayElement:i}}</a>
-{% endfor %}
-
-<div id="linup_div">
-	<br><br>
-	<table>
-	<tr><td colspan=3><img src="/site_media/{{pitcher.0}}_silhouette.gif" /></td></tr>
-	<tr><td>Pitcher -{{pitcher.0}} </td></tr>
-	<tr><td><form action="/players/{{player.guid}}/lineup/pitcher/adjust/0/remove/" method="post"><button>X</button></form></td></tr>
-	</table>
-	<table>
-	<tr>
-	{% for i in lineup|count|num_range %}
-	<td valign=top>
-	<table border=0>
-	<tr><td colspan=3>
-	<img src="/site_media/{{lineup|getArrayElement:i }}_silhouette.gif" />
-	</td></tr>
-	<tr colspan=3><td>Batter: {{lineup|getArrayElement:i }}</td></tr>
-	<tr>
-	<td valign=top><table><tr><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/left/" method="post"><button style="font-size: 10px; width: 40px" type="submit"><--</button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/right/" method="post"><button style="font-size: 10px; width: 40px" >--></button></form></td><td><form action="/players/{{player.guid}}/lineup/batter/adjust/{{i}}/{{lineup|getArrayElement:i }}/remove/" method="post"><button style="font-size: 10px; width: 40px" >X</button></form></td></tr></table></td></tr>
-	</table>
-	</td>
-	{% endfor %}
-	</tr>
-	</table>
-	<br><br>
-</div>
-
+<label id=FriendLabel></label>
+<br><br>
+<label id="PitcherLineupLabel"></label>
+<br><br>
+<label id="LineupLabel"></label>
 </body>

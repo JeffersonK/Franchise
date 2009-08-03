@@ -14,27 +14,42 @@ def index(request):
 def player_details(request, player_id):
 	pitcher = [-1]
 	l = [-1,0,1,2,3,4,5,6,7]
+	friends = [0,0,0,0]
 	ajax = request.GET.has_key('ajax')
 
 	player_json = API.ServerAPIGetPlayerState(player_id)[1:-1]
-	friends_json = API.ServerAPIGetLineupCandidates(player_id)
-	player = simplejson.dumps(player_json)
-	friends = simplejson.dumps(friends_json)
 	position = player_json[player_json.find("position")+11]
-        if (ajax):
+	player = simplejson.dumps(player_json)
+        
+	if (ajax):
 	        return HttpResponse(player_json, mimetype='application/javascript')
-	return render_to_response('players/detail.html', {'guid': player_id, 'position': position, 'player': player, 'friends': friends, 'pitcher': pitcher, 'lineup': l})
+	return render_to_response('players/detail.html', {'guid': player_id, 'position': position, 'player': player_json, 'friends': friends, 'pitcher': pitcher, 'lineup': l})
 
 def player_incstats(request, player_id):
+	if request.method == 'POST':
+		ajax = request.GET.has_key('ajax')
+		stat = request.GET['stat_name']
+		print stat
+		result = API.ServerAPIUseStatPoint(player_id, stat)
+		print result
+		player_json = API.ServerAPIGetPlayerState(player_id)[1:-1]
+		if (ajax):
+			print "AJAX"
+		        return HttpResponse(player_json, mimetype='application/javascript')
+	
+	print "NO AJAX or NO POST"
+	return render_to_response('players/index.html')
+
+
+def player_getfriends(request, player_id):
+	print "GETTING FRIENDS!!!"
+
 	ajax = request.GET.has_key('ajax')
-	stat = request.GET['stat_name']
-	print stat
-	result = API.ServerAPIUseStatPoint(player_id, stat)
-	print result
-	player_json = API.ServerAPIGetPlayerState(player_id)[1:-1]
+	friends_json = API.ServerAPIGetLineupCandidates(player_id)
 	if (ajax):
 		print "AJAX"
-	        return HttpResponse(player_json, mimetype='application/javascript')
+	        return HttpResponse(friends_json, mimetype='application/javascript')
 	
 	print "NO AJAX"
 	return render_to_response('players/index.html')
+
