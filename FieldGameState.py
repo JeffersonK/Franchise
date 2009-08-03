@@ -270,46 +270,46 @@ class DefensiveFieldState:
 
     def getInfieldLoc(self, theta, radius):
         if radius < 20:
-            return gsPOSITION_POSSTR[gsCATCHER_POSCODE]
+            return gsCATCHER_POSCODE #gsPOSITION_POSSTR[gsCATCHER_POSCODE]
 
         if radius < 100:
-            return gsPOSITION_POSSTR[gsPITCHER_POSCODE]
+            return gsPITCHER_POSCODE #gsPOSITION_POSSTR[gsPITCHER_POSCODE]
             #return 'P'
 
         if theta < min(gsTHETA_THIRDBASERANGE):#up the 3rd base line
-            return gsPOSITION_POSSTR[gsTHIRDBASE_POSCODE]       
+            return gsTHIRDBASE_POSCODE#gsPOSITION_POSSTR[gsTHIRDBASE_POSCODE]       
             #return '3B'
         
         if theta in gsTHETA_THIRDBASERANGE:
-            return gsPOSITION_POSSTR[gsTHIRDBASE_POSCODE]       
+            return gsTHIRDBASE_POSCODE#gsPOSITION_POSSTR[gsTHIRDBASE_POSCODE]       
             #return '3B'
         
         if theta < min(gsTHETA_SSRANGE):
-            return gsPOSITION_POSSTR[gsSHORTSTOP_POSCODE]       
+            return gsSHORTSTOP_POSCODE#gsPOSITION_POSSTR[gsSHORTSTOP_POSCODE]       
             #return 'SS'
         
         if theta in gsTHETA_SSRANGE:
-            return gsPOSITION_POSSTR[gsSHORTSTOP_POSCODE]       
+            return gsSHORTSTOP_POSCODE#gsPOSITION_POSSTR[gsSHORTSTOP_POSCODE]       
             #return 'SS'
         
         if theta < min(gsTHETA_SECONDBASERANGE):
-            return gsPOSITION_POSSTR[gsSECONDBASE_POSCODE]       
+            return gsSECONDBASE_POSCODE#gsPOSITION_POSSTR[gsSECONDBASE_POSCODE]       
             #return '2B'
         
         if theta in gsTHETA_SECONDBASERANGE:
-            return gsPOSITION_POSSTR[gsSECONDBASE_POSCODE]       
+            return gsSECONDBASE_POSCODE#gsPOSITION_POSSTR[gsSECONDBASE_POSCODE]       
             #return '2B'
         
         if theta < min(gsTHETA_FIRSTBASERANGE):
-            return gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
+            return gsFIRSTBASE_POSCODE#gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
             #return '1B'
         
         if theta in gsTHETA_FIRSTBASERANGE:
-            return gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
+            return gsFIRSTBASE_POSCODE#gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
             #return '1B'
         
         if theta <= gsTHETA_RIGHTFIELD_FOULPOLE:
-            return gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
+            return gsFIRSTBASE_POSCODE#gsPOSITION_POSSTR[gsFIRSTBASE_POSCODE]       
             #return '1B'
 
     def isChangeSides(self):
@@ -325,13 +325,13 @@ class DefensiveFieldState:
 
     def getOutfieldLoc(self, theta):
         if theta < 33:
-            return gsPOSITION_POSSTR[gsLEFTFIELDER_POSCODE]       
+            return gsLEFTFIELDER_POSCODE#gsPOSITION_POSSTR[gsLEFTFIELDER_POSCODE]       
             #return 'LF'
         if theta < 66:
-            return gsPOSITION_POSSTR[gsCENTERFIELDER_POSCODE]       
+            return gsCENTERFIELDER_POSCODE#gsPOSITION_POSSTR[gsCENTERFIELDER_POSCODE]       
             #return 'CF'
         if theta <= 90:
-            return gsPOSITION_POSSTR[gsRIGHTFIELDER_POSCODE]       
+            return gsRIGHTFIELDER_POSCODE#gsPOSITION_POSSTR[gsRIGHTFIELDER_POSCODE]       
             #return 'RF'
     
     def getBasesState(self):

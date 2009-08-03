@@ -17,7 +17,7 @@ class Play:
         self.__ballCount = ballCount
 
         #Calculated After Object Creation
-        self.__where = ('x','x','x')#where the ball was hit to: (theta, phi, radius)
+        self.__where = (-999,-999,-999)#where the ball was hit to: (theta, phi, radius)
         self.__fieldersInPlay = []#None #(i.e. - 6-4-3)
 
         self.__runnersAdvanced = [] #[GUID:(0,1),GUID:(1,2)
@@ -40,7 +40,7 @@ class Play:
     
     def createPlayEncoding(self):
         
-        enc = "%s(%d,%d,%s,%d,%d,%d-%d,%s,%s,%s)" % (self.__playResultEncoding,
+        enc = '%s(%d,%d,%s,%d,%d,%d-%d,%s,%s,%s)' % (self.__playResultEncoding,
                                                      self.__batterGUID,
                                                      self.__pitcherGUID,
                                                      self.__pitchType,
@@ -49,7 +49,7 @@ class Play:
                                                      self.__ballCount,
                                                      self.__strikeCount,
                                                      str(self.__where),
-                                                     str(self.__fieldersInPlay), #Who
+                                                     self.__fieldersInPlay, #Who
                                                      str(self.__runnersAdvanced))
         self.__playResultEncoding = enc
 

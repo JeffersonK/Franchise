@@ -13,6 +13,7 @@ import Player
 import leagueleaders
 from PlayerSkills import *
 from Globals import *
+import simplejson
 
 ############
 #
@@ -55,7 +56,9 @@ def ServerAPIGetPlayerState(playerGUID):
     plyr =  plyrDB.getObjectHandle(playerGUID)
     if plyr == None:
         return None
-    jsonPlyr = json.dumps(plyr.__getstate__())
+    jsonPlyr = json.dumps(plyr.__getstate__(), sort_keys=True)
+    #sjsonPlyr = simplejson.dumps(plyr.__getstate__(), sort_keys=True)
+    #print jsonPlyr == sjsonPlyr
     _closePlayerDB(plyrDB)
     return jsonPlyr
 
@@ -86,7 +89,7 @@ def ServerAPIGetLineupCandidates(playerGUID):
     for (guid, plyr) in plyrDB.iteritems():
         if guid != playerGUID:
             guidList += [(guid, plyr.getName(), plyr.getPosition())]
-    jsonList = json.dumps(guidList)
+    jsonList = json.dumps(guidList, sort_keys=True)
     _closePlayerDB(plyrDB)
     return jsonList
 
@@ -131,7 +134,7 @@ def ServerAPIGetTrainingJobs(playerGUID):
     if plyr == None:
         return -1 #PLAYER DOESNT EXIST
     trainingJobs = plyr.getTrainingOptions()
-    jsonstr = json.dumps(trainingJobs)
+    jsonstr = json.dumps(trainingJobs, sort_keys=True)
     _closePlayerDB(plyrDB)
     plyrDB = None
     return jsonstr
@@ -202,11 +205,14 @@ def main():
 
     jp = json.loads(plyr0)
     print type(jp)
+    
+    jp = simplejson.loads(plyr0)
+    print type(jp)
 
-    lc = ServerAPIGetLineupCandidates(0)
-    print lc
+    #lc = ServerAPIGetLineupCandidates(0)
+    #print lc
 
-    ServerAdminAPISetPlayerState(0, plyr0)
+    #ServerAdminAPISetPlayerState(0, plyr0)
 
     #print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXENERGYPOINTS) 
     #print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXCHALLENGEPOINTS)
@@ -218,10 +224,9 @@ def main():
     #print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_CONTROL)
     #print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_STAMINA)
 
-    print ServerAPIGetTrainingJobs(0)
-    print ServerAPITrainSkills(0,0)
-
-    print ServerAPIGetTrainingJobs(1)
+    #print ServerAPIGetTrainingJobs(0)
+    #print ServerAPITrainSkills(0,0)
+    #print ServerAPIGetTrainingJobs(1)
 
 if __name__ == "__main__":
     main()
