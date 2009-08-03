@@ -67,7 +67,7 @@ def edit_player(request, player_id):
 			                gsSINKER:sinker, 
 			                gsSPITBALL:spitball,
 			                gsFORKBALL:forkball}
-		
+			x="""	
 			#Batter/Pitcher Zone Mastery	
 			zone0 = request.POST['zone0']
 			zone1 = request.POST['zone1']
@@ -90,7 +90,7 @@ def edit_player(request, player_id):
 			pzone7 = request.POST['pzone7']
 			pzone8 = request.POST['pzone8']
 			powerZone = [pzone0,pzone1,pzone2,pzone3,pzone4,pzone5,pzone6,pzone7,pzone8]
-
+			"""
 
 
 		except:
@@ -106,13 +106,13 @@ def edit_player(request, player_id):
 			if (p.getPosition() == "P"):
 				print "Pitcher: "
 				result += str(p.getPlayerAbilities().setPitchingPitchMasteryMatrix(pitchMastery))
-				result += str(p.getPlayerAbilities().setPitchingZoneMasteryMatrix(zoneMastery))
+				#result += str(p.getPlayerAbilities().setPitchingZoneMasteryMatrix(zoneMastery))
 			else:
 				print "Batter: "
 				patience = request.POST['Patience']
 				result += str(p.getPlayerAbilities().setPatience(patience))
 				result += str(p.getPlayerAbilities().setBattingPitchMasteryMatrix(pitchMastery))
-				result += str(p.getPlayerAbilities().setBattingZoneMasteryMatrix(zoneMastery))
+				#result += str(p.getPlayerAbilities().setBattingZoneMasteryMatrix(zoneMastery))
 				result += str(p.getPlayerAbilities().setBattingPowerZones(powerZone))
 
 			#p.setPosition(position)
