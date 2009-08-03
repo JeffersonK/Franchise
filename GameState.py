@@ -269,15 +269,13 @@ class GameState:
     def handleStartAtBat(self):
 
         self.__fieldGameState.setBatterGUID(self._getNextBatterGUID())
-        
-        #DEBUG
+
+        #DEBUG_GAMESTATE
+        #print " +++ HANDLE START AT BAT +++ "
         #print self
 
     def handleAtBatResult(self, atBatEventObj):
-        #if hit:
-        #if atBatEventObj.runnersAdvance():
-            #self._handleAdvanceAllRunners(atBatEventObj)
-            
+
         if atBatEventObj.teamScored():
             isGameOver = self.handleTeamScored(atBatEventObj) 
             #can't exit here because game could end
@@ -297,10 +295,11 @@ class GameState:
 
         teamObj.advanceBattingLineup()
         
+        #DEBUG_GAMESTATE
+        #print self
+        #print " --- HANDLE END AT BAT --- : %s" % atBatEventObj
+        
         #here is where you update playerGameState Stats
-        
-        #print atBatEventObj
-        
         teamObj.updateTeamGameState(atBatEventObj, True)
         
         defTeamObj = self._getDefenseTeamObject()
@@ -310,10 +309,6 @@ class GameState:
         
         self._appendGameEvents(atBatEventObj.atBatEventLog())
 
-        #DEBUG
-        #print atBatEventObj
-        #print self
-        
         return
 
     #should be called before handleStartAtBat or after handleEndAtBat() 
@@ -338,7 +333,6 @@ class GameState:
         if pitcherAbilities == None:
             print "could't get pitcher abilities"
             return None
-
         
         atBatEvent = AtBatResult.AtBatResult(self._getNextBatterGUID(),
                                              batterAbilities,
@@ -348,8 +342,9 @@ class GameState:
                                              self._getPlayerPitcherSkills(pitcherGUID),
                                              self._getStateForNextAtBatEvent())
 
-        
-        atBatEvent.simAtBat()          
+        ret = atBatEvent.simAtBat()          
+        #DEBUG_GAMESTATE
+        #print "SIM AT BAT RETURN: %s" % ret
 
         return atBatEvent
 

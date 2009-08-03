@@ -180,8 +180,9 @@ class PitcherStats:
                 self.__currentWinStreak = 0
 
             #save a game's results as a sub-list
+            #only save last games results for now
             #self.__batterResults += [other.__batterResults]
-            self.__batterResults = []#other.__batterResults
+            self.__batterResults = other.__batterResults
         else:
             #save each batter
             self.__batterResults += [other.__batterResults]
@@ -751,6 +752,9 @@ class PitcherStats:
         elif pitchCall == gsPITCHCALL_BALL:
             self.__totBallsThrown += 1
         elif pitchCall == gsPITCHCALL_FOUL:
+            #TODO: fix bug, we need seperate 
+            # variable to track the count,
+            # fouls should be counted as strikes
             if self.__totStrikesThrown < gsMAXSTRIKECOUNT-1:
                 self.__totStrikesThrown += 1
         elif pitchCall == gsPITCHCALL_STRIKEOUT:
@@ -872,13 +876,11 @@ class BatterStats:
             other.countXP()
             if other.__XPScore > self.__highXPScore:
                 self.__highXPScore = other.__XPScore
-                #self.__highXPScoreAtBatResult = other.__atBatResults
+                self.__highXPScoreAtBatResult = other.__atBatResults
 
             self.__wins += other.__wins
             self.__losses += other.__losses
             
-            
-
             #check for cycles
             if other.__totHits >= 4 and \
                     other.__totHRs > 0 and \
@@ -902,19 +904,18 @@ class BatterStats:
             #we probably need to limit how much history we keep here
             #but it is good to save until the end of the game for post processing
             #as well as testing purposes
-            #print "%s + [%s]" % (self.__atBatResults, other.__atBatResults)
-            
+
+            #Only Keep the last game result for now
             #self.__atBatResults += [other.__atBatResults]
-            self.__atBatResults = []#other.__atBatResults
+            self.__atBatResults = other.__atBatResults
         else:
-            #TODO: FIX BUG HERE
-            #if other.__atBatResults == []:
-            #    print "%s + [%s]" % (self.__atBatResults, other.__atBatResults)
-            #    print self
-            #    while 1:
-            #        None
             self.__atBatResults += [other.__atBatResults]            
 
+            #DEBUG CHECK
+            if other.__atBatResults == []:
+                print "DEBUG: addPitchThrown() %s + [%s]" \
+                    % (self.__atBatResults, other.__atBatResults)
+                
         self.__totHRs += other.__totHRs
         if other.__longestHR > self.__longestHR:
             self.__longestHR = other.__longestHR
@@ -968,8 +969,7 @@ class BatterStats:
             "'highXPScore':%d," +\
             "'highXPScoreAtBatResult':%s}"
         
-        #print self.__atBatResults
-        #if self.__atBatResults
+
         x = dictStr % (self.__statType, self.__atBatResults, self.__totAtBats, 
                        self.__gamesPlayed, self.__wins, self.__losses, self.__totHits,
                        self.__currentHitStreak, self.__longestHitStreak,
@@ -996,9 +996,6 @@ class BatterStats:
             
 
     def __setstate__(self, dictStr):
-        #print type(dictStr)
-        #print dictStr
-        #d = eval(dictStr)
         d = dictStr
         #self.__statType = d['statType']
         self.safe_setstatevar('statType', d, gsSTATTYPE_BATTER_STATS)
@@ -1189,7 +1186,6 @@ class BatterStats:
     def addPitchReceived(self, pitchType, pitchZone, pitchSpeed, pitchCall, 
                          runnersInScoringPos, playObj=None):
         if playObj != None:
-
             self.__atBatResults += [str(playObj)]
 
             #Check for runners in scoring position
@@ -1224,22 +1220,26 @@ class BatterStats:
             elif playObj.isTriplePlay():#triple play
                 self.__totTPHitInto += 1
             
+            elif playObj.isWalk():
+                self.__totWalks += 1
+                self.__totAtBats -= 1 #doesn't count as at bat
+                
+            elif playObj.isStrikeout():
+                self.__totKd += 1
+                
             self.__totRBIs += playObj.runsScoredOnPlay()
             if playObj.isGrandSlam():
                 self.__totGrandSlams += 1
         
-        elif runnersInScoringPos > 0:
-            #playObj == None
-            self.__totRunnersLeftInScoringPos += runnersInScoringPos
-            self.__totAtBatsWithRunnersInScoringPos += 1
-        
-        if pitchCall == gsPITCHCALL_WALK:
-            self.__totWalks += 1
-            self.__totAtBats -= 1 #doesn't count as at bat
-        elif pitchCall == gsPITCHCALL_STRIKEOUT:
-            self.__totKd += 1
-
             
+        #else: #playObj == None
+        
+        # Nothing to do for batter right now pitcher keeps track of the count
+        
+        #DEBUG
+        #print "PLAYOBJ == None in addPitchReceived"
+        
+                            
 #TODO: Class FielderStats
 
 x = """class PlayerStats:

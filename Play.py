@@ -17,7 +17,7 @@ class Play:
         self.__ballCount = ballCount
 
         #Calculated After Object Creation
-        self.__where = (0,0)#where the ball was hit to: (theta, radius)
+        self.__where = ('x','x','x')#where the ball was hit to: (theta, phi, radius)
         self.__fieldersInPlay = []#None #(i.e. - 6-4-3)
 
         self.__runnersAdvanced = [] #[GUID:(0,1),GUID:(1,2)
@@ -56,8 +56,8 @@ class Play:
     def setResult(self, resultString):
         self.__playResultEncoding = resultString
 
-    def setHitEndLocation(self, theta, r):
-        self.__where = (theta, r)
+    def setHitEndLocation(self, theta, phi,  r):
+        self.__where = (theta, phi, r)
 
     def setFieldersInPlay(self, posStr):
         self.__fieldersInPlay = [posStr]

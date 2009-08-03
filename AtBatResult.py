@@ -229,6 +229,7 @@ class AtBatResult:
                 None
             elif not swungAtBall and self.__pitcherStats.getBalls() == gsMAXBALLCOUNT-1:
                 #TODO: need to check to see if runs score and generate a Play()
+                #print "*** ATBATRESULT: WALK ***"
                 playObj = Play(self.__batterGUID, self.__pitcherGUID,
                                pitchType, pitchZone, 0, 
                                self.__pitcherStats.getBalls(), 
@@ -241,28 +242,42 @@ class AtBatResult:
                 playObj.setRunnersAdvanced(runnersAdvancedList)
                 playObj.createPlayEncoding()
                 self.__resultCode = str(playObj)                
-                
+                #print playObj
+                self.__pitcherStats.addPitchThrown(pitchType, 
+                                                   pitchZone, 
+                                                   0,#walks don't count as at bats 
+                                                   gsPITCHCALL_WALK, 
+                                                   playObj)
                 #TODO: need to use fieldState to determine who 
                 #      scored and set appropriately
                 #      in the playObj because in the case of a WALK/HBP runs can
                 #      score without a ball being in play
-                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, 
-                                                    gsPITCHCALL_WALK, playObj)
-                self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0,#walks don't count as at bats 
-                                                   gsPITCHCALL_WALK, playObj)
+                self.__batterStats.addPitchReceived(pitchType, 
+                                                    pitchZone, 
+                                                    0, 
+                                                    gsPITCHCALL_WALK, 
+                                                    self.__fieldState.numRunnersInScoringPos(),
+                                                    playObj)
+
 
                 self.__playObj = playObj
                 #print "WALK"
+                
                 return gsPITCHCALL_WALK
 
             else:# not swungAtBall:
                 #this addPitchReceived does nothing for now 
                 #because we don't track
                 #individual pitches for batters
-                self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, 
+                self.__pitcherStats.addPitchThrown(pitchType, 
+                                                   pitchZone, 
+                                                   0, 
                                                    gsPITCHCALL_BALL)
-                self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, 
-                                                    gsPITCHCALL_BALL, 0)
+                self.__batterStats.addPitchReceived(pitchType, 
+                                                    pitchZone, 
+                                                    0, 
+                                                    gsPITCHCALL_BALL, 
+                                                    0)
                 return gsPITCHCALL_BALL
 
         #else:
@@ -300,8 +315,8 @@ class AtBatResult:
                                                         gsPITCHCALL_FOUL, 
                                                         0)
                     self.__resultCode = gsNULL_ATBATRESULT_CODE
-                    
                     self.__playObj = playObj
+                    return gsPITCHCALL_FOUL
                 else:
                     playObj.createPlayEncoding()
                     self.__resultCode = str(playObj)
@@ -319,8 +334,7 @@ class AtBatResult:
                                                         playObj)                
 
                     self.__playObj = playObj
-
-                return gsPITCHCALL_CONTACT
+                    return gsPITCHCALL_CONTACT
 
         #else:
         #he whiff'd!
@@ -360,8 +374,16 @@ class AtBatResult:
             if swungAtBall:
                 #print "SWUNG AT BALL"
                 None
-            self.__pitcherStats.addPitchThrown(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE)
-            self.__batterStats.addPitchReceived(pitchType, pitchZone, 0, gsPITCHCALL_STRIKE, 0)
+            self.__pitcherStats.addPitchThrown(pitchType, 
+                                               pitchZone, 
+                                               0, 
+                                               gsPITCHCALL_STRIKE)
+
+            self.__batterStats.addPitchReceived(pitchType, 
+                                                pitchZone, 
+                                                0, 
+                                                gsPITCHCALL_STRIKE, 
+                                                0)
             return gsPITCHCALL_STRIKE
 
     #########
@@ -413,7 +435,8 @@ class AtBatResult:
         #print bbcr.getHitParams()
         #print "%s %s %d" % (result, fielder, r)
         playObj.setFieldersInPlay(fielder)
-        playObj.setHitEndLocation('?', radius)
+        (theta, phi, radius) = bbcr.getHitParams()
+        playObj.setHitEndLocation(theta, phi, radius)
         playObj.setResult(result)
         playObj.setRunnersAdvanced(runnersAdvancedList)
 
