@@ -4,50 +4,39 @@ import PlayerAbilities
 from PlayerStats import *
 import time
 from Levels import *
-
+from PlayerSkills import *
 
 class Player:
 
-    def __init__(self, playerGUID):#, type):
-
+    def __init__(self, playerGUID):
         #Book Keeping
         self.__playerGUID = playerGUID
-
-        #TODO: change this to an integer
         #self.__position = position.upper()
         self.__position = ''
         #self.__handedness
-
         self.__franchiseGUID = gsPLAYERFREEAGENT
-        #self.__franchiseGUIDHistory = [(franchiseGUID, datefrom, dateto)]
-        
         self.__playerAbilities = PlayerAbilities.PlayerAbilities()
-
+        self.__pitcherSkills = PitcherPlayerSkills()
+        self.__batterSkills = BatterPlayerSkills()
         self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS)
         self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS)
-
         #Player Personality/Character
         self.__name = "Player%d" % playerGUID
         self.__XP = 0
         self.__energy = gsPLAYERENERGY_MAXINITIAL
         self.__level = 1
-
         self.__lastPlayerRecharge = getTime()
         self.__money = gsINITIAL_MONEY_ALLOC
         self.__lastTimePaid = getTime()
         self.__unusedStatPoints = gsINITIAL_STATPOINT_ALLOC
-
         self.__maxChallengePoints = gsPLAYERCHALLENGE_MAXINITIAL#maximumNumber of games that can be played per unit time
         self.__challengePoints = gsPLAYERCHALLENGE_MAXINITIAL
         self.__maxPlayerEnergy = gsPLAYERENERGY_MAXINITIAL#determines how much training/jobs can be done/unit time
         self.__recoveryTime = gsPLAYERRECOVERYTIME_INITIAL#seconds until energy/challenge points are regained
-
         #self.__items = PlayerItems()
         #self.__achievements = PlayerAchievements()
-
         self.__defaultLineup = []
         self.__defaultRotation = []
-
         return
 
     def __getstate__(self):
@@ -56,8 +45,9 @@ class Player:
             "'lastPlayerRecharge':%d,'money':%d,'lastTimePaid':%d," +\
             "'XP':%d,'level':%d,'unusedStatPoints':%d," +\
             "'position':'%s','franchiseGUID':%d," +\
-            "'playerAbilities':%s,'batterStats':%s,'pitcherStats':%s," +\
-            "'defaultLineup':%s, 'defaultRotation':%s}"
+            "'%s':%s,'batterStats':%s,'pitcherStats':%s," +\
+            "'defaultLineup':%s, 'defaultRotation':%s," +\
+            "'%s':\"%s\", '%s':\"%s\"}"
 
         return fmt % (self.__playerGUID, self.__name, self.__energy, 
                       self.__maxChallengePoints, self.__challengePoints, 
@@ -65,11 +55,15 @@ class Player:
                       self.__lastPlayerRecharge, self.__money, 
                       self.__lastTimePaid, self.__XP, self.__level, 
                       self.__unusedStatPoints,
-                      self.__position, self.__franchiseGUID,
+                      self.__position, self.__franchiseGUID, PLAYERABILITIES,
                       self.__playerAbilities.__getstate__(),
                       self.__batterStats.__getstate__(), 
                       self.__pitcherStats.__getstate__(),
-                      self.__defaultLineup, self.__defaultRotation)
+                      self.__defaultLineup, self.__defaultRotation,
+                      PLAYERSKILLS_BATTERSKILLS,
+                      self.__batterSkills.__getstate__(), 
+                      PLAYERSKILLS_PITCHERSKILLS,
+                      self.__pitcherSkills.__getstate__())
 
     def __setstate__(self, dictstr):
 
@@ -82,9 +76,7 @@ class Player:
             return
 
         self.__franchiseGUID = d['franchiseGUID']
-
         self.__playerGUID = d['playerGUID']
-
         self.__position = d['position']
         
         #player
@@ -93,7 +85,6 @@ class Player:
         self.__challengePoints = 10
         self.__name = d['name']
         self.__XP = d['XP']
-        
         self.__maxChallengePoints = d['maxChallengePoints']
         self.__challengePoints = d['challengePoints']
         self.__maxPlayerEnergy = d['maxPlayerEnergy']
@@ -104,22 +95,20 @@ class Player:
         self.__unusedStatPoints = d['unusedStatPoints']
         #self.__achievements = {}
         #self.__items = {}
-
         self.__defaultLineup = d['defaultLineup']
         self.__defaultRotation = d['defaultRotation']
-
-        abilities = d['playerAbilities']
-        self.__playerAbilities = PlayerAbilities.PlayerAbilities(abilities['batting'],
-                                                                 abilities['pitching'],
+        abilities = d[PLAYERABILITIES]
+        self.__playerAbilities = PlayerAbilities.PlayerAbilities(abilities[PLAYERABILITIES_BATTING],
+                                                                 abilities[PLAYERABILITIES_PITCHING],
                                                                  abilities['running'],
-                                                                 abilities['fielding'],
-                                                                 abilities['character'])
-
+                                                                 abilities[PLAYERABILITIES_FIELDING],
+                                                                 abilities[PLAYERABILITIES_CHARACTER])
         batterStatsStr = d['batterStats']
         self.__batterStats = BatterStats(gsSTATSUBTYPE_ENDGAMESTATS).__setstate__(batterStatsStr)
-        
         pitcherStatsStr = d['pitcherStats']
         self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_ENDGAMESTATS).__setstate__(pitcherStatsStr)
+        self.__batterSkills = BatterPlayerSkills().__setstate__(d[PLAYERSKILLS_BATTERSKILLS])
+        self.__pitcherSkills = PitcherPlayerSkills().__setstate__(d[PLAYERSKILLS_PITCHERSKILLS])
         return self
 
     def __str__(self):
@@ -132,6 +121,12 @@ class Player:
     #here is where a player will gain ablities when their stats are updated
     def getPlayerAbilities(self):
         return self.__playerAbilities
+
+    def getPlayerBatterSkills(self):
+        return self.__batterSkills
+
+    def getPlayerPitcherSkills(self):
+        return self.__pitcherSkills
 
     def getBatterStats(self):
         return self.__batterStats
@@ -151,7 +146,8 @@ class Player:
                 playerGameStats.isPitcherStats():
 
             self.__XP += playerGameState.countXP()
-            #TODO: look in the playerGamStats and compare to the existing stats for achievements
+            #TODO: look in the playerGamStats and compare 
+            #to the existing stats for achievements
             self.__pitcherStats += playerGameStats
             #print self
             self._checkLevelUp()
@@ -175,8 +171,7 @@ class Player:
             #print self
 
             #increment money
-            if playerGameStats.getWins() > 0:
-               
+            if playerGameStats.getWins() > 0:   
                 self.__money += moneyInc
             else:
                 self.__money += int(0.5*moneyInc)
@@ -226,6 +221,9 @@ class Player:
     def getMoney(self):
         return self.__money
 
+    def decreaseMoney(self, num):
+        self.__money -= num
+
     def getUnusedStatPoints(self):
         return self.__unusedStatPoints
     
@@ -259,6 +257,42 @@ class Player:
         self.__unusedStatPoints -= 1            
         return 0
 
+    def getTrainingOptions(self):
+        trainingDB = ObjectDB("trainingdb", "trn")
+        trainingJobs = []
+        for (guid, trainingJob) in trainingDB.iteritems():
+            trainingJobs += [trainingJob.__getstate__()]
+
+        del(trainingDB)
+        trainingDB = None
+        return trainingJobs
+
+    def train(self, trainingGUID):
+        trainingDB = ObjectDB("trainingdb", "trn")
+        trainObj = trainingDB.getObjectHandle(trainingGUID)
+        (energy, money) = trainObj.cost()
+        if self.__energy < energy:
+            del trainingDB
+            trainObj = None
+            return -1
+
+        if self.__money < money:
+            del trainingDB
+            trainObj = None
+            return -2
+        
+        skillTrained = trainObj.getSkillType()
+        if skillTrained in BATTERSKILLS:
+            self.__batterSkills.trainSkills(trainObj)
+        else:
+            self.__pitcherSkills.trainSkills(trainObj)
+
+        self.decreaseEnergy(energy)
+        self.decreaseMoney(money)
+        del trainingDB
+        trainObj = None
+        return 0
+        
     def getLevel(self):
         return self.__level
 

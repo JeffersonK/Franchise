@@ -57,17 +57,19 @@ class BatBallContactResult:
 class AtBatResult:
     
     def __init__(self, 
-                 batterGUID, batterAbil,
-                 pitcherGUID, pitcherAbil,
+                 batterGUID, batterAbil, batterSkills,
+                 pitcherGUID, pitcherAbil, pitcherSkills,
                  fieldState): #(numOuts, numOnBase) TODO: make this a proper object
             
         self.__pitcherGUID = pitcherGUID
         self.__pitcherAbil = pitcherAbil
+        self.__pitcherSkills = pitcherSkills
         self.__pitcherStats = PitcherStats(gsSTATSUBTYPE_SINGLEPLAYSTATS)
         self.__pitcherStats.addBatterFaced()
 
         self.__batterGUID = batterGUID
         self.__batterAbil = batterAbil
+        self.__batterSkills = batterSkills
         self.__batterStats = BatterStats(gsSTATSUBTYPE_SINGLEPLAYSTATS)
         self.__batterStats.addAtBat()
 
@@ -268,8 +270,8 @@ class AtBatResult:
         #we always swing this call get the probability that the
         #batter makes contact
         if not swungAtBall:
-            pr = PrEng.PrContactNew(pitcherAbil, 
-                                    batterAbil,
+            pr = PrEng.PrContactNew(pitcherAbil, self.__pitcherSkills, 
+                                    batterAbil, self.__batterSkills,
                                     (pitchType, pitchZone))
 
         #using the probability of contact we then

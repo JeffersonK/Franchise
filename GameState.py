@@ -53,6 +53,18 @@ class GameState:
             return player.getPlayerAbilities()
         return None
 
+    def _getPlayerPitcherSkills(self, guid):
+        player = self.__playerDB.getObjectHandle(guid)
+        if player != None:
+            return player.getPlayerPitcherSkills()
+        return None
+
+    def _getPlayerBatterSkills(self, guid):
+        player = self.__playerDB.getObjectHandle(guid)
+        if player != None:
+            return player.getPlayerBatterSkills()
+        return None
+
     def _getPitcherGUID(self):
         defenseTeamObj = self._getDefenseTeamObject()
         return defenseTeamObj.getCurrentPitcherGUID()
@@ -330,8 +342,10 @@ class GameState:
         
         atBatEvent = AtBatResult.AtBatResult(self._getNextBatterGUID(),
                                              batterAbilities,
+                                             self._getPlayerBatterSkills(batterGUID),
                                              self._getPitcherGUID(),
                                              pitcherAbilities,
+                                             self._getPlayerPitcherSkills(pitcherGUID),
                                              self._getStateForNextAtBatEvent())
 
         

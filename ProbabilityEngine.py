@@ -79,15 +79,17 @@ gsBC_WORSTBAT_VS_BESTPIT = 0.30
 gsBC_SAMEBAT_VS_SAMEPIT = 0.60
 gsPITCHMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_PITCHMASTERY_LEVELS)
 gsZONEMASTERY_LEVEL_STEPSIZE = (gsBC_BESTBAT_VS_WORSTPIT - gsBC_WORSTBAT_VS_BESTPIT)/float(gsNUM_ZONEMASTERY_LEVELS)
-def PrContactNew(pitcherAbilities, batterAbilities, pitchAttrs):
+def PrContactNew(pitcherAbilities, pitcherSkills,
+                 batterAbilities, batterSkills,
+                 pitchAttrs):
 
     pitchType, pitchZone = pitchAttrs
 
-    batterZoneMastery = batterAbilities.getBattingZoneMasteryMatrix()
-    pitcherZoneMastery = pitcherAbilities.getPitchingZoneMasteryMatrix()
+    batterZoneMastery = batterSkills.getBattingZoneMasteryMatrix()
+    pitcherZoneMastery = pitcherSkills.getPitchingZoneMasteryMatrix()
 
-    batterPitchMastery = batterAbilities.getBattingPitchMasteryMatrix()
-    pitcherPitchMastery = pitcherAbilities.getPitchingPitchMasteryMatrix()
+    batterPitchMastery = batterSkills.getBattingPitchMasteryMatrix()
+    pitcherPitchMastery = pitcherSkills.getPitchingPitchMasteryMatrix()
 
     if pitchType not in pitcherPitchMastery:
         print "DEBUG pitchType: %s not in pitch mastery matrix for pitcher\n" % pitchType

@@ -40,8 +40,8 @@ gsMuPitcherMin = 0.0# 28%
 gsMuBatterMax = gsMuPrimeMax
 gsMuPitcherMax = gsMuPrimeMax"""
 
-Chi2b0 = 0.0
-Chi2p0 = 0.0
+#Chi2b0 = 0.0
+#Chi2p0 = 0.0
 
 minPower = 1
 batterPowerZones = [minPower, minPower, minPower,
@@ -49,45 +49,40 @@ batterPowerZones = [minPower, minPower, minPower,
                     minPower, minPower, minPower]
                     
 
-batterZoneMastery = [Chi2b0, Chi2b0, Chi2b0,
-                     Chi2b0, Chi2b0, Chi2b0,
-                     Chi2b0, Chi2b0, Chi2b0]
-
-
-pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
-                      Chi2p0, Chi2p0, Chi2p0,
-                      Chi2p0, Chi2p0, Chi2p0]
-
-
-batterPitchMastery = {}
-pitcherPitchMastery = {}
-for pitchType in gsPITCHTYPES:
-    batterPitchMastery[pitchType] = Chi2b0
-    pitcherPitchMastery[pitchType] = Chi2p0
-
-gsMAX_PITCHMASTERY_LEVEL = gsNUM_PITCHMASTERY_LEVELS
-gsMIN_PITCHMASTERY_LEVEL = 0
-gsMAX_ZONEMASTERY_LEVEL = gsNUM_ZONEMASTERY_LEVELS
-gsMIN_ZONEMASTERY_LEVEL = 0
+#batterZoneMastery = [Chi2b0, Chi2b0, Chi2b0,
+#                     Chi2b0, Chi2b0, Chi2b0,
+#                     Chi2b0, Chi2b0, Chi2b0]
+#pitcherZoneMastery = [Chi2p0, Chi2p0, Chi2p0,
+#                      Chi2p0, Chi2p0, Chi2p0,
+#                      Chi2p0, Chi2p0, Chi2p0]
+#batterPitchMastery = {}
+#pitcherPitchMastery = {}
+#for pitchType in gsPITCHTYPES:
+#    batterPitchMastery[pitchType] = Chi2b0
+#    pitcherPitchMastery[pitchType] = Chi2p0
+#gsMAX_PITCHMASTERY_LEVEL = gsNUM_PITCHMASTERY_LEVELS
+#gsMIN_PITCHMASTERY_LEVEL = 0
+#gsMAX_ZONEMASTERY_LEVEL = gsNUM_ZONEMASTERY_LEVELS
+#gsMIN_ZONEMASTERY_LEVEL = 0
 
 
 #PITCHING
-defaultpitcherAbil = {'zoneMastery':pitcherZoneMastery, #pitchers effectiveness at throwing pitches by zone
-                      'pitchMastery':pitcherPitchMastery,#how good a pitcher is at throwing various pitches
+defaultpitcherAbil = {#'zoneMastery':pitcherZoneMastery, #pitchers effectiveness at throwing pitches by zone
+                      #'pitchMastery':pitcherPitchMastery,#how good a pitcher is at throwing various pitches
                       'strength':0,#affects the speed of the pitches thrown
-                      'control':0, #affects if a whether a pitch is a ball or not
-                      'stamina':0,   #affects how many pitches they can throw before their accuracy and speed are temporarily affected
+                      PLAYERABILITY_PITCHER_CONTROL:0, #affects if a whether a pitch is a ball or not
+                      PLAYERABILITY_PITCHER_STAMINA:0,   #affects how many pitches they can throw before their accuracy and speed are temporarily affected
                       }
 
 #BATTER abilities
-defaultbatterAbil = {'zoneMastery':batterZoneMastery,#how good a batter is at making contact with a pitch in a given location
-                     'pitchMastery':batterPitchMastery,#how good a batter is at making contact with a certain kind of pitch
-                     'powerZones':batterPowerZones, #effects the zones where hitters have power
-                     'patience':0.0, #effects how often the batter chances balls/bad pitches
+defaultbatterAbil = {#'zoneMastery':batterZoneMastery,#how good a batter is at making contact with a pitch in a given location
+                     #'pitchMastery':batterPitchMastery,#how good a batter is at making contact with a certain kind of pitch
+                     PLAYERABILITY_BATTER_POWER:batterPowerZones, #effects the zones where hitters have power
+                     PLAYERABILITY_BATTER_PATIENCE:0.0, #effects how often the batter chances balls/bad pitches
                      }
 
 #FIELDING
-defaultfieldingAbil = {'defense':0, #effects the range/radius of the player on defense
+defaultfieldingAbil = {PLAYERABILITY_DEFENSE:0, #effects the range/radius of the player on defense
                        }
  
 #RUNNING   
@@ -95,8 +90,8 @@ defaultrunningAbil = {'speed':0, #effects whether extra bases can be squeezed ou
                       }
 
 #CHARACTER
-defaultcharacterAbil = {'leadership':0, #makes everyone on the team a little better
-                        'prestige':gsPLAYER_INIT_PRESTIGE, #affects how much money the player draws per game and unit time
+defaultcharacterAbil = {PLAYERABILITY_LEADERSHIP:0, #makes everyone on the team a little better
+                        PLAYERABILITY_PRESTIGE:gsPLAYER_INIT_PRESTIGE, #affects how much money the player draws per game and unit time
                         }
 
 
@@ -131,25 +126,26 @@ class PlayerAbilities:
         return self.__getstate__()
 
     def __getstate__(self):
-        fmt = "{'fielding':%s,'batting':%s,'pitching':%s,'running':%s,'character':%s}"
-        return fmt % (str(self.__fielding), 
-                      str(self.__batting),
-                      str(self.__pitching),
-                      str(self.__running),
-                      str(self.__character))
+        fmt = "{'%s':%s,'%s':%s,'%s':%s,'%s':%s,'%s':%s}"
+        return fmt % (PLAYERABILITIES_FIELDING, str(self.__fielding), 
+                      PLAYERABILITIES_BATTING, str(self.__batting),
+                      PLAYERABILITIES_PITCHING, str(self.__pitching),
+                      'running', str(self.__running),
+                      PLAYERABILITIES_CHARACTER, str(self.__character))
 
     
     def __setstate__(self, dictStr):
         print "TODO: check for eval errors in PlayerAbility __setstate__"
         d = eval(dictStr)
-        self.__fielding = d['fielding']
-        self.__batting = d['batting']
-        self.__pitching = d['pitching']
+        self.__fielding = d[PLAYERABILITIES_FIELDING]
+        self.__batting = d[PLAYERABILITIES_BATTING]
+        self.__pitching = d[PLAYERABILITIES_PITCHING]
         self.__running = d['running']
-        self.__character = d['character']
+        self.__character = d[PLAYERABILITIES_CHARACTER]
         return self
 
     #PITCHING SPECIFIC
+    OLD = """
     def getPitchingPitchMasteryMatrix(self):
         return self.__pitching['pitchMastery']
 
@@ -192,13 +188,13 @@ class PlayerAbilities:
             newMatrix += [ret]
         self.__pitching['zoneMastery'] = newMatrix
         return 0
-    
+    """
 
     def getPitcherStamina(self):
-        return self.__pitching['stamina']
+        return self.__pitching[PLAYERABILITY_PITCHER_STAMINA]
     
     def incPitcherStamina(self):
-        self.__pitching['stamina'] += 1
+        self.__pitching[PLAYERABILITY_PITCHER_STAMINA] += 1
 
     def getPitcherStrength(self):
         return self.__pitching['strength']
@@ -207,10 +203,10 @@ class PlayerAbilities:
         self.__pitching['stregnth'] += 1
 
     def getPitcherControl(self):
-        return self.__pitching['control']
+        return self.__pitching[PLAYERABILITY_PITCHER_CONTROL]
 
     def incPitcherControl(self):
-        self.__pitching['control'] += 1
+        self.__pitching[PLAYERABILITY_PITCHER_CONTROL] += 1
 
     #BATTING SPECIFIC
     def setBattingPowerZones(self, powerZones):
@@ -227,12 +223,13 @@ class PlayerAbilities:
                     ret < gsMIN_ZONEMASTERY_LEVEL:
                 return -4
             newMatrix += [ret]
-        self.__batting['powerZones'] = newMatrix
+        self.__batting[PLAYERABILITY_BATTER_POWER] = newMatrix
         return 0 
 
     def getBattingPowerZones(self):
-        return self.__batting['powerZones']
+        return self.__batting[PLAYERABILITY_BATTER_POWER]
 
+    OLD = """
     def getBattingPitchMasteryMatrix(self):
         return self.__batting['pitchMastery']
 
@@ -276,7 +273,7 @@ class PlayerAbilities:
             newMatrix += [ret]
         self.__batting['zoneMastery'] = newMatrix
         return 0
-
+    """
     #def getSpeed(self):
     #    return self.__running['speed']
     #def setSpeed(self, newVal):
@@ -287,60 +284,45 @@ class PlayerAbilities:
     #    return 0
 
     def getDefense(self):
-        return self.__fielding['defense']
+        return self.__fielding[PLAYERABILITY_DEFENSE]
 
     def incDefense(self):
-        self.__fielding['defense'] += 1
+        self.__fielding[PLAYERABILITY_DEFENSE] += 1
 
     def getLeadership(self):
-        return self.__character['leadership']
+        return self.__character[PLAYERABILITY_LEADERSHIP]
 
     def incLeadership(self):
-        self.__character['leadership'] += 1
+        self.__character[PLAYERABILITY_LEADERSHIP] += 1
 
 
     def getPrestige(self):
-        return self.__character['prestige']
+        return self.__character[PLAYERABILITY_PRESTIGE]
 
     def incPrestige(self):
-        self.__character['prestige'] += 1
+        self.__character[PLAYERABILITY_PRESTIGE] += 1
 
     def getBatterPatience(self):
-        return self.__batting['patience']
+        return self.__batting[PLAYERABILITY_BATTER_PATIENCE]
 
     def incBatterPatience(self):
-        self.__batting['patience'] += 1
+        self.__batting[PLAYERABILITY_BATTER_PATIENCE] += 1
 
     def incBatterPower(self):
-        pwr = self.__batting['powerZones'][0]
-        self.__batting['powerZones'] = [pwr+1] * 9
-        #self.__batting['patience'] += 1
+        pwr = self.__batting[PLAYERABILITY_BATTER_POWER][0]
+        self.__batting[PLAYERABILITY_BATTER_POWER] = [pwr+1] * 9
 
+
+
+#
+# Use For Unit Testing
+#
 def main():
 
     pa = PlayerAbilities()
     print pa
 
-    print pa.getBattingZoneMasteryMatrix()
-    print pa.setBattingZoneMasteryMatrix(['2.1']*9)
-    print pa.getBattingZoneMasteryMatrix()
-
-    print pa.getPitchingZoneMasteryMatrix()
-    print pa.setPitchingZoneMasteryMatrix(['2.1']*9)
-    print pa.getPitchingZoneMasteryMatrix()
-    
-    pitchMastery = {}
-    for pitchType in gsPITCHTYPES:
-        pitchMastery[pitchType] = '2'
-        
-    print pa.getBattingPitchMasteryMatrix()
-    print pa.setBattingPitchMasteryMatrix(pitchMastery)
-    print pa.getBattingPitchMasteryMatrix()
-
-    print pa.getPitchingPitchMasteryMatrix()
-    print pa.setPitchingPitchMasteryMatrix(pitchMastery)
-    print pa.getPitchingPitchMasteryMatrix()
-
     return
+
 if __name__ == "__main__":
     main()

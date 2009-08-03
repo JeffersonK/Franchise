@@ -11,7 +11,7 @@ import json
 from ObjectDB import *
 import Player
 import leagueleaders
-from PlayerSkillTraining import *
+from PlayerSkills import *
 
 ############
 #
@@ -169,8 +169,8 @@ def ServerAPIUseStatPoint(playerGUID, abilityName):
         return -1 #PLAYER DOESNT EXIST
     if plyr.incStatPoint(abilityName) < 0:
         return -2 #UKNOWN ABILITY or NO UNUSED STAT POINTS
-
     _closePlayerDB(plyrDB)
+    plyrDB = None
     return 0
 
 #############
@@ -180,13 +180,14 @@ def ServerAPIUseStatPoint(playerGUID, abilityName):
 #
 #############
 def ServerAPIGetTrainingJobs(playerGUID):
-    trainingDB = ObjectDB("trainingdb", "trn")
-    trainingJobs = []
-    for (guid, trainingJob) in trainingDB.iteritems():
-        trainingJobs += [trainingJob.__getstate__()]
-        print trainingJob
+    plyrDB = _openPlayerDB()
+    plyr =  plyrDB.getObjectHandle(playerGUID)
+    if plyr == None:
+        return -1 #PLAYER DOESNT EXIST
+    trainingJobs = plyr.getTrainingOptions()
     jsonstr = json.dumps(trainingJobs)
-    del(trainingDB)
+    _closePlayerDB(plyrDB)
+    plyrDB = None
     return jsonstr
 
 #############
@@ -195,7 +196,14 @@ def ServerAPIGetTrainingJobs(playerGUID):
 #
 #############
 def ServerAPITrainSkills(playerGUID, trainingGUID):
-    return
+    plyrDB = _openPlayerDB()
+    plyr =  plyrDB.getObjectHandle(playerGUID)
+    if plyr == None:
+        return -1 #PLAYER DOESNT EXIST
+    ret = plyr.train(trainingGUID)
+    _closePlayerDB(plyrDB)
+    plyrDB = None
+    return ret
 
 #############
 #
@@ -254,17 +262,18 @@ def main():
 
     ServerAdminAPISetPlayerState(0, plyr0)
 
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXENERGYPOINTS) 
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXCHALLENGEPOINTS)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_DEFENSE)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_PRESTIGE)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_LEADERSHIP)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_POWER)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_PATIENCE)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_CONTROL)
-    print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_STAMINA)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXENERGYPOINTS) 
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_MAXCHALLENGEPOINTS)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_DEFENSE)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_PRESTIGE)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_LEADERSHIP)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_POWER)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_BATTER_PATIENCE)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_CONTROL)
+    #print ServerAPIUseStatPoint(0,PLAYERABILITY_PITCHER_STAMINA)
 
     print ServerAPIGetTrainingJobs(0)
+    print ServerAPITrainSkills(0,0)
 
 if __name__ == "__main__":
     main()
