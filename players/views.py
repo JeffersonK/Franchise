@@ -6,7 +6,6 @@ from django.shortcuts import HttpResponse
 import ServerAPI as API
 import leagueleaders
 from Globals import *
-import simplejson
 
 def index(request):
 	return render_to_response('index.html')
