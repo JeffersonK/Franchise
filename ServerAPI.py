@@ -13,7 +13,6 @@ import Player
 import leagueleaders
 from PlayerSkills import *
 from Globals import *
-import simplejson
 
 ############
 #
