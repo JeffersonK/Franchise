@@ -1,0 +1,27 @@
+{% include "style.css" %}
+{% include "includes.html" %}
+{% load template_funcs %}
+
+<style>
+body	{margin:0}
+</style>
+<body bgcolor="#CCCCCC" ><!-- onLoad="do_ajax('GET', 'headerstats', '/player/0/headerstats/', false)">-->
+<div class="mlb">
+	<div class="header"><div class="content">
+		<table width=100%> 
+			<tr height=100>
+				<td colspan="5" STYLE="background-repeat: no-repeat;">Main</td>
+				<td colspan="2" valign=top><label id=headerstats>{% include 'players/headerstats.html' %}</label></td>
+			</tr>
+			<tr>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/main/', false);return false">Home</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/training/', false);return false">Training</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/challenge/', false);return false">Challenge</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/main/', false);return false">Standings</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/main/', false);return false">Item Shop</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/profile/', false);return false">Profile{% if player.unusedStatPoints|gt:0 %} (+{{player.unusedStatPoints}}){% endif %}</a></td>
+				<td class="td_main_buttons"><a href="#" onclick="do_ajax('GET', 'maincontent', '/player/0/stats/', false);return false">Player Statistics</a></td>
+			</tr>
+		</table>
+	</div></div>
+</div>

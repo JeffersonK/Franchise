@@ -5,9 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-#    (r'^updates/', include('Levitas.updates.urls')),
-#    (r'^devices/', include('Levitas.devices.urls')),
-    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/var/www/django/Franchise/pics'}),
+    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/frank/src/Franchise/media'}),
     (r'^leaders/', include('Franchise.leaders.urls')),
     (r'^player/', include('Franchise.players.urls')),
     (r'^admin/', include('Franchise.admin.urls')),

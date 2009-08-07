@@ -1,0 +1,50 @@
+<script type="text/javascript">
+/*********
+*AJAX
+*
+*********/
+
+var xmlhttp = null
+
+function ajaxHeader()
+{
+if (window.XMLHttpRequest)
+  {
+  // code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest()
+  }
+else if (window.ActiveXObject)
+  {
+  // code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP")
+  }
+else
+  {
+  alert("Your browser does not support XMLHTTP!")
+  }
+}
+
+function do_ajax(type, div, url, reloadHeader)
+{
+	ajaxHeader()
+	if (xmlhttp != null){
+		xmlhttp.onreadystatechange=function(){
+		if(xmlhttp.readyState==4){
+			page = xmlhttp.responseText
+
+			document.getElementById(div).innerHTML = page
+			if (reloadHeader)
+				do_ajax('GET', 'headerstats', '/player/0/headerstats/', false)
+		document.getElementById("LoadingOverlay").style.display = "none"
+		}
+		}
+		document.getElementById("LoadingOverlay").style.display = "inline"
+		xmlhttp.open(type,url,true)
+		xmlhttp.send(null)
+	}
+}
+</script>
+<div id="LoadingOverlay" style="position: absolute; top: 200px; left: 283px; width: 180px; text-align: center; z-index: 100; display: none;">
+	<div><center><img src="/site_media/rotatingbaseball.gif" /></center></div>
+</div>
+

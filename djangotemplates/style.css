@@ -1,0 +1,59 @@
+<style type='text/css'>
+	.mlb{ font-family: sans-serif;}
+	.mlb div.mainheader {padding: 1px; border: 0px solid #b6b6b6; clear: both; } 
+	.mlb div.header div.content{} 
+	.mlb div.header div.content table { }
+	.mlb div.header div.content td { font-size: 0.8em; font-weight:bold; color: #FFFFFF; border: 0px solid #b6b6b6; }
+	.td_main_buttons { font-size: 0.8em; font-weight:bold; color: #FFFFFF; border: 0px solid #b6b6b6; height: 30px; width: 14%; vertical-align: middle; text-align: center; background: url('/site_media/field_small.jpg');}
+	.td_main_buttons a:link {  text-decoration:none; font-size: 10px; color: #FFFFFF; }
+	.td_main_buttons a:visited {  text-decoration:none; font-size: 10px; color: #FFFFFF; }
+	.td_main_buttons a:hover {  text-decoration:underline; color: silver; font-size: 10px; color: #FFFFFF; }
+	
+	.mlb div.iframe div.content {padding: 1px; border: 1px solid #b6b6b6; margin: .6em 0 .6em 0 !important; clear: both;}
+	.mlb_main_content {padding: 1px; border: 1px solid #b6b6b6; margin: .6em 0 .6em 0 !important; clear: both;}
+
+
+	.mlb_game_history_header{ font-size: 14px; padding: 2px; font-weight: bold; text-align: center;} 
+	.mlb_game_history_body{ font-size: 0.8em; padding: 1px; font-weight: normal;} 
+	.mlb_game_history_body a { font-size: 1.2em !important; font-weight: bold;} 
+	.recap_button { font-size: 10px;}
+	.rematch_button { font-size: 10px;}
+	
+	.mlb_leadership_skills { font-size: 0.8em; padding: 1px; }
+	.mlb_leadership_skills td { vertical-align: middle; }
+		.td_left { font-weight:bold; }
+		.td_right { text-align: right; }
+	.mlb_zone_mastery { font-size: 0.9em; padding: 2px; border: 0px solid #b6b6b6; }
+	.mlb_zone_mastery td { font-size: 0.8em; font-weight:bold; color: #FFFFFF; border: 1px solid #b6b6b6; width: 50px; height: 50px; vertical-align: middle; text-align: center; }
+	.mlb_zone_mastery_header h1 { font-size: 12px; font-weight: bold; text-align: center;}
+	.mlb_zone_mastery_header h2 { font-size: 9px; font-weight: normal; text-align: center;}
+	.mlb_zone_mastery_header td { height: 3px; border: 0px; margin: 0px;font-weight:bold; height: 5px; vertical-align: middle; text-align: center; }
+
+	.mlb_leader_boards table { width: 100%; margin: 1; font-size: 10px; }
+	.mlb_leader_boards td {font-weight: bold; }
+
+	.mlb_player_card_header { font-size: 0.9em; padding: 0px; border: 1px solid #b6b6b6;}
+	.mlb_player_card_header td { font-size: 0.8em; font-weight:bold; color: #000000; border: 1px solid #b6b6b6; width: 3px; height: 3px; vertical-align: middle; text-align: center; background: #CCCCCC;}
+
+	.mlb_player_card { padding: 0px; border: 1px solid #b6b6b6; }
+	.mlb_player_card td { font-weight:normal; color: #000000; border: 1px solid #b6b6b6; vertical-align: middle; text-align: center; background: white;}
+
+	.mlb_player_highlights {font-size: 10px; font-weight: bold;}
+
+
+	.mlb_player_skills_profile_table {vertical-align: top;}
+
+
+	.mlb div.box { margin-bottom: 0px; }
+	.mlb div.box div.top { margin: 0pt; padding: 0pt; height: 26px; background-image: url("/site_media/tm.gif");}
+	.mlb div.box div.top h2 { margin: 0pt; padding: 6px 0pt 0pt 4px; display: inline; float: left; }
+	.mlb div.box div.top h2 a { font-size: 12px; font-weight: bold; color: #ffffff; }
+	.mlb div.box div.top div.left { height: 26px; width: 6px; float: left; background-image: url("/site_media//tl"); background-repeat: no-repeat; }
+	.mlb div.box div.top div.right { height: 26px; width: 6px; float: right; background-image: url("/site_media//tr.gif"); background-repeat: no-repeat; }
+	.mlb div.box div.body { border-left: 1px solid #086630; border-right: 1px solid #086630; margin: 0pt; padding: 4px;}
+	.mlb div.box div.body a { font-size: 9px; color: #000000; }
+	.mlb div.box div.bottom { height: 4px; background-image: url("/site_media/bm.gif"); background-repeat: repeat-x; }
+	.mlb div.box div.bottom div.left { height: 4px; width: 6px; float: left; background-image: url("/site_media/bl.gif"); background-repeat: no-repeat; }
+	.mlb div.box div.bottom div.right { height: 4px; width: 6px; float: right; background-image: url("/site_media/br.gif"); background-repeat: no-repeat; }
+	.mlb div.clear { clear: both; }
+</style>

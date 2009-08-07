@@ -3,6 +3,13 @@ import copy
 
 register = Library()
 
+
+@register.filter
+def gt(value, arg): #Returns a boolean of whether the value is greater than the argument
+    return int(value) > int(arg)
+
+
+############################################
 @register.filter
 def adjust_left(lineup,location):
 	first=int(location)-1
