@@ -3,6 +3,7 @@ from Player import *
 import AtBatResult
 from Globals import *
 
+DEBUG_GAMESTATE=True
 ########################
 #
 #
@@ -102,8 +103,8 @@ class GameState:
     #should return whether end of game
     def handleChangeSides(self): #"handleEndInning()
 
-        #DEBUG
-        #print "--- CHANGE SIDES --- (homeTeamUp:%s)" % self.__homeTeamUp
+        if DEBUG_GAMESTATE:
+            print "--- CHANGE SIDES --- (homeTeamUp:%s)" % self.__homeTeamUp
 
         #DEBUG
         #if not self._isEndTeamAtBat():
@@ -270,9 +271,9 @@ class GameState:
 
         self.__fieldGameState.setBatterGUID(self._getNextBatterGUID())
 
-        #DEBUG_GAMESTATE
-        #print " +++ HANDLE START AT BAT +++ "
-        #print self
+        if DEBUG_GAMESTATE:
+            print " +++ HANDLE START AT BAT +++ "
+            print self
 
     def handleAtBatResult(self, atBatEventObj):
 
@@ -295,9 +296,9 @@ class GameState:
 
         teamObj.advanceBattingLineup()
         
-        #DEBUG_GAMESTATE
-        #print self
-        #print " --- HANDLE END AT BAT --- : %s" % atBatEventObj
+        if DEBUG_GAMESTATE:
+            print self
+            print " --- HANDLE END AT BAT --- : %s" % atBatEventObj
         
         #here is where you update playerGameState Stats
         teamObj.updateTeamGameState(atBatEventObj, True)
@@ -343,8 +344,8 @@ class GameState:
                                              self._getStateForNextAtBatEvent())
 
         ret = atBatEvent.simAtBat()          
-        #DEBUG_GAMESTATE
-        #print "SIM AT BAT RETURN: %s" % ret
+        if DEBUG_GAMESTATE:
+            print "SIM AT BAT RETURN: %s" % ret
 
         return atBatEvent
 

@@ -61,7 +61,6 @@ def run(argv):
         else:
             assert False, "unhandled option"
     
-
     #print GENERATETEAMS
     #print NRUNS
     #return
@@ -97,7 +96,6 @@ def run(argv):
     
         f1.setLineup()
         f1.setRotation()
-
 
         # GENERATE
         if GENERATETEAMS:
